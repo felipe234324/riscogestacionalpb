@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório Saúde Indígena - {{ current_user.nome }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root{
+      --primary:#8B4513;--secondary:#A0522D;--accent:#f2eabc;--white:#fff;--text:#333;
+      --shadow:0 12px 32px rgba(0,0,0,.15);--transition:all .3s ease;--danger:#d32f2f;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+
+    /* FUNDO COBRE A TELA TODA */
+    html{height:100%}
+    body{
+      font-family:'Poppins',sans-serif;
+      min-height:100vh;margin:0;
+      background:url('/static/imagens/fundo-indigena.jpg') center/cover no-repeat fixed;
+      display:flex;justify-content:center;align-items:flex-start;
+      padding:30px 15px;color:var(--text);line-height:1.6;
+    }
+
+    /* CAIXA BRANCA + TRANSPARÊNCIA + DESFOQUE */
+    .container{
+      background:rgba(255,255,255,0.93);
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      border-radius:26px;padding:42px;width:100%;max-width:1260px;
+      margin:0 auto;box-shadow:var(--shadow);
+      border-left:11px solid var(--primary);
+      animation:fadeIn .8s ease-out;
+    }
+
+    /* === SEU CSS ORIGINAL (só melhorei 3 linhas) === */
+    .header-title{text-align:center;margin-bottom:30px}
+    .header-title img{max-width:380px;height:auto;margin-bottom:12px}
+    h2{color:var(--primary);font-weight:600;font-size:1.8rem;display:flex;align-items:center;justify-content:center;gap:8px}
+    .flash-message{padding:10px;margin-bottom:20px;border-radius:6px;text-align:center;font-size:.95rem}
+    .flash-message.success{background:#e6f0e5;color:var(--primary)}
+    .flash-message.danger{background:#f8d7da;color:#721c24}
+    .form-group{display:flex;flex-direction:row;align-items:flex-end;gap:15px;margin-bottom:20px;width:100%}
+    select,input[type=date]{flex:1;min-width:200px;padding:10px;border-radius:6px;border:1px solid var(--secondary);font-size:.95rem;background:#f8f9fa;transition:var(--transition);height:40px}
+    select:focus,input[type=date]:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px rgba(139,69,19,.2);background:var(--white)}
+    .date-input-group{display:flex;flex-direction:column;gap:5px;min-width:150px}
+    .date-input-group label{font-size:.9rem;color:var(--secondary);font-weight:500}
+    .btn-container{width:120px;height:40px}
+    .btn-entrar{width:100%;height:100%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:var(--accent);border:none;border-radius:6px;font-size:.95rem;font-weight:600;cursor:pointer;transition:var(--transition);box-shadow:0 4px 12px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center}
+    .btn-entrar:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(139,69,19,.3)}
+    .table-container{overflow-x:auto;margin-top:20px}
+    table{width:100%;border-collapse:collapse;background:var(--white)}
+    th,td{border:1px solid var(--secondary);padding:12px;text-align:center;font-size:.95rem}
+    th{background:#f9e4d4;color:var(--primary);font-weight:600;cursor:pointer;position:relative;user-select:none}
+    th.sortable::after{content:'\f0dc';font-family:'Font Awesome 6 Free';font-weight:900;margin-left:5px;font-size:.8rem;color:var(--primary)}
+    th.sort-asc::after{content:'\f0de'} th.sort-desc::after{content:'\f0dd'}
+    tr:nth-child(even){background:#f8f9fa}
+    tr:hover{background:#fdf5e6}
+    .risco-habitual{color:#856404;background:#fff3cd;font-weight:500}
+    .risco-intermediario{color:#d94801;background:#ffd8a8;font-weight:500}
+    .risco-alto{color:#721c24;background:#f8d7da;font-weight:500}
+.pdf-button {
+    background-color: white !important;
+    color: var(--primary) !important; /* #8B4513 */
+    border: 1.5px solid var(--primary);
+    padding: 0 12px;
+    font-size: 0.8rem;
+    min-width: 90px;
+    min-height: 36px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+.pdf-button:hover {
+    background-color: var(--accent) !important; /* #f2eabc */
+    border-color: #A0522D;
+    color: var(--primary) !important;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+}
+
+.pdf-button i {
+    color: #d32f2f;
+    font-size: 0.9rem;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+    .pdf-button {
+        font-size: 0.75rem;
+        min-width: 80px;
+        min-height: 32px;
+        padding: 0 10px;
+    }
+}
+    .button-group{display:flex;justify-content:flex-start;gap:14px;margin-top:30px;flex-wrap:wrap}
+    .button--nav{display:inline-flex;align-items:center;padding:9px 20px;min-width:180px;background:var(--primary);color:var(--accent);text-decoration:none;border-radius:8px;font-weight:600;font-size:0.95rem;transition:var(--transition);border:none;cursor:pointer;justify-content:center}
+    .button--nav:hover{background:#6B3E0F;transform:translateY(-2px);box-shadow:0 5px 12px rgba(139,69,19,.3)}
+    .button--nav.logout{background:var(--danger)}
+    .button--nav.logout:hover{background:#b71c1c}
+    .pagination-container{position:sticky;bottom:20px;left:0;width:100%;display:flex;justify-content:center;z-index:10;background:transparent;padding:10px 0}
+    .pagination{display:inline-flex;justify-content:center;align-items:center;gap:15px;background:var(--white);padding:10px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:30px}
+    .stat-card{background:var(--white);border-radius:16px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,.1);transition:var(--transition)}
+    .stat-card:hover{transform:translateY(-5px);box-shadow:0 12px 24px rgba(139,69,19,.15)}
+    .stat-card-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--white);font-size:1.2rem}
+    .stat-card-icon.total{background:var(--primary)}
+    .stat-card-icon.habitual{background:#ffc107}
+    .stat-card-icon.intermediate{background:#f28c38}
+    .stat-card-icon.high{background:var(--danger)}
+    .stat-card-value{font-size:1.5rem;font-weight:600;color:var(--primary);margin-bottom:5px}
+    .stat-card-label{font-size:.9rem;color:#6b7280}
+    .accordion{margin-bottom:30px}
+    .accordion-item{background:var(--white);border-radius:8px;margin-bottom:10px;box-shadow:0 4px 12px rgba(0,0,0,.1);overflow:hidden}
+    .accordion-header{padding:15px 20px;background:#fdf5e6;color:var(--primary);font-weight:500;font-size:1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .3s}
+    .accordion-header:hover{background:#f9e4d4}
+    .accordion-header i{transition:transform .3s}
+    .accordion-header.active i{transform:rotate(180deg)}
+    .accordion-content{max-height:0;overflow:hidden;transition:max-height .3s ease-out;padding:0 20px}
+    .accordion-content.active{padding:20px}
+    .accordion-content ul{list-style:none;padding:0}
+    .accordion-content li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:.95rem}
+    .accordion-content li:last-child{border-bottom:none}
+    .accordion-content li span:last-child{font-weight:500;color:var(--primary)}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:768px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:576px){
+      .container{padding:20px;max-width:95%}
+      .stats-grid{grid-template-columns:1fr}
+      .form-group{flex-direction:column;align-items:stretch}
+      .button--nav{min-width:160px;padding:10px 16px;font-size:.9rem}
+      .header-title img{max-width:280px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- LOGO + TÍTULO -->
+    <div class="header-title">
+      <img src="/static/imagens/titulo-indigena.png" alt="Saúde Indígena">
+      <h2>Relatório Saúde Indígena – {{ current_user.nome }}</h2>
+    </div>
+
+    <!-- FLASH -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="flash-message {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- CARDS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-icon total"><i class="fas fa-users"></i></div>
+        <div class="stat-card-text">
+          <div class="stat-card-value">{{ estatisticas.total_registros }}</div>
+          <div class="stat-card-label">Registros Indígenas (último sem desfecho)</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon total"><i class="fas fa-city"></i></div>
+        <div class="stat-card-text">
+          <div class="stat-card-value">{{ estatisticas.municipios_unicos }}</div>
+          <div class="stat-card-label">Municípios com Indígenas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon total"><i class="fas fa-percentage"></i></div>
+        <div class="stat-card-text">
+          <div class="stat-card-value">{{ '{:.1f}'.format(estatisticas.percentual_indigenas) }}%</div>
+          <div class="stat-card-label">do Total de Gestantes</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon habitual"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="stat-card-text">
+          <div class="stat-card-value">{{ estatisticas.risco_habitual }} ({{ '{:.1f}'.format(estatisticas.risco_habitual / estatisticas.total_registros * 100 if estatisticas.total_registros > 0 else 0) }}%)</div>
+          <div class="stat-card-label">Risco Habitual</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon intermediate"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="stat-card-text">
+          <div class="stat-card-value">{{ estatisticas.risco_intermediario }} ({{ '{:.1f}'.format(estatisticas.risco_intermediario / estatisticas.total_registros * 100 if estatisticas.total_registros > 0 else 0) }}%)</div>
+          <div class="stat-card-label">Risco Intermediário</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon high"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="stat-card-text">
+          <div class="stat-card-value">{{ estatisticas.risco_alto }} ({{ '{:.1f}'.format(estatisticas.risco_alto / estatisticas.total_registros * 100 if estatisticas.total_registros > 0 else 0) }}%)</div>
+          <div class="stat-card-label">Risco Alto</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12 ACORDEÕES -->
+    <div class="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header">Identidade de Gênero <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, count in estatisticas.genero_counts.items() %}
+              {% if item != '-' %}
+                <li><span>{{ item }}</span><span>{{ count }} ({{ '{:.1f}'.format(count / estatisticas.total_registros * 100 if estatisticas.total_registros > 0 else 0) }}%)</span></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Orientação Sexual <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, count in estatisticas.sexualidade_counts.items() %}
+              {% if item != '-' %}
+                <li><span>{{ item }}</span><span>{{ count }} ({{ '{:.1f}'.format(count / estatisticas.total_registros * 100 if estatisticas.total_registros > 0 else 0) }}%)</span></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Etnia Indígena <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% set total_etnias = estatisticas.total_etnias_indigenas %}
+            {% if total_etnias > 0 %}
+              {% for etnia, dados in estatisticas.etnia_indigena_counts.items() %}
+                {% if etnia != 'Nenhuma etnia indígena registrada' %}
+                  <li><span>{{ etnia }}</span><span>{{ dados.count }} ({{ '{:.1f}'.format((dados.count / total_etnias) * 100) }}%)</span></li>
+                {% endif %}
+              {% endfor %}
+              <li class="border-top pt-2 mt-2"><span><strong>Total etnias indígenas:</strong></span><span><strong>{{ total_etnias }}</strong> (100.0%)</span></li>
+            {% else %}
+              <li class="text-muted"><em>Nenhuma etnia indígena registrada</em></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Período Gestacional <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for periodo, count in estatisticas.periodo_gestacional.items() %}
+              <li><span>{{ periodo }}</span><span>{{ count }} ({{ '{:.1f}'.format(count / estatisticas.total_registros * 100 if estatisticas.total_registros > 0 else 0) }}%)</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Características individuais, condições socioeconômicas e familiares <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, count in estatisticas.caracteristicas_counts.items() %}
+              {% if item != '-' and item not in ['Situação de rua', 'Indígena', 'Quilombola'] %}
+                <li><span>{{ item }}</span><span>{{ count }}</span></li>
+              {% endif %}
+            {% endfor %}
+            {% if estatisticas.caracteristicas_counts.get('Situação de rua', 0) > 0 or estatisticas.caracteristicas_counts.get('Indígena', 0) > 0 or estatisticas.caracteristicas_counts.get('Quilombola', 0) > 0 %}
+              <li><span>Situação de rua / Indígena ou Quilombola</span><span>{{ estatisticas.caracteristicas_counts.get('Situação de rua', 0) + estatisticas.caracteristicas_counts.get('Indígena', 0) + estatisticas.caracteristicas_counts.get('Quilombola', 0) }}</span></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Avaliação Nutricional <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, count in estatisticas.avaliacao_nutricional_counts.items() %}
+              {% if item != '-' %}
+                <li><span>{{ item }}</span><span>{{ count }}</span></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Comorbidades prévias à gestação atual <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, count in estatisticas.comorbidades_counts.items() %}
+              {% if item != '-' %}
+                <li><span>{{ item }}</span><span>{{ count }}</span></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Condições clínicas específicas e relacionadas às gestações prévias <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, count in estatisticas.historia_obstetrica_counts.items() %}
+              {% if item != '-' %}
+                <li><span>{{ item }}</span><span>{{ count }}</span></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Condições clínicas específicas e relacionadas à gestação atual <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, count in estatisticas.condicoes_gestacionais_counts.items() %}
+              {% if item != '-' %}
+                <li><span>{{ item }}</span><span>{{ count }}</span></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Fora de Área <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul><li><span>Gestantes fora de área</span><span>{{ estatisticas.fora_area_count }}</span></li></ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">Desfechos <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for desfecho, count in estatisticas.desfecho_counts.items() %}
+              <li><span>{{ desfecho }}</span><span>{{ count }} ({{ '{:.1f}'.format(count / estatisticas.total_desfechos * 100 if estatisticas.total_desfechos > 0 else 0) }}%)</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <form method="POST" action="{{ url_for('saude_indigena') }}" class="form-group">
+      <select name="municipio">
+        <option value="">Todos os Municípios</option>
+        {% if current_user.saude_indigena or (current_user.is_super_admin and current_user.role == 'estadual') %}
+          {% for m in municipios %}
+            <option value="{{ m }}" {% if m == filtro_municipio %}selected{% endif %}>{{ m }}</option>
+          {% endfor %}
+        {% else %}
+          <option value="{{ current_user.municipio }}" selected>{{ current_user.municipio }}</option>
+        {% endif %}
+      </select>
+      <div class="date-input-group">
+        <label for="data_inicio">Data Início</label>
+        <input type="date" id="data_inicio" name="data_inicio" value="{{ filtro_data_inicio or '' }}">
+      </div>
+      <div class="date-input-group">
+        <label for="data_fim">Data Fim</label>
+        <input type="date" id="data_fim" name="data_fim" value="{{ filtro_data_fim or '' }}">
+      </div>
+      <div class="btn-container">
+        <button type="submit" class="btn-entrar"><i class="fas fa-filter"></i> Filtrar</button>
+      </div>
+    </form>
+
+    <!-- BOTÕES -->
+    <div class="button-group">
+      {% if current_user.role == 'estadual' or current_user.is_super_admin %}
+        <a href="{{ url_for('calculadora') }}" class="button--nav"><i class="fas fa-calculator"></i> Voltar Calculadora</a>
+        <a href="{{ url_for('admin_painel') }}" class="button--nav"><i class="fas fa-tachometer-alt"></i> Voltar Painel</a>
+      {% endif %}
+      <button id="export-csv" class="button--nav"><i class="fas fa-download"></i> Exportar CSV</button>
+      <button id="logout-btn" class="button--nav logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</button>
+    </div>
+
+    <!-- TABELA -->
+    <div class="table-container">
+      <table id="relatorio-table">
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="user_id">ID Usuário</th>
+            <th class="sortable" data-sort="codigo_ficha">Código Ficha</th>
+            <th class="sortable" data-sort="nome_gestante">Nome Gestante</th>
+            <th class="sortable" data-sort="genero">Identidade de Gênero</th>
+            <th class="sortable" data-sort="sexualidade">Orientação Sexual</th>
+            <th class="sortable" data-sort="etnia_indigena">Etnia Indígena</th>
+            <th class="sortable" data-sort="data_nasc">Data Nascimento</th>
+            <th class="sortable" data-sort="telefone">Telefone</th>
+            <th class="sortable" data-sort="municipio">Município</th>
+            <th class="sortable" data-sort="ubs">UBS</th>
+            <th class="sortable" data-sort="acs">ACS</th>
+            <th class="sortable" data-sort="periodo_gestacional">Período Gestacional</th>
+            <th class="sortable" data-sort="data_envio">Data Envio</th>
+            <th class="sortable" data-sort="pontuacao_total">Pontuação Total</th>
+            <th class="sortable" data-sort="classificacao_risco">Classificação de Risco</th>
+            <th class="sortable" data-sort="imc">IMC</th>
+            <th>Características individuais, condições socioeconômicas e familiares</th>
+            <th>Avaliação Nutricional</th>
+            <th>Comorbidades prévias à gestação atual</th>
+            <th>Condições clínicas específicas e relacionadas às gestações prévias</th>
+            <th>Condições clínicas específicas e relacionadas à gestação atual</th>
+            <th class="sortable" data-sort="desfecho">Desfecho</th>
+            <th class="sortable" data-sort="profissional">Profissional</th>
+            <th class="sortable" data-sort="fa">Fora de Área</th>
+            <th>PDF</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in registros %}
+          <tr>
+            <td>{{ r.user_id }}</td>
+            <td>{{ r.codigo_ficha }}</td>
+            <td>{{ r.nome_gestante }}</td>
+            <td>{{ r.genero or 'Não informado' }}</td>
+            <td>{{ r.sexualidade or 'Não informado' }}</td>
+            <td>{{ r.etnia_indigena or 'Não informado' }}</td>
+            <td>{{ r.data_nasc }}</td>
+            <td>{{ r.telefone }}</td>
+            <td>{{ r.municipio }}</td>
+            <td>{{ r.ubs }}</td>
+            <td>{{ r.acs }}</td>
+            <td>{{ r.periodo_gestacional }}</td>
+            <td>{{ r.data_envio }}</td>
+            <td>{{ r.pontuacao_total }}</td>
+            <td class="{% if r.classificacao_risco == 'Risco Habitual' %}risco-habitual{% elif r.classificacao_risco == 'Risco Intermediário' %}risco-intermediario{% elif r.classificacao_risco == 'Risco Alto' %}risco-alto{% endif %}">
+              {{ r.classificacao_risco }}
+            </td>
+            <td>{{ r.imc if r.imc is not none else '-' }}</td>
+            <td>{{ r.caracteristicas }}</td>
+            <td>{{ r.avaliacao_nutricional }}</td>
+            <td>{{ r.comorbidades }}</td>
+            <td>{{ r.historia_obstetrica }}</td>
+            <td>{{ r.condicoes_gestacionais }}</td>
+            <td>{{ r.desfecho if r.desfecho else '-' }}</td>
+            <td>{{ r.profissional }}</td>
+            <td>{{ r.fa }}</td>
+            <td>
+              {% if (r.pdf_compartilhado_municipal == 1 and current_user.role == 'municipal') or current_user.role in ['estadual','apoio'] or current_user.saude_indigena %}
+<button class="pdf-button" onclick="gerarPDF('{{ r.codigo_ficha }}', this)" title="Baixar PDF">
+    <i class="fas fa-file-pdf"></i> PDF
+</button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if not registros %}
+        <p style="text-align:center;margin-top:1rem;color:var(--primary);">Nenhum registro encontrado.</p>
+      {% endif %}
+
+      <div class="pagination-container">
+        <div class="pagination">
+          <button id="prev-page" class="button--nav" disabled><i class="fas fa-chevron-left"></i> Anterior</button>
+          <span id="page-info">Página <span id="current-page">1</span> de <span id="total-pages">1</span></span>
+          <button id="next-page" class="button--nav"><i class="fas fa-chevron-right"></i> Próximo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT 100% FUNCIONAL -->
+  <script>
+    function getCsrfToken(){
+      const n='csrf_token=';const d=decodeURIComponent(document.cookie).split(';');
+      for(let i=0;i<d.length;i++){let c=d[i].trim();if(c.indexOf(n)===0)return c.substring(n.length);}
+      return '';
+    }
+    function gerarPDF(codigo,btn){
+      btn.disabled=true;const ico=btn.innerHTML;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>';
+      fetch(`/gerar_pdf/${encodeURIComponent(codigo)}`,{method:'GET',headers:{'X-CSRF-Token':getCsrfToken()},credentials:'same-origin'})
+        .then(r=>{btn.disabled=false;btn.innerHTML=ico;if(!r.ok)throw new Error('Erro');return r.blob();})
+        .then(b=>{const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=`ficha_${codigo}.pdf`;a.click();URL.revokeObjectURL(u);})
+        .catch(e=>{btn.innerHTML=ico;const m=document.createElement('div');m.className='flash-message danger';m.textContent='Erro ao baixar PDF: '+e.message;document.querySelector('.container').insertBefore(m,document.querySelector('.form-group'));setTimeout(()=>m.remove(),5000);});
+    }
+    function logout(){
+      const b=document.getElementById('logout-btn');b.disabled=true;b.textContent='Saindo...';
+      fetch('{{ url_for("logout") }}',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':getCsrfToken()},credentials:'same-origin'})
+        .then(r=>{if(!r.ok)throw new Error('Erro');return r.json();})
+        .then(d=>{if(d.success)location.href='/';else throw new Error(d.message||'Erro');})
+        .catch(e=>{b.disabled=false;b.textContent='Sair';const m=document.createElement('div');m.className='flash-message danger';m.textContent='Erro ao sair: '+e.message;document.querySelector('.container').insertBefore(m,document.querySelector('.form-group'));setTimeout(()=>m.remove(),5000);});
+    }
+    document.addEventListener('DOMContentLoaded',()=>{
+      const table=document.getElementById('relatorio-table');
+      const tbody=table.querySelector('tbody');
+      const headers=table.querySelectorAll('th.sortable');
+      const rowsPerPage=100;
+      let rows=Array.from(tbody.querySelectorAll('tr'));
+      let currentPage=1;
+      const totalPages=Math.ceil(rows.length/rowsPerPage);
+      const prevBtn=document.getElementById('prev-page');
+      const nextBtn=document.getElementById('next-page');
+      const curSpan=document.getElementById('current-page');
+      const totSpan=document.getElementById('total-pages');
+      totSpan.textContent=totalPages;curSpan.textContent=currentPage;
+      function update(){
+        const s=(currentPage-1)*rowsPerPage;const e=s+rowsPerPage;
+        rows.forEach((r,i)=>{r.style.display=(i>=s&&i<e)?'':'none';});
+        prevBtn.disabled=currentPage===1;nextBtn.disabled=currentPage===totalPages;
+        curSpan.textContent=currentPage;
+      }
+      update();
+      prevBtn.onclick=()=>{if(currentPage>1){currentPage--;update();}};
+      nextBtn.onclick=()=>{if(currentPage<totalPages){currentPage++;update();}};
+      let sortDir={},curSort=null;
+      headers.forEach(h=>{
+        h.onclick=()=>{
+          const k=h.dataset.sort;
+          if(curSort===k) sortDir[k]=!sortDir[k];
+          else{sortDir={};sortDir[k]=true;headers.forEach(hh=>hh.classList.remove('sort-asc','sort-desc'));}
+          curSort=k;
+          h.classList.add(sortDir[k]?'sort-asc':'sort-desc');
+          rows.sort((a,b)=>{
+            let av=a.querySelector(`td:nth-child(${Array.from(headers).findIndex(hh=>hh.dataset.sort===k)+1})`).textContent.trim();
+            let bv=b.querySelector(`td:nth-child(${Array.from(headers).findIndex(hh=>hh.dataset.sort===k)+1})`).textContent.trim();
+            if(!isNaN(av)&&!isNaN(bv)){av=parseFloat(av);bv=parseFloat(bv);}
+            else if(['data_envio','data_nasc'].includes(k)){av=av.split('/').reverse().join('');bv=bv.split('/').reverse().join('');}
+            return (av<bv?-1:av>bv?1:0)*(sortDir[k]?1:-1);
+          });
+          tbody.innerHTML='';rows.forEach(r=>tbody.appendChild(r));
+          currentPage=1;update();
+        };
+      });
+      document.getElementById('export-csv').onclick=()=>{
+        const rows=Array.from(document.querySelectorAll('#relatorio-table tr'));
+        const csv=[];const del=';';
+        const head=Array.from(rows[0].querySelectorAll('th')).slice(0,-1).map(t=>`"${t.textContent.trim().replace(/"/g,'""')}"`);
+        csv.push(head.join(del));
+        for(let i=1;i<rows.length;i++){
+          const cols=Array.from(rows[i].querySelectorAll('td')).slice(0,-1).map(c=>`"${c.textContent.trim().replace(/"/g,'""')}"`);
+          csv.push(cols.join(del));
+        }
+        const blob=new Blob(['\uFEFF'+csv.join('\n')],{type:'text/csv;charset=utf-8;'});
+        const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='relatorio_saude_indigena.csv';a.click();
+      };
+      document.querySelectorAll('.accordion-header').forEach(h=>{
+        h.onclick=()=>{
+          const item=h.parentElement;const cont=h.nextElementSibling;
+          const active=item.classList.contains('active');
+          document.querySelectorAll('.accordion-item').forEach(i=>{if(i!==item){i.classList.remove('active');i.querySelector('.accordion-content').classList.remove('active');i.querySelector('.accordion-content').style.maxHeight=null;}});
+          item.classList.toggle('active');cont.classList.toggle('active');
+          cont.style.maxHeight=active?null:cont.scrollHeight+'px';
+        };
+      });
+    });
+  </script>
+</body>
+</html>

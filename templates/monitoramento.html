@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitoramento</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --primary: #194756;
+      --secondary: #54736e;
+      --accent: #f2eabc;
+      --light: #f8f9fa;
+      --white: #ffffff;
+      --text: #333333;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+      --danger-color: #d32f2f;
+      --danger-hover: #b71c1c;
+      --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      --success-color: #ffc107;
+      --warning-color: #f28c38;
+      --danger-background: #f8d7da;
+      --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--accent);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container {
+      background-color: var(--white);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 1200px;
+      margin: 40px 20px;
+      animation: fadeIn 0.5s ease-out;
+    }
+    h2 {
+      color: var(--secondary);
+      margin-bottom: 30px;
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .flash-message {
+      padding: 10px;
+      margin-bottom: 20px;
+      margin-top: 30px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    .flash-message.success {
+      background-color: #e6f0e5;
+      color: var(--primary);
+    }
+    .flash-message.danger {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 15px;
+      margin: 20px 0;
+      width: 100%;
+    }
+    select {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--secondary);
+      font-size: 0.95rem;
+      background-color: #f8f9fa;
+      transition: var(--transition);
+      height: 40px;
+      box-sizing: border-box;
+    }
+    select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(84, 115, 110, 0.2);
+      background-color: var(--white);
+    }
+    .btn-entrar {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      background: var(--primary);
+      color: var(--white);
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: var(--transition);
+      border: none;
+      cursor: pointer;
+      height: 40px;
+    }
+    .btn-entrar:hover {
+      background: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: var(--box-shadow);
+    }
+    .btn-entrar:active {
+      transform: translateY(0);
+    }
+    .btn-entrar .icon {
+      margin-right: 8px;
+    }
+    .stats-grid-top {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .stats-grid-bottom {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+      max-width: 66.67%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .stat-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--box-shadow);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      animation: slideIn 0.5s ease-out;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-primary);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 0;
+    }
+    .stat-card:hover::before {
+      opacity: 0.1;
+    }
+    .stat-card-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .stat-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+    .stat-card:hover .stat-card-icon {
+      transform: scale(1.15);
+    }
+    .stat-card-icon.total { background: var(--primary); }
+    .stat-card-icon.habitual { background: var(--success-color); }
+    .stat-card-icon.intermediate { background: var(--warning-color); }
+    .stat-card-icon.high { background: var(--danger-color); }
+    .stat-card-text {
+      flex: 1;
+    }
+    .stat-card-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+    .stat-card-label {
+      font-size: 0.9rem;
+      color: #6b7280;
+      font-weight: 400;
+    }
+    #map {
+      height: 400px;
+      border-radius: 8px;
+      box-shadow: var(--box-shadow);
+      margin-bottom: 20px;
+    }
+    .filter-toggle-container {
+      margin: 20px 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .filter-toggle {
+      padding: 10px 20px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filter-toggle:hover {
+      background: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: var(--box-shadow);
+    }
+    .filter-buttons {
+      display: flex;
+      gap: 15px;
+      overflow: hidden;
+      max-width: 0;
+      transition: max-width 0.5s ease;
+    }
+    .filter-buttons.active {
+      max-width: 600px;
+    }
+    .filter-button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--white);
+      transition: var(--transition);
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .filter-buttons.active .filter-button {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .filter-button.active {
+      filter: brightness(0.8);
+    }
+    .filter-button[data-filter="total"] {
+      background: var(--primary);
+    }
+    .filter-button.risco-habitual {
+      background: var(--success-color);
+    }
+    .filter-button.risco-intermediario {
+      background: var(--warning-color);
+    }
+    .filter-button.risco-alto {
+      background: var(--danger-color);
+    }
+    .filter-button:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--box-shadow);
+    }
+    .table-container {
+      overflow-x: auto;
+      margin-top: 20px;
+      display: none;
+    }
+    .table-container.active {
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--white);
+    }
+    th, td {
+      border: 1px solid var(--secondary);
+      padding: 12px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    th {
+      background-color: #e6f0e5;
+      color: var(--primary);
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+    th:hover {
+      background-color: #d4e6d4;
+    }
+    th.sortable::after {
+      content: '\f0dc';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      margin-left: 5px;
+      font-size: 0.8rem;
+      color: var(--primary);
+    }
+    th.sort-asc::after {
+      content: '\f0de';
+    }
+    th.sort-desc::after {
+      content: '\f0dd';
+    }
+    tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    tr:hover {
+      background-color: #e6f0e5;
+    }
+    .button-group {
+      display: flex;
+      justify-content: flex-start;
+      gap: 15px;
+      margin-top: 25px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    .button--nav {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      background: var(--danger-color);
+      color: var(--white);
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: var(--transition);
+      border: none;
+      cursor: pointer;
+    }
+    .button--nav:hover {
+      background: var(--danger-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--box-shadow);
+    }
+    .button--nav:active {
+      transform: translateY(0);
+    }
+    .button--nav .icon {
+      margin-right: 8px;
+    }
+    .pagination-container {
+      position: sticky;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      z-index: 10;
+      background-color: var(--white);
+      padding: 10px 0;
+    }
+    .pagination {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      background-color: var(--white);
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: var(--box-shadow);
+    }
+    .pagination button {
+      padding: 8px 15px;
+      font-size: 0.95rem;
+    }
+    .pagination button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #page-info {
+      font-size: 0.95rem;
+      color: var(--primary);
+    }
+    .info-icon {
+      position: relative;
+      display: inline-block;
+      margin-left: 10px;
+      cursor: help;
+    }
+    .info-icon i {
+      color: var(--primary);
+      transition: var(--transition);
+    }
+    .info-icon:hover i {
+      color: #123540;
+    }
+    .tooltip {
+      visibility: hidden;
+      width: 300px;
+      background-color: #333;
+      color: var(--white);
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px;
+      position: absolute;
+      z-index: 100;
+      top: 50%;
+      left: calc(100% + 10px);
+      transform: translateY(-50%);
+      opacity: 0;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      font-size: 0.85rem;
+      box-shadow: var(--box-shadow);
+    }
+    .info-icon:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 768px) {
+      .stats-grid-top {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .stats-grid-bottom {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 100%;
+      }
+      .form-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      select {
+        width: 100%;
+        min-width: unset;
+        height: 40px;
+      }
+      .filter-buttons.active {
+        max-width: 100%;
+        flex-direction: column;
+      }
+    }
+    @media (max-width: 576px) {
+      .container {
+        margin: 20px 15px;
+        padding: 20px;
+      }
+      .stats-grid-top, .stats-grid-bottom {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+      }
+      .stat-card-value {
+        font-size: 1.3rem;
+      }
+      .stat-card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+      #map {
+        height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>
+      Monitoramento
+      <span class="info-icon">
+        <i class="fas fa-info-circle"></i>
+        <span class="tooltip">Os dados sobre risco habitual, intermediário e alto consideram apenas o último registro das gestantes sem 'Desfecho' e sem 'Fora de Área'.</span>
+      </span>
+    </h2>
+    <div class="button-group">
+      <button id="logout-btn" class="button--nav button--logout" onclick="logout()" aria-label="Sair">
+        <i class="fas fa-sign-out-alt icon"></i> Sair
+      </button>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <div class="stats-grid-top">
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-card-icon habitual">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+          <div class="stat-card-text">
+            <div class="stat-card-value">{{ estatisticas.classificacao_risco.risco_habitual }} ({{ '{:.1f}'.format(estatisticas.classificacao_risco.risco_habitual / estatisticas.total_registros * 100 if estatisticas.total_registros > 0 else 0) }}%)</div>
+            <div class="stat-card-label">Risco Habitual</div>
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-card-icon intermediate">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="stat-card-text">
+            <div class="stat-card-value">{{ estatisticas.classificacao_risco.risco_intermediario }} ({{ '{:.1f}'.format(estatisticas.classificacao_risco.risco_intermediario / estatisticas.total_registros * 100 if estatisticas.total_registros > 0 else 0) }}%)</div>
+            <div class="stat-card-label">Risco Intermediário</div>
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-card-icon high">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="stat-card-text">
+            <div class="stat-card-value">{{ estatisticas.classificacao_risco.risco_alto }} ({{ '{:.1f}'.format(estatisticas.classificacao_risco.risco_alto / estatisticas.total_registros * 100 if estatisticas.total_registros > 0 else 0) }}%)</div>
+            <div class="stat-card-label">Risco Alto</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stats-grid-bottom">
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-card-icon total">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-card-text">
+            <div class="stat-card-value">{{ estatisticas.total_registros }}</div>
+            <div class="stat-card-label">Total de Cadastros Ativos</div>
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-card-icon total">
+            <i class="fas fa-city"></i>
+          </div>
+          <div class="stat-card-text">
+            <div class="stat-card-value">{{ estatisticas.municipios_unicos }}</div>
+            <div class="stat-card-label">Municípios Distintos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="filter-toggle-container">
+      <button class="filter-toggle" id="filter-toggle">
+        <i class="fas fa-filter"></i> Filtros
+      </button>
+      <div class="filter-buttons" id="filter-buttons">
+        <button class="filter-button active" data-filter="total">Cadastros Totais</button>
+        <button class="filter-button risco-habitual" data-filter="risco_habitual">Risco Habitual</button>
+        <button class="filter-button risco-intermediario" data-filter="risco_intermediario">Risco Intermediário</button>
+        <button class="filter-button risco-alto" data-filter="risco_alto">Risco Alto</button>
+      </div>
+    </div>
+    <div id="map"></div>
+    <form method="POST" action="{{ url_for('monitoramento') }}" class="form-group">
+      <select name="macrorregiao" id="macrorregiao-select">
+        <option value="">Todas as Macrorregiões</option>
+        <option value="1ª" {% if filtro_macrorregiao == '1ª' %}selected{% endif %}>1ª Macrorregião</option>
+        <option value="2ª" {% if filtro_macrorregiao == '2ª' %}selected{% endif %}>2ª Macrorregião</option>
+        <option value="3ª" {% if filtro_macrorregiao == '3ª' %}selected{% endif %}>3ª Macrorregião</option>
+      </select>
+      <select name="regiao" id="regiao-select">
+        <option value="">Todas as Regiões</option>
+        {% for macro in regioes_por_macrorregiao %}
+          {% for regiao in regioes_por_macrorregiao[macro]|sort %}
+            <option value="{{ regiao }}" {% if filtro_regiao == regiao %}selected{% endif %}>{{ regiao }}</option>
+          {% endfor %}
+        {% endfor %}
+      </select>
+      <select name="municipio" id="municipio-select">
+        <option value="">Todos os Municípios</option>
+        {% for municipio in municipios %}
+          <option value="{{ municipio }}" {% if municipio == filtro_municipio %}selected{% endif %}>
+            {{ municipio }}
+          </option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn-entrar" aria-label="Filtrar registros">
+        <i class="fas fa-filter icon"></i> Filtrar
+      </button>
+    </form>
+    <div class="table-container" id="table-container">
+      <table id="monitoramento-table">
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="nome">Nome</th>
+            <th class="sortable" data-sort="municipio">Município</th>
+            <th class="sortable" data-sort="profissao">Profissão</th>
+            <th class="sortable" data-sort="role">Papel</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for usuario in usuarios %}
+          <tr>
+            <td>{{ usuario.nome }}</td>
+            <td>{{ usuario.municipio }}</td>
+            <td>{{ usuario.profissao or 'N/A' }}</td>
+            <td>{{ usuario.role or 'apoio' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if not usuarios %}
+        <p style="text-align: center; margin-top: 1rem; color: var(--primary);">Nenhum usuário disponível para o município selecionado.</p>
+      {% endif %}
+      <div class="pagination-container">
+        <div class="pagination">
+          <button id="prev-page" class="button--nav" disabled><i class="fas fa-chevron-left icon"></i> Anterior</button>
+          <span id="page-info">Página <span id="current-page">1</span> de <span id="total-pages">1</span></span>
+          <button id="next-page" class="button--nav"><i class="fas fa-chevron-right icon"></i> Próximo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Mapeamento de macrorregiões, regiões e municípios
+    const regioesPorMacrorregiao = {{ regioes_por_macrorregiao|tojson|safe }};
+    const municipios = {{ municipios|tojson|safe }};
+    const usuariosPorMunicipio = {{ usuarios_por_municipio|tojson|safe }};
+    let currentFilter = 'total';
+    let mapLayer = null;
+
+    // Função para obter o token CSRF
+    function getCsrfToken() {
+      const name = 'csrf_token=';
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const cookies = decodedCookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        let cookie = cookies[i].trim();
+        if (cookie.indexOf(name) === 0) {
+          return cookie.substring(name.length, cookie.length);
+        }
+      }
+      return '';
+    }
+
+    // Função de logout
+    function logout() {
+      const logoutBtn = document.getElementById('logout-btn');
+      logoutBtn.disabled = true;
+      logoutBtn.textContent = 'Saindo...';
+
+      fetch('/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': getCsrfToken()
+        },
+        credentials: 'same-origin'
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          window.location.href = '/login';
+        } else {
+          throw new Error(data.message || 'Erro ao fazer logout.');
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao fazer logout:', error);
+        logoutBtn.disabled = false;
+        logoutBtn.textContent = 'Sair';
+        const flashContainer = document.querySelector('.container');
+        const flashMessage = document.createElement('div');
+        flashMessage.className = 'flash-message danger';
+        flashMessage.textContent = `Erro ao fazer logout: ${error.message}`;
+        flashContainer.insertBefore(flashMessage, flashContainer.querySelector('.form-group'));
+        setTimeout(() => flashMessage.remove(), 5000);
+      });
+    }
+
+    // Função para encontrar macrorregião e região de um município
+    function findMacrorregiaoRegiao(municipio) {
+      for (const macro in regioesPorMacrorregiao) {
+        for (const regiao in regioesPorMacrorregiao[macro]) {
+          if (regioesPorMacrorregiao[macro][regiao].includes(municipio)) {
+            return [macro, regiao];
+          }
+        }
+      }
+      return [null, null];
+    }
+
+    // Função para encontrar macrorregião de uma região
+    function findMacrorregiao(regiao) {
+      for (const macro in regioesPorMacrorregiao) {
+        if (regiao in regioesPorMacrorregiao[macro]) {
+          return macro;
+        }
+      }
+      return null;
+    }
+
+    // Função para obter todas as regiões
+    function getAllRegioes() {
+      const regioes = [];
+      for (const macro in regioesPorMacrorregiao) {
+        for (const regiao in regioesPorMacrorregiao[macro]) {
+          if (!regioes.includes(regiao)) {
+            regioes.push(regiao);
+          }
+        }
+      }
+      return regioes.sort((a, b) => parseInt(a) - parseInt(b));
+    }
+
+    // Função para obter todos os municípios de uma macrorregião
+    function getMunicipiosMacrorregiao(macrorregiao) {
+      const municipios = [];
+      if (macrorregiao) {
+        for (const regiao in regioesPorMacrorregiao[macrorregiao]) {
+          municipios.push(...regioesPorMacrorregiao[macrorregiao][regiao]);
+        }
+      } else {
+        for (const macro in regioesPorMacrorregiao) {
+          for (const regiao in regioesPorMacrorregiao[macro]) {
+            municipios.push(...regioesPorMacrorregiao[macro][regiao]);
+          }
+        }
+      }
+      return municipios.sort();
+    }
+
+    // Mapa
+    function getFillOpacity(count, max) {
+      if (count === 0) return 0;
+      return 0.2 + (count / max) * 0.8;
+    }
+
+    const map = L.map('map', {
+      maxBounds: [
+        [-8.5, -38.5],
+        [-6.0, -34.5]
+      ],
+      maxBoundsViscosity: 1.0,
+      minZoom: 7,
+      maxZoom: 10,
+      zoomControl: false,
+      attributionControl: false
+    }).setView([-7.12, -36.72], 7);
+
+    function updateMap(filter, macrorregiao = '', regiao = '', municipio = '') {
+      if (mapLayer) {
+        map.removeLayer(mapLayer);
+      }
+
+      // Filtrar municípios com base nos filtros
+      let filteredMunicipios = Object.keys(usuariosPorMunicipio);
+      if (macrorregiao) {
+        filteredMunicipios = getMunicipiosMacrorregiao(macrorregiao);
+        if (regiao) {
+          filteredMunicipios = regioesPorMacrorregiao[macrorregiao][regiao] || [];
+        }
+        if (municipio) {
+          filteredMunicipios = [municipio];
+        }
+      } else if (regiao) {
+        const macro = findMacrorregiao(regiao);
+        if (macro) {
+          filteredMunicipios = regioesPorMacrorregiao[macro][regiao] || [];
+        }
+      } else if (municipio) {
+        filteredMunicipios = [municipio];
+      }
+
+      const maxUsuarios = Math.max(...filteredMunicipios.map(m => {
+        return usuariosPorMunicipio[m] ? (usuariosPorMunicipio[m][filter] || 0) : 0;
+      }), 1);
+
+      // Carregar mapas
+      Promise.all([
+        fetch('{{ url_for("static", filename="mapa/brasil_estados.json") }}').then(res => res.json()),
+        fetch('{{ url_for("static", filename="mapa/PB_Municipios_2023.json") }}').then(res => res.json())
+      ])
+      .then(([brasilData, pbData]) => {
+        // Adicionar estados brasileiros (exceto Paraíba)
+        L.geoJSON(brasilData, {
+          style: function(feature) {
+            return {
+              fillColor: '#666',
+              weight: 0.5,
+              opacity: 1,
+              color: '#444',
+              fillOpacity: 0.8
+            };
+          },
+          filter: function(feature) {
+            return feature.properties.nome !== 'Paraíba';
+          }
+        }).addTo(map);
+
+        // Adicionar municípios da Paraíba
+        mapLayer = L.geoJSON(pbData, {
+          style: function(feature) {
+            const municipioName = feature.properties.name;
+            if (!filteredMunicipios.includes(municipioName)) {
+              return {
+                fillColor: '#ffffff',
+                weight: 0.5,
+                opacity: 1,
+                color: '#ddd',
+                fillOpacity: 0
+              };
+            }
+            const count = usuariosPorMunicipio[municipioName] ? (usuariosPorMunicipio[municipioName][filter] || 0) : 0;
+            const color = filter === 'total' ? '#1b5e20' :
+                          filter === 'risco_habitual' ? '#ffc107' :
+                          filter === 'risco_intermediario' ? '#f28c38' : '#d32f2f';
+            return {
+              fillColor: count === 0 ? '#ffffff' : color,
+              weight: 0.5,
+              opacity: 1,
+              color: '#ddd',
+              fillOpacity: getFillOpacity(count, maxUsuarios)
+            };
+          },
+          onEachFeature: function(feature, layer) {
+            const municipio = feature.properties.name;
+            if (!filteredMunicipios.includes(municipio)) return;
+            const counts = usuariosPorMunicipio[municipio] || { total: 0, risco_habitual: 0, risco_intermediario: 0, risco_alto: 0 };
+            const popupContent = filter === 'total' ?
+              `<b>${municipio}</b><br>Total de Cadastros: ${counts.total}` :
+              `<b>${municipio}</b><br>${filter.replace('risco_', 'Risco ').replace('_', ' ').toUpperCase()}: ${counts[filter]}`;
+            layer.bindPopup(popupContent);
+          }
+        }).addTo(map);
+      })
+      .catch(error => {
+        console.error('Erro ao carregar os mapas:', error);
+      });
+    }
+
+    // Inicializa o mapa com cadastros totais
+    updateMap('total', '{{ filtro_macrorregiao }}', '{{ filtro_regiao }}', '{{ filtro_municipio }}');
+
+    // Toggle dos filtros
+    const filterToggle = document.getElementById('filter-toggle');
+    const filterButtons = document.getElementById('filter-buttons');
+    filterToggle.addEventListener('click', () => {
+      filterButtons.classList.toggle('active');
+      const buttons = filterButtons.querySelectorAll('.filter-button');
+      buttons.forEach((btn, index) => {
+        btn.style.transition = `opacity 0.3s ease ${index * 0.1}s, transform 0.3s ease ${index * 0.1}s`;
+      });
+    });
+
+    // Filtros de risco
+    document.querySelectorAll('.filter-button').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        currentFilter = button.getAttribute('data-filter');
+        const macrorregiao = document.getElementById('macrorregiao-select').value;
+        const regiao = document.getElementById('regiao-select').value;
+        const municipio = document.getElementById('municipio-select').value;
+        updateMap(currentFilter, macrorregiao, regiao, municipio);
+        updateTable();
+      });
+    });
+
+    // Atualizar seletores de região e município
+    const macrorregiaoSelect = document.getElementById('macrorregiao-select');
+    const regiaoSelect = document.getElementById('regiao-select');
+    const municipioSelect = document.getElementById('municipio-select');
+
+    function updateRegiaoOptions() {
+      const macrorregiao = macrorregiaoSelect.value;
+      const selectedRegiao = regiaoSelect.value;
+      regiaoSelect.innerHTML = '<option value="">Todas as Regiões</option>';
+      
+      let regioes = [];
+      if (macrorregiao) {
+        regioes = Object.keys(regioesPorMacrorregiao[macrorregiao] || {}).sort((a, b) => parseInt(a) - parseInt(b));
+      } else {
+        regioes = getAllRegioes();
+      }
+
+      regioes.forEach(regiao => {
+        const option = document.createElement('option');
+        option.value = regiao;
+        option.textContent = regiao;
+        if (regiao === selectedRegiao) option.selected = true;
+        regiaoSelect.appendChild(option);
+      });
+    }
+
+    function updateMunicipioOptions() {
+      const macrorregiao = macrorregiaoSelect.value;
+      const regiao = regiaoSelect.value;
+      const selectedMunicipio = municipioSelect.value;
+      municipioSelect.innerHTML = '<option value="">Todos os Municípios</option>';
+
+      let municipiosList = [];
+      if (regiao) {
+        const macro = macrorregiao || findMacrorregiao(regiao);
+        if (macro && regioesPorMacrorregiao[macro][regiao]) {
+          municipiosList = regioesPorMacrorregiao[macro][regiao].sort();
+        }
+      } else if (macrorregiao) {
+        municipiosList = getMunicipiosMacrorregiao(macrorregiao);
+      } else {
+        municipiosList = municipios;
+      }
+
+      municipiosList.forEach(municipio => {
+        const option = document.createElement('option');
+        option.value = municipio;
+        option.textContent = municipio;
+        if (municipio === selectedMunicipio) option.selected = true;
+        municipioSelect.appendChild(option);
+      });
+    }
+
+    // Função para atualizar seletores com base no município selecionado
+    function updateFromMunicipio() {
+      const municipio = municipioSelect.value;
+      if (municipio) {
+        const [macro, regiao] = findMacrorregiaoRegiao(municipio);
+        if (macro && regiao) {
+          macrorregiaoSelect.value = macro;
+          updateRegiaoOptions();
+          regiaoSelect.value = regiao;
+          updateMunicipioOptions();
+          municipioSelect.value = municipio;
+        }
+      } else {
+        updateRegiaoOptions();
+        updateMunicipioOptions();
+      }
+    }
+
+    // Função para atualizar seletores com base na região selecionada
+    function updateFromRegiao() {
+      const regiao = regiaoSelect.value;
+      if (regiao) {
+        const macro = findMacrorregiao(regiao);
+        if (macro) {
+          macrorregiaoSelect.value = macro;
+          updateRegiaoOptions();
+          regiaoSelect.value = regiao;
+        }
+      }
+      updateMunicipioOptions();
+    }
+
+    // Inicializar seletores
+    updateFromMunicipio(); // Inicializa com base no município, se houver
+    if (!municipioSelect.value) {
+      updateFromRegiao(); // Inicializa com base na região, se não houver município
+    }
+
+    macrorregiaoSelect.addEventListener('change', () => {
+      updateRegiaoOptions();
+      updateMunicipioOptions();
+      updateMap(currentFilter, macrorregiaoSelect.value, regiaoSelect.value, municipioSelect.value);
+      updateTable();
+    });
+
+    regiaoSelect.addEventListener('change', () => {
+      updateFromRegiao();
+      updateMap(currentFilter, macrorregiaoSelect.value, regiaoSelect.value, municipioSelect.value);
+      updateTable();
+    });
+
+    municipioSelect.addEventListener('change', () => {
+      updateFromMunicipio();
+      updateMap(currentFilter, macrorregiaoSelect.value, regiaoSelect.value, municipioSelect.value);
+      updateTable();
+    });
+
+    // Controle de exibição da tabela
+    document.addEventListener('DOMContentLoaded', function () {
+      const tableContainer = document.getElementById('table-container');
+      const table = document.getElementById('monitoramento-table');
+      const tbody = table.querySelector('tbody');
+      const headers = table.querySelectorAll('th.sortable');
+      let sortDirection = {};
+      let currentSort = null;
+      const rowsPerPage = 100;
+      let currentPage = 1;
+      let rows = Array.from(tbody.querySelectorAll('tr'));
+      let totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage));
+      const prevPageBtn = document.getElementById('prev-page');
+      const nextPageBtn = document.getElementById('next-page');
+      const currentPageSpan = document.getElementById('current-page');
+      const totalPagesSpan = document.getElementById('total-pages');
+
+      tableContainer.classList.add('active');
+      totalPagesSpan.textContent = totalPages;
+      currentPageSpan.textContent = currentPage;
+
+      function updateTable() {
+        const macrorregiao = macrorregiaoSelect.value;
+        const regiao = regiaoSelect.value;
+        const municipio = municipioSelect.value;
+
+        rows = Array.from(tbody.querySelectorAll('tr')).filter(row => {
+          const municipioCell = row.querySelector('td:nth-child(2)').textContent.trim();
+          if (municipio) return municipioCell === municipio;
+          if (regiao) {
+            const macro = macrorregiao || findMacrorregiao(regiao);
+            return (regioesPorMacrorregiao[macro][regiao] || []).includes(municipioCell);
+          }
+          if (macrorregiao) {
+            return getMunicipiosMacrorregiao(macrorregiao).includes(municipioCell);
+          }
+          return true;
+        });
+
+        totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage));
+        totalPagesSpan.textContent = totalPages;
+        currentPage = 1;
+        currentPageSpan.textContent = currentPage;
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        rows.forEach((row, index) => {
+          row.style.display = (index >= start && index < end) ? '' : 'none';
+        });
+
+        prevPageBtn.disabled = currentPage === 1;
+        nextPageBtn.disabled = currentPage === totalPages;
+      }
+
+      updateTable();
+
+      prevPageBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          updateTable();
+        }
+      });
+
+      nextPageBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          updateTable();
+        }
+      });
+
+      headers.forEach(header => {
+        header.addEventListener('click', () => {
+          const sortKey = header.getAttribute('data-sort');
+          if (currentSort === sortKey) {
+            sortDirection[sortKey] = !sortDirection[sortKey];
+          } else {
+            sortDirection = {};
+            sortDirection[sortKey] = true;
+            headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+          }
+          currentSort = sortKey;
+
+          header.classList.add(sortDirection[sortKey] ? 'sort-asc' : 'sort-desc');
+          sortTable(sortKey, sortDirection[sortKey]);
+        });
+      });
+
+      function sortTable(key, ascending) {
+        rows.sort((a, b) => {
+          let aValue = a.querySelector(`td:nth-child(${Array.from(headers).findIndex(h => h.getAttribute('data-sort') === key) + 1})`).textContent.trim();
+          let bValue = b.querySelector(`td:nth-child(${Array.from(headers).findIndex(h => h.getAttribute('data-sort') === key) + 1})`).textContent.trim();
+
+          if (!isNaN(aValue) && !isNaN(bValue)) {
+            aValue = parseFloat(aValue);
+            bValue = parseFloat(bValue);
+          }
+
+          if (aValue < bValue) return ascending ? -1 : 1;
+          if (aValue > bValue) return ascending ? 1 : -1;
+          return 0;
+        });
+
+        while (tbody.firstChild) {
+          tbody.removeChild(tbody.firstChild);
+        }
+        rows.forEach(row => tbody.appendChild(row));
+
+        currentPage = 1;
+        updateTable();
+      }
+
+      console.log('Tabela visível:', tableContainer.classList.contains('active'));
+      console.log('Número de linhas:', rows.length);
+    });
+  </script>
+</body>
+</html>

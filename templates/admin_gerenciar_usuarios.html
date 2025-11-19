@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Usuários</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary-color: #194756;
+            --secondary-color: #54736e;
+            --accent-color: #f2eabc;
+            --danger-color: #d32f2f;
+            --danger-hover: #b71c1c;
+            --success-color: #388e3c;
+            --success-hover: #2e7d32;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --municipal-color: #d35400;
+            --state-color: #16a085;
+            --common-color: #8e44ad;
+            --apoio-color: #2980b9;
+            --indigena-color: #8B4513;
+            --indigena-hover: #A0522D;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--accent-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--text-light);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            max-width: 1230px;
+            margin: 0 auto;
+            box-shadow: var(--box-shadow);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        /* AJUSTE 1: CARDS EM 2 COLUNAS, 3 POR LINHA */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: var(--text-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            transition: transform var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            max-height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            box-sizing: border-box;
+        }
+
+        .card-icon.municipal { background: var(--municipal-color); }
+        .card-icon.state { background: var(--state-color); }
+        .card-icon.common { background: var(--common-color); }
+        .card-icon.apoio { background: var(--apoio-color); }
+        .card-icon.indigena { 
+            background: var(--indigena-color); 
+            background-image: url('/static/imagens/perfil-indigena.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .card-label {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .icon-indigena2 {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background-image: url('/static/imagens/perfil-indigena2.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+        }
+
+        .icon-indigena {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background-image: url('/static/imagens/perfil-indigena.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+        }
+
+        .table-container {
+            background: var(--text-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .table-header h3 {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        #map {
+            height: 400px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #dddddd;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+
+        th {
+            background: var(--secondary-color);
+            color: var(--accent-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+        }
+
+        th.sortable::after {
+            content: '\f0dc';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-left: 5px;
+            font-size: 0.8rem;
+            color: var(--accent-color);
+        }
+
+        th.sort-asc::after { content: '\f0de'; }
+        th.sort-desc::after { content: '\f0dd'; }
+        th.filter-active { background: var(--primary-color); }
+
+        tr:hover {
+            background-color: rgba(242, 234, 188, 0.2);
+        }
+
+        .municipio-cell, .cnes-cell, .email-cell {
+            position: relative;
+            overflow-wrap: break-word;
+            white-space: normal;
+            max-width: 200px;
+        }
+
+        .municipio-cell .tooltip, .cnes-cell .tooltip, .email-cell .tooltip {
+            visibility: hidden;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 8px 10px;
+            position: absolute;
+            z-index: 1000;
+            top: 80%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            max-width: 300px;
+            white-space: normal;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .municipio-cell:hover .tooltip, .cnes-cell:hover .tooltip, .email-cell:hover .tooltip {
+            visibility: visible;
+        }
+
+        .button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-right: 8px;
+        }
+
+        .button--primary {
+            background: var(--primary-color);
+            color: var(--accent-color);
+        }
+
+        .button--primary:hover {
+            background: #123540;
+            transform: translateY(-1px);
+        }
+
+        .button--nav {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--primary-color);
+            color: var(--accent-color);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            white-space: nowrap;
+            max-width: 200px;
+        }
+
+        .button--nav:hover {
+            background: #123540;
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .button--nav:active {
+            transform: translateY(0);
+        }
+
+        .button--nav.disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .button--cancel {
+            background: var(--danger-color);
+            color: var(--text-light);
+        }
+
+        .button--cancel:hover {
+            background: var(--danger-hover);
+            transform: translateY(-1px);
+        }
+
+        .button--indigena {
+            background: var(--indigena-color);
+            color: var(--text-light);
+        }
+
+        .button--indigena:hover {
+            background: var(--indigena-hover);
+            transform: translateY(-1px);
+        }
+
+        /* AJUSTE 2: BOTÃO PNAR COM COR DE MONITORAMENTO */
+        .button--pnar {
+            background: var(--state-color);
+            color: var(--text-light);
+        }
+
+        .button--pnar:hover {
+            background: #13866f;
+            transform: translateY(-2px);
+        }
+
+        .flash-message {
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            font-weight: 600;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            min-height: 50px;
+        }
+
+        .flash-message.success {
+            background-color: #e6f0e5;
+            color: var(--primary-color);
+        }
+
+        .flash-message.danger {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+        }
+
+        .form-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .select-sm {
+            padding: 5px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #dddddd;
+            width: 150px;
+            max-height: 200px;
+            appearance: none;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%23666" d="M6 9L1 4h10z"/></svg>') no-repeat right 10px center;
+            background-size: 12px;
+        }
+
+        .select-sm option[disabled][selected] {
+            color: #999;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination .button--nav {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .pagination .button--nav.disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            font-size: 16px;
+            color: var(--secondary-color);
+        }
+
+        .icon {
+            margin-right: 5px;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .search-input {
+            padding: 10px 10px 10px 40px;
+            font-size: 14px;
+            border: 1px solid #dddddd;
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 350px;
+            background: var(--text-light);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: border-color var(--transition);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .search-icon1 {
+            position: absolute;
+            left: 15px;
+            top: 40%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        #search-user-modal .search-input {
+            padding-left: 40px;
+            text-indent: 5px;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--text-light);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--box-shadow);
+            animation: slideIn 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        .modal-content input,
+        .modal-content select {
+            padding: 10px;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: border-color var(--transition);
+        }
+
+        .modal-content input:focus,
+        .modal-content select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid var(--indigena-color);
+        }
+
+        .checkbox-container label {
+            font-weight: 600;
+            color: var(--indigena-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--indigena-color);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .autocomplete-dropdown {
+            background: var(--text-light);
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            margin-top: 5px;
+            box-shadow: var(--box-shadow);
+            width: calc(100% - 24px);
+        }
+
+        .autocomplete-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background var(--transition);
+        }
+
+        .autocomplete-item:hover {
+            background: var(--accent-color);
+        }
+
+        .autocomplete-item i {
+            color: var(--apoio-color);
+            font-size: 16px;
+        }
+
+        .apoio-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid var(--secondary-color);
+            border-radius: var(--border-radius);
+            background: #f9f9f9;
+        }
+
+        .apoio-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: var(--transition);
+        }
+
+        .apoio-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .apoio-list-item:hover {
+            background: var(--accent-color);
+        }
+
+        .apoio-list-item.indigena {
+            background: rgba(139, 69, 19, 0.05);
+        }
+
+        .apoio-list-item span {
+            margin-left: -10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+
+        .apoio-list-item.indigena span {
+            color: var(--indigena-color);
+            font-weight: 600;
+        }
+
+        .apoio-list-item i {
+            color: var(--apoio-color);
+            font-size: 16px;
+        }
+
+        .apoio-list-item.indigena i {
+            color: var(--indigena-color);
+        }
+
+        .apoio-list-empty {
+            padding: 15px;
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            table { display: block; overflow-x: auto; }
+            .container { padding: 15px; }
+            .pagination { flex-direction: column; gap: 10px; }
+            .stats-cards { grid-template-columns: 1fr; }
+            #map { height: 300px; }
+            .modal-content { width: 95%; }
+            .button--nav { max-width: 150px; }
+            .search-input { max-width: 100%; }
+            .autocomplete-dropdown { width: calc(100% - 24px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h2>Gerenciar Usuários</h2>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="{{ url_for('admin_painel') }}" class="button--nav">
+                    <i class="fas fa-arrow-left icon"></i> Voltar
+                </a>
+                <button id="open-user-search" class="button--nav">
+                    <i class="fas fa-user-edit icon"></i> Modificar Cadastro
+                </button>
+                <button id="open-apoio-modal" class="button--nav">
+                    <i class="fas fa-user-plus icon"></i> Gerenciar Apoio
+                </button>
+                <a href="{{ url_for('monitoramento') }}" class="button--nav">
+                    <i class="fas fa-chart-line icon"></i> Monitoramento
+                </a>
+                <button id="open-pnar-modal" class="button--nav button--pnar">
+                    <i class="fas fa-hospital-user"></i> PNAR
+                </button>
+                <a href="{{ url_for('saude_indigena') }}" class="button--nav button--indigena" id="btn-saude-indigena">
+                    <span class="icon-indigena"></span> Saúde Indígena
+                </a>
+                <button id="logout-button" class="button--nav button--cancel" onclick="logout()">
+                    <i class="fas fa-sign-out-alt icon"></i> Sair
+                </button>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Modal de Gerenciamento de Apoio -->
+        <div id="apoio-modal" class="modal">
+            <div class="modal-content">
+                <h3>Gerenciar Usuários de Apoio</h3>
+                <!-- AJUSTE 3: BOTÃO CADASTRAR PNAR AO LADO -->
+                <div class="apoio-buttons">
+                    <button id="open-cadastro-apoio" class="button button--primary">Cadastrar Novo Apoio</button>
+                    <button id="open-cadastro-pnar" class="button button--primary">Cadastrar PNAR</button>
+                </div>
+                <div class="apoio-list" id="apoio-list"></div>
+                <div class="modal-buttons">
+                    <button type="button" id="close-apoio-modal" class="button button--cancel">Fechar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Cadastro de Apoio -->
+        <div id="cadastro-apoio-modal" class="modal">
+            <div class="modal-content">
+                <h3>Cadastrar Usuário de Apoio</h3>
+                <form id="cadastro-apoio-form" action="{{ url_for('cadastrar_apoio') }}" method="POST">
+                    <label for="apoio-nome">Nome Completo:</label>
+                    <input type="text" id="apoio-nome" name="nome" required>
+                    <label for="apoio-cpf">CPF:</label>
+                    <input type="text" id="apoio-cpf" name="cpf" required pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="XXX.XXX.XXX-XX">
+                    <label for="apoio-email">E-mail:</label>
+                    <input type="email" id="apoio-email" name="email" required>
+                    <label for="apoio-senha">Senha:</label>
+                    <input type="password" id="apoio-senha" name="senha" required minlength="6">
+                    <label for="apoio-confirmar-senha">Confirmar Senha:</label>
+                    <input type="password" id="apoio-confirmar-senha" name="confirmar_senha" required minlength="6">
+                    
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="apoio-indigena" name="saude_indigena">
+                        <label for="apoio-indigena">
+                            <span class="icon-indigena2"></span>
+                            Este usuário terá acesso ao relatório da Saúde Indígena
+                        </label>
+                    </div>
+
+                    <div class="modal-buttons">
+                        <button type="button" id="cancel-cadastro" class="button button--cancel">Cancelar</button>
+                        <button type="submit" class="button button--primary">Cadastrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- AJUSTE 4: MODAL DE CADASTRO PNAR -->
+        <div id="cadastro-pnar-modal" class="modal">
+            <div class="modal-content">
+                <h3>Cadastrar PNAR</h3>
+                <form id="cadastro-pnar-form" action="{{ url_for('cadastrar_pnar') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{% if 'csrf_token' in session %}{{ session.csrf_token }}{% endif %}">
+                    <label for="pnar-servico">Ambulatório:</label>
+                    <select id="pnar-servico" name="servico" required>
+                        <option value="" disabled selected>Selecione o serviço (ou deixe em branco)</option>
+                        <option value="Instituto Cândida Vargas">Instituto Cândida Vargas</option>
+                        <option value="Hospital da Mulher Dona Creuza Pires">Hospital da Mulher Dona Creuza Pires</option>
+                        <option value="Hospital Universitário Lauro Wanderley">Hospital Universitário Lauro Wanderley</option>
+                        <option value="Ambulatório Municipal de Guarabira">Ambulatório Municipal de Guarabira</option>
+                        <option value="Hospital Regional de Picuí">Hospital Regional de Picuí</option>
+                        <option value="Hospital e Maternidade Santa Filomena - Monteiro">Hospital e Maternidade Santa Filomena - Monteiro</option>
+                        <option value="Maternidade Peregrino Filho">Maternidade Peregrino Filho</option>
+                        <option value="Hospital Distrital de Itaporanga">Hospital Distrital de Itaporanga</option>
+                        <option value="Hospital Regional Américo Maia Catolé do Rocha">Hospital Regional Américo Maia Catolé do Rocha</option>
+                        <option value="Hospital Regional de Cajazeiras">Hospital Regional de Cajazeiras</option>
+                        <option value="Hospital Universitário Júlio Bandeira - HUJB">Hospital Universitário Júlio Bandeira - HUJB</option>
+                        <option value="Hospital Regional de Sousa">Hospital Regional de Sousa</option>
+                        <option value="Hospital Regional de Itabaiana">Hospital Regional de Itabaiana</option>
+                        <option value="Ambulatório Municipal Especializado de Mamanguape">Ambulatório Municipal Especializado de Mamanguape</option>
+                        <option value="Hospital Geral de Queimadas">Hospital Geral de Queimadas</option>
+                        <option value="Instituto Saúde Elpídio de Almeida - ISEA">Instituto Saúde Elpídio de Almeida - ISEA</option>
+                    </select>
+
+                    <label for="pnar-nome">Nome do Responsável:</label>
+                    <input type="text" id="pnar-nome" name="nome" required>
+
+                    <label for="pnar-cpf">CPF:</label>
+                    <input type="text" id="pnar-cpf" name="cpf" required pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="XXX.XXX.XXX-XX">
+
+                    <label for="pnar-email">E-mail:</label>
+                    <input type="email" id="pnar-email" name="email" required>
+
+                    <label for="pnar-senha">Senha:</label>
+                    <input type="password" id="pnar-senha" name="senha" required minlength="6">
+
+                    <label for="pnar-confirmar-senha">Confirmar Senha:</label>
+                    <input type="password" id="pnar-confirmar-senha" name="confirmar_senha" required minlength="6">
+
+                    <div class="modal-buttons">
+                        <button type="button" id="cancel-cadastro-pnar" class="button button--cancel">Cancelar</button>
+                        <button type="submit" class="button button--primary">Cadastrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmação de Cadastro PNAR -->
+        <div id="confirm-pnar-modal" class="modal">
+            <div class="modal-content">
+                <h3>Confirmar Cadastro PNAR</h3>
+                <p id="confirm-pnar-text">Tem certeza?</p>
+                <div class="modal-buttons">
+                    <button id="cancel-confirm-pnar" class="button button--cancel">Não</button>
+                    <button id="confirm-pnar" class="button button--primary">Sim</button>
+                </div>
+            </div>
+        </div>
+
+<!-- Modal de Gerenciamento de PNAR -->
+<div id="pnar-modal" class="modal">
+    <div class="modal-content">
+        <h3>Gerenciar PNAR</h3>
+
+        <!-- BOTÃO QUE VAI PRA pnar.html -->
+        <div class="apoio-buttons" style="margin-bottom: 15px; justify-content: flex-start;">
+            <a href="{{ url_for('pnar') }}" class="button button--pnar" style="text-decoration: none;">
+                <i class="fas fa-external-link-alt" style="margin-right: 8px;"></i>
+                Abrir Página Completa do PNAR
+            </a>
+        </div>
+
+        <div class="apoio-list" id="pnar-list"></div>
+
+        <div class="modal-buttons">
+            <button type="button" id="close-pnar-modal" class="button button--cancel">Fechar</button>
+        </div>
+    </div>
+</div>
+
+        <!-- Modal de Confirmação de Cadastro (Apoio) -->
+        <div id="confirm-cadastro-modal" class="modal">
+            <div class="modal-content">
+                <h3>Confirmar Cadastro</h3>
+                <p id="confirm-text">Tem certeza que deseja cadastrar este usuário de apoio?</p>
+                <div class="modal-buttons">
+                    <button id="cancel-confirm-cadastro" class="button button--cancel">Não</button>
+                    <button id="confirm-cadastro" class="button button--primary">Sim, Cadastrar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Busca de Usuário -->
+        <div id="search-user-modal" class="modal">
+            <div class="modal-content">
+                <h3>Modificar Usuário</h3>
+                <div class="search-container">
+                    <input type="text" id="user-search-input" class="search-input" placeholder="Digite o nome do usuário...">
+                    <i class="fas fa-search search-icon1"></i>
+                </div>
+                <div id="autocomplete-dropdown" class="autocomplete-dropdown"></div>
+                <div class="modal-buttons">
+                    <button type="button" id="cancel-search" class="button button--cancel">Fechar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Edição de Usuário -->
+        <div id="edit-user-modal" class="modal">
+            <div class="modal-content">
+                <h3>Editar Usuário</h3>
+                <form id="edit-user-form" method="POST">
+                    <input type="hidden" name="usuario_id" id="edit-usuario-id">
+                    <label for="edit-nome">Nome:</label>
+                    <input type="text" id="edit-nome" name="nome" required>
+                    <label for="edit-email">E-mail:</label>
+                    <input type="email" id="edit-email" name="email" required>
+                    <label for="edit-profissao">Profissão:</label>
+                    <input type="text" id="edit-profissao" name="profissao" required>
+                    <label for="edit-cnes">CNES:</label>
+                    <input type="text" id="edit-cnes" name="cnes" required>
+                    <label for="edit-municipios">Municípios:</label>
+                    <select id="edit-municipios" name="municipios[]" multiple class="select-sm" style="height: 200px;">
+                    </select>
+                    <div class="modal-buttons">
+                        <button type="button" id="cancel-edit" class="button button--cancel">Cancelar</button>
+                        <button type="submit" class="button button--primary">Confirmar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmação de Edição -->
+        <div id="confirm-edit-modal" class="modal">
+            <div class="modal-content">
+                <h3>Confirmar Edição</h3>
+                <p>Tem certeza que deseja salvar as alterações deste usuário?</p>
+                <div class="modal-buttons">
+                    <button id="cancel-confirm-edit" class="button button--cancel">Não</button>
+                    <button id="confirm-edit" class="button button--primary">Sim, Confirmar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmação de Exclusão (Apoio) -->
+        <div id="confirm-delete-modal" class="modal">
+            <div class="modal-content">
+                <h3>Confirmar Exclusão</h3>
+                <p>Tem certeza que deseja excluir este usuário de apoio?</p>
+                <div class="modal-buttons">
+                    <button id="cancel-confirm-delete" class="button button--cancel">Não</button>
+                    <button id="confirm-delete" class="button button--primary">Sim, Excluir</button>
+                </div>
+            </div>
+        </div>
+
+        <main>
+            <div class="stats-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value">{{ totais_usuarios.estadual|default(0) }}</div>
+                            <div class="card-label">{{ 'Administrador Estadual' if totais_usuarios.estadual|default(0) <= 1 else 'Administradores Estaduais' }}</div>
+                        </div>
+                        <div class="card-icon state">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value">{{ totais_usuarios.municipal|default(0) }}</div>
+                            <div class="card-label">{{ 'Administrador Municipal' if totais_usuarios.municipal|default(0) <= 1 else 'Administradores Municipais' }}</div>
+                        </div>
+                        <div class="card-icon municipal">
+                            <i class="fas fa-user-cog"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value">{{ totais_usuarios.comum|default(0) }}</div>
+                            <div class="card-label">{{ 'Usuário Comum (profissional)' if totais_usuarios.comum|default(0) <= 1 else 'Usuários Comuns (profissionais)' }}</div>
+                        </div>
+                        <div class="card-icon common">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value">{{ totais_usuarios.apoio|default(0) }}</div>
+                            <div class="card-label">{{ 'Usuário do Apoio Institucional' if totais_usuarios.apoio|default(0) <= 1 else 'Usuários do Apoio Institucional' }}</div>
+                        </div>
+                        <div class="card-icon apoio">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card Saúde Indígena -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value">{{ totais_usuarios.indigena|default(0) }}</div>
+                            <div class="card-label">{{ 'Apoio Saúde Indígena' if totais_usuarios.indigena|default(0) <= 1 else 'Apoiadores Saúde Indígena' }}</div>
+                        </div>
+                        <div class="card-icon indigena"></div>
+                    </div>
+                </div>
+                <!-- Card PNAR (mantido com cor de monitoramento) -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value">{{ totais_usuarios.pnar|default(0) }}</div>
+                            <div class="card-label">
+                                {{ 'Usuário PNAR' if totais_usuarios.pnar|default(0) <= 1 else 'Usuários PNAR' }}
+                            </div>
+                        </div>
+                        <div class="card-icon" style="background: var(--danger-color);">
+                            <i class="fas fa-hospital-user"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-map-marked-alt"></i> Usuários por Município</h3>
+                </div>
+                <div id="map"></div>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="quick-search" class="search-input" placeholder="Pesquisar usuários...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+
+            <table id="usuarios-ativos-table" aria-label="Usuários ativos">
+                <thead>
+                    <tr>
+                        <th class="sortable" data-sort="nome" data-filter="nome">Nome</th>
+                        <th class="sortable" data-sort="email" data-filter="email">E-mail</th>
+                        <th class="sortable" data-sort="municipio" data-filter="municipio">Município</th>
+                        <th class="sortable" data-sort="profissao" data-filter="profissao">Profissão</th>
+                        <th class="sortable" data-sort="cnes" data-filter="cnes">CNES</th>
+                        <th class="sortable" data-sort="role" data-filter="role">Papel Atual</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if usuarios.items %}
+                        {% for usuario in usuarios.items %}
+                        <tr>
+                            <td>{{ usuario.nome|default('N/A') }}</td>
+                            <td class="email-cell{% if usuario.email and usuario.email|length > 22 %} has-tooltip{% endif %}">
+                                {% if usuario.email and usuario.email|length > 22 %}
+                                    {{ usuario.email[:20] }}...
+                                    <span class="tooltip">{{ usuario.email }}</span>
+                                {% else %}
+                                    {{ usuario.email|default('N/A') }}
+                                {% endif %}
+                            </td>
+                            <td class="municipio-cell{% if municipio|length > 14 or (usuario.municipios|length > 1 and primeiro|length > 14) %} has-tooltip{% endif %}">
+                                {% if usuario.municipios and usuario.municipios|length > 0 and usuario.municipios[0] and usuario.municipios[0] != 'Não informado' %}
+                                    {% if usuario.municipios|length == 1 %}
+                                        {% set municipio = usuario.municipios[0] %}
+                                        {% if municipio|length > 14 %}
+                                            {{ municipio[:14] }}...
+                                            <span class="tooltip">{{ municipio }}</span>
+                                        {% else %}
+                                            {{ municipio }}
+                                        {% endif %}
+                                    {% else %}
+                                        {% set primeiro = usuario.municipios[0] %}
+                                        {% if primeiro|length > 14 %}
+                                            {{ primeiro[:14] }}... (+{{ usuario.municipios|length - 1 }})
+                                            <span class="tooltip">{{ usuario.municipios|join(', ') }}</span>
+                                        {% else %}
+                                            {{ primeiro }} (+{{ usuario.municipios|length - 1 }})
+                                        {% endif %}
+                                    {% endif %}
+                                {% elif usuario.municipio and usuario.municipio != 'Não informado' %}
+                                    {% set municipio = usuario.municipio %}
+                                    {% if municipio|length > 14 %}
+                                        {{ municipio[:14] }}...
+                                        <span class="tooltip">{{ municipio }}</span>
+                                    {% else %}
+                                        {{ municipio }}
+                                    {% endif %}
+                                {% else %}
+                                    Não informado
+                                {% endif %}
+                            </td>
+                            <td>{{ usuario.profissao|default('N/A') }}</td>
+                            <td class="cnes-cell{% if usuario.cnes and usuario.cnes|length > 7 %} has-tooltip{% endif %}">
+                                {% if usuario.cnes and usuario.cnes|length > 7 %}
+                                    {{ usuario.cnes[:7] }}...
+                                    <span class="tooltip">{{ usuario.cnes }}</span>
+                                {% else %}
+                                    {{ usuario.cnes|default('N/A') }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if usuario.is_super_admin %}
+                                    Administrador Estadual
+                                {% elif usuario.is_admin %}
+                                    Administrador Municipal
+                                {% elif usuario.saude_indigena %}
+                                    Apoio Saúde Indígena
+                                {% elif usuario.role == 'apoio' %}
+                                    Usuário de Apoio
+                                {% else %}
+                                    Usuário Comum
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form class="form-inline" action="{{ url_for('admin_gerenciar_usuarios', page=usuarios.page) }}" method="POST">
+                                    <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+                                    <select name="novo_role" class="select-sm custom-select">
+                                        <option value="" selected disabled>Selecione</option>
+                                        <option value="comum" {% if usuario.role == 'comum' %}selected{% endif %}>Comum</option>
+                                        <option value="municipal" {% if usuario.role == 'municipal' %}selected{% endif %}>Municipal</option>
+                                        <option value="estadual" {% if usuario.role == 'estadual' %}selected{% endif %}>Estadual</option>
+                                        <option value="apoio" {% if usuario.role == 'apoio' %}selected{% endif %}>Apoio</option>
+                                    </select>
+                                    <button type="submit" class="button button--primary" onclick="return submitRoleChange(this)">✓</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">Nenhum usuário ativo encontrado.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                {% if usuarios.has_prev %}
+                <a href="{{ url_for('admin_gerenciar_usuarios', page=usuarios.prev_num) }}" class="button--nav">
+                    <i class="fas fa-chevron-left icon"></i> Anterior
+                </a>
+                {% else %}
+                <a class="button--nav disabled">
+                    <i class="fas fa-chevron-left icon"></i> Anterior
+                </a>
+                {% endif %}
+                <span>Página {{ usuarios.page }} de {{ usuarios.pages }}</span>
+                {% if usuarios.has_next %}
+                <a href="{{ url_for('admin_gerenciar_usuarios', page=usuarios.next_num) }}" class="button--nav">
+                    Próximo <i class="fas fa-chevron-right icon"></i>
+                </a>
+                {% else %}
+                <a class="button--nav disabled">
+                    Próximo <i class="fas fa-chevron-right icon"></i>
+                </a>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Mapa
+        const usuariosPorMunicipio = {{ usuarios_por_municipio|tojson }};
+        const maxUsuarios = Math.max(...Object.values(usuariosPorMunicipio).map(m => m.municipal + m.estadual + m.comum + m.apoio), 1);
+
+        function getFillOpacity(count) {
+            if (count === 0) return 0;
+            return 0.2 + (count / maxUsuarios) * 0.8;
+        }
+
+        const map = L.map('map', {
+            maxBounds: [
+                [-8.5, -38.5],
+                [-6.0, -34.5]
+            ],
+            maxBoundsViscosity: 1.0,
+            minZoom: 7,
+            maxZoom: 10,
+            zoomControl: false,
+            attributionControl: false
+        }).setView([-7.12, -36.72], 7);
+
+        fetch('{{ url_for("static", filename="mapa/brasil_estados.json") }}')
+            .then(response => response.json())
+            .then(brasilData => {
+                L.geoJSON(brasilData, {
+                    style: function(feature) {
+                        return {
+                            fillColor: '#666',
+                            weight: 0.5,
+                            opacity: 1,
+                            color: '#444',
+                            fillOpacity: 0.8
+                        };
+                    },
+                    filter: function(feature) {
+                        return feature.properties.nome !== 'Paraíba';
+                    }
+                }).addTo(map);
+
+                fetch('{{ url_for("static", filename="mapa/PB_Municipios_2023.json") }}')
+                    .then(response => response.json())
+                    .then(pbData => {
+                        L.geoJSON(pbData, {
+                            style: function(feature) {
+                                const municipio = feature.properties.name;
+                                const count = usuariosPorMunicipio[municipio] ? 
+                                    usuariosPorMunicipio[municipio].municipal + 
+                                    usuariosPorMunicipio[municipio].estadual + 
+                                    usuariosPorMunicipio[municipio].comum + 
+                                    usuariosPorMunicipio[municipio].apoio : 0;
+                                return {
+                                    fillColor: count === 0 ? '#ffffff' : '#1b5e20',
+                                    weight: 0.5,
+                                    opacity: 1,
+                                    color: '#ddd',
+                                    fillOpacity: getFillOpacity(count)
+                                };
+                            },
+                            onEachFeature: function(feature, layer) {
+                                const municipio = feature.properties.name;
+                                const counts = usuariosPorMunicipio[municipio] || {municipal: 0, estadual: 0, comum: 0, apoio: 0};
+                                layer.bindPopup(`
+                                    <b>${municipio}</b><br>
+                                    Administradores Estaduais: ${counts.estadual}<br>
+                                    Administradores Municipais: ${counts.municipal}<br>
+                                    Usuários Comuns: ${counts.comum}<br>
+                                    Total: ${counts.municipal + counts.estadual + counts.comum}
+                                `);
+                            }
+                        }).addTo(map);
+                    });
+            });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const openSearchBtn = document.getElementById('open-user-search');
+            const searchUserModal = document.getElementById('search-user-modal');
+            const userSearchInput = document.getElementById('user-search-input');
+            const autocompleteDropdown = document.getElementById('autocomplete-dropdown');
+            const cancelSearchBtn = document.getElementById('cancel-search');
+            const editUserModal = document.getElementById('edit-user-modal');
+            const editUserForm = document.getElementById('edit-user-form');
+            const cancelEditBtn = document.getElementById('cancel-edit');
+            const municipioSelect = document.getElementById('edit-municipios');
+            const openApoioModalBtn = document.getElementById('open-apoio-modal');
+            const apoioModal = document.getElementById('apoio-modal');
+            const openCadastroApoioBtn = document.getElementById('open-cadastro-apoio');
+            const cadastroApoioModal = document.getElementById('cadastro-apoio-modal');
+            const cadastroApoioForm = document.getElementById('cadastro-apoio-form');
+            const cancelCadastroBtn = document.getElementById('cancel-cadastro');
+            const confirmCadastroModal = document.getElementById('confirm-cadastro-modal');
+            const confirmCadastroBtn = document.getElementById('confirm-cadastro');
+            const cancelConfirmCadastroBtn = document.getElementById('cancel-confirm-cadastro');
+            const closeApoioModalBtn = document.getElementById('close-apoio-modal');
+            const apoioList = document.getElementById('apoio-list');
+            const confirmDeleteModal = document.getElementById('confirm-delete-modal');
+            const confirmDeleteBtn = document.getElementById('confirm-delete');
+            const cancelConfirmDeleteBtn = document.getElementById('cancel-confirm-delete');
+            const confirmEditModal = document.getElementById('confirm-edit-modal');
+            const confirmEditBtn = document.getElementById('confirm-edit');
+            const cancelConfirmEditBtn = document.getElementById('cancel-confirm-edit');
+            const table = document.getElementById('usuarios-ativos-table');
+            const tbody = table.querySelector('tbody');
+            const headers = table.querySelectorAll('th.sortable');
+            let sortDirection = {};
+            let currentSort = null;
+            let currentFilter = null;
+            let filterValue = null;
+            const rowsPerPage = 100;
+            let currentPage = 1;
+            let rows = Array.from(tbody.querySelectorAll('tr'));
+            let filteredRows = rows;
+            let currentDeleteForm = null;
+            let currentEditForm = null;
+
+            function showFlashMessage(message, category = 'success') {
+                const flashMessage = document.createElement('div');
+                flashMessage.className = `flash-message ${category}`;
+                flashMessage.textContent = message;
+                document.querySelector('.container').insertBefore(flashMessage, document.querySelector('main'));
+                setTimeout(() => flashMessage.remove(), 3000);
+            }
+
+            function loadApoioList() {
+                fetch('{{ url_for("listar_usuarios_apoio") }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        apoioList.innerHTML = '';
+                        if (data.success && data.usuarios_apoio.length > 0) {
+                            const usuariosOrdenados = data.usuarios_apoio.sort((a, b) => {
+                                const nomeA = (a.nome || '').trim().toLowerCase();
+                                const nomeB = (b.nome || '').trim().toLowerCase();
+                                return nomeA.localeCompare(nomeB);
+                            });
+
+                            usuariosOrdenados.forEach(usuario => {
+                                const item = document.createElement('div');
+                                item.className = `apoio-list-item ${usuario.saude_indigena ? 'indigena' : ''}`;
+                                item.innerHTML = `
+                                    <span>
+                                        ${usuario.saude_indigena ? '<span class="icon-indigena2"></span>' : '<i class="fas fa-user-check"></i>'} 
+                                        ${usuario.nome}
+                                    </span>
+                                    <form class="form-inline" action="{{ url_for('excluir_apoio') }}" method="POST" onsubmit="return showConfirmDeleteModal(${usuario.id});">
+                                        <input type="hidden" name="usuario_id" value="${usuario.id}">
+                                        <button type="submit" class="button button--cancel">Excluir</button>
+                                    </form>
+                                `;
+                                apoioList.appendChild(item);
+                            });
+                        } else {
+                            apoioList.innerHTML = '<div class="apoio-list-empty">Nenhum usuário de apoio encontrado.</div>';
+                        }
+                    })
+                    .catch(error => {
+                        apoioList.innerHTML = '<div class="apoio-list-empty">Erro ao carregar lista de apoio.</div>';
+                        console.error('Erro ao carregar usuários de apoio:', error);
+                        showFlashMessage('Erro ao carregar lista de usuários de apoio.', 'danger');
+                    });
+            }
+
+            openApoioModalBtn.addEventListener('click', () => {
+                apoioModal.style.display = 'flex';
+                loadApoioList();
+            });
+
+            closeApoioModalBtn.addEventListener('click', () => {
+                apoioModal.style.display = 'none';
+            });
+
+            openCadastroApoioBtn.addEventListener('click', () => {
+                apoioModal.style.display = 'none';
+                cadastroApoioModal.style.display = 'flex';
+                document.getElementById('apoio-nome').focus();
+            });
+
+            cancelCadastroBtn.addEventListener('click', () => {
+                cadastroApoioModal.style.display = 'none';
+                cadastroApoioForm.reset();
+                apoioModal.style.display = 'flex';
+                loadApoioList();
+            });
+
+            cadastroApoioForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const nome = document.getElementById('apoio-nome').value.trim();
+                const cpf = document.getElementById('apoio-cpf').value.trim();
+                const email = document.getElementById('apoio-email').value.trim();
+                const senha = document.getElementById('apoio-senha').value;
+                const confirmarSenha = document.getElementById('apoio-confirmar-senha').value;
+                const saudeIndigena = document.getElementById('apoio-indigena').checked;
+
+                const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+                if (!cpfRegex.test(cpf)) {
+                    showFlashMessage('Por favor, insira um CPF válido no formato XXX.XXX.XXX-XX.', 'danger');
+                    return;
+                }
+
+                if (senha !== confirmarSenha) {
+                    showFlashMessage('As senhas não coincidem.', 'danger');
+                    return;
+                }
+
+                if (senha.length < 6) {
+                    showFlashMessage('A senha deve ter pelo menos 6 caracteres.', 'danger');
+                    return;
+                }
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showFlashMessage('Por favor, insira um email válido.', 'danger');
+                    return;
+                }
+
+                document.getElementById('confirm-text').textContent = 
+                    saudeIndigena 
+                    ? `Tem certeza que deseja cadastrar ${nome} como Apoio Saúde Indígena?`
+                    : `Tem certeza que deseja cadastrar ${nome} como usuário de apoio?`;
+
+                confirmCadastroModal.style.display = 'flex';
+            });
+
+            confirmCadastroBtn.addEventListener('click', () => {
+                fetch(cadastroApoioForm.action, {
+                    method: 'POST',
+                    body: new FormData(cadastroApoioForm)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const isIndigena = document.getElementById('apoio-indigena').checked;
+
+                        const apoioCard = document.querySelector('.card .card-icon.apoio').closest('.card');
+                        const apoioValue = apoioCard.querySelector('.card-value');
+                        const apoioLabel = apoioCard.querySelector('.card-label');
+                        let novaContagemApoio = parseInt(apoioValue.textContent);
+                        if (!isIndigena) {
+                            novaContagemApoio += 1;
+                        }
+                        apoioValue.textContent = novaContagemApoio;
+                        apoioLabel.textContent = novaContagemApoio <= 1 ? 'Usuário de Apoio' : 'Usuários de Apoio';
+
+                        const indigenaCard = document.querySelector('.card .card-icon.indigena').closest('.card');
+                        const indigenaValue = indigenaCard.querySelector('.card-value');
+                        const indigenaLabel = indigenaCard.querySelector('.card-label');
+                        let novaContagemIndigena = parseInt(indigenaValue.textContent);
+                        if (isIndigena) {
+                            novaContagemIndigena += 1;
+                        }
+                        indigenaValue.textContent = novaContagemIndigena;
+                        indigenaLabel.textContent = novaContagemIndigena <= 1 ? 'Apoio Saúde Indígena' : 'Apoiadores Saúde Indígena';
+
+                        confirmCadastroModal.style.display = 'none';
+                        cadastroApoioModal.style.display = 'none';
+                        cadastroApoioForm.reset();
+                        apoioModal.style.display = 'flex';
+                        loadApoioList();
+                        showFlashMessage(data.message || 'Usuário cadastrado com sucesso!', 'success');
+                    } else {
+                        showFlashMessage('Erro: ' + data.message, 'danger');
+                    }
+                })
+                .catch(err => {
+                    showFlashMessage('Erro na comunicação com o servidor.', 'danger');
+                    console.error(err);
+                });
+            });
+
+            cancelConfirmCadastroBtn.addEventListener('click', () => {
+                confirmCadastroModal.style.display = 'none';
+            });
+
+            window.showConfirmDeleteModal = function(usuarioId) {
+                currentDeleteForm = document.querySelector(`form input[value="${usuarioId}"]`).closest('form');
+                confirmDeleteModal.style.display = 'flex';
+                return false;
+            };
+
+            confirmDeleteBtn.addEventListener('click', () => {
+                if (currentDeleteForm) {
+                    fetch(currentDeleteForm.action, {
+                        method: 'POST',
+                        body: new FormData(currentDeleteForm)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const apoioCard = document.querySelector('.card .card-icon.apoio').closest('.card').querySelector('.card-value');
+                            const apoioLabel = document.querySelector('.card .card-icon.apoio').closest('.card').querySelector('.card-label');
+                            const indigenaCard = document.querySelector('.card .card-icon.indigena').closest('.card').querySelector('.card-value');
+                            const indigenaLabel = document.querySelector('.card .card-icon.indigena').closest('.card').querySelector('.card-label');
+                            
+                            if (apoioCard && apoioLabel) {
+                                const novaContagem = Math.max(0, parseInt(apoioCard.textContent) - 1);
+                                apoioCard.textContent = novaContagem;
+                                apoioLabel.textContent = novaContagem <= 1 ? 'Usuário de Apoio' : 'Usuários de Apoio';
+                            }
+
+                            confirmDeleteModal.style.display = 'none';
+                            loadApoioList();
+                            showFlashMessage(data.message || 'Usuário de apoio excluído com sucesso!', 'success');
+                        } else {
+                            showFlashMessage('Erro ao excluir usuário: ' + data.message, 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro na requisição (exclusão):', error);
+                        showFlashMessage('Erro ao excluir usuário: ' + error.message, 'danger');
+                    });
+                }
+            });
+
+            cancelConfirmDeleteBtn.addEventListener('click', () => {
+                confirmDeleteModal.style.display = 'none';
+            });
+
+            confirmEditBtn.addEventListener('click', () => {
+                fetch(editUserForm.action, {
+                    method: 'POST',
+                    body: new FormData(editUserForm)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showFlashMessage('Usuário atualizado com sucesso!', 'success');
+                        confirmEditModal.style.display = 'none';
+                        editUserModal.style.display = 'none';
+                        location.reload();
+                    } else {
+                        showFlashMessage('Erro ao atualizar usuário: ' + data.message, 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao atualizar usuário:', error);
+                    showFlashMessage('Erro ao atualizar usuário.', 'danger');
+                });
+            });
+
+            cancelConfirmEditBtn.addEventListener('click', () => {
+                confirmEditModal.style.display = 'none';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (e.target === searchUserModal) {
+                    searchUserModal.style.display = 'none';
+                    userSearchInput.value = '';
+                    autocompleteDropdown.innerHTML = '';
+                    autocompleteDropdown.style.display = 'none';
+                }
+                if (e.target === editUserModal) {
+                    editUserModal.style.display = 'none';
+                }
+                if (e.target === cadastroApoioModal) {
+                    cadastroApoioModal.style.display = 'none';
+                    cadastroApoioForm.reset();
+                    apoioModal.style.display = 'flex';
+                    loadApoioList();
+                }
+                if (e.target === confirmCadastroModal) {
+                    confirmCadastroModal.style.display = 'none';
+                }
+                if (e.target === confirmDeleteModal) {
+                    confirmDeleteModal.style.display = 'none';
+                    currentDeleteForm = null;
+                }
+                if (e.target === confirmEditModal) {
+                    confirmEditModal.style.display = 'none';
+                }
+                if (e.target === apoioModal) {
+                    apoioModal.style.display = 'none';
+                }
+            });
+
+            document.getElementById('apoio-cpf').addEventListener('input', function (e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 11) value = value.slice(0, 11);
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                e.target.value = value;
+            });
+
+            openSearchBtn.addEventListener('click', () => {
+                searchUserModal.style.display = 'flex';
+                userSearchInput.focus();
+            });
+
+            cancelSearchBtn.addEventListener('click', () => {
+                searchUserModal.style.display = 'none';
+                userSearchInput.value = '';
+                autocompleteDropdown.innerHTML = '';
+                autocompleteDropdown.style.display = 'none';
+            });
+
+            let debounceTimer;
+            userSearchInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    const query = userSearchInput.value.trim();
+                    if (query.length < 2) {
+                        autocompleteDropdown.innerHTML = '';
+                        autocompleteDropdown.style.display = 'none';
+                        return;
+                    }
+
+                    fetch(`/admin/buscar_usuarios_aprovados?query=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            autocompleteDropdown.innerHTML = '';
+                            if (data.success && data.usuarios?.length > 0) {
+                                data.usuarios.forEach(usuario => {
+                                    const item = document.createElement('div');
+                                    item.className = 'autocomplete-item';
+                                    item.innerHTML = `<i class="fas fa-user-check"></i> ${usuario.nome || 'N/A'}`;
+                                    item.dataset.id = usuario.id;
+                                    item.addEventListener('click', () => {
+                                        fetch(`/admin/obter_usuario/${usuario.id}`)
+                                            .then(response => response.json())
+                                            .then(userData => {
+                                                if (userData.success && userData.usuario) {
+                                                    const usuario = userData.usuario;
+                                                    document.getElementById('edit-usuario-id').value = usuario.id || '';
+                                                    document.getElementById('edit-nome').value = usuario.nome || '';
+                                                    document.getElementById('edit-email').value = usuario.email || '';
+                                                    document.getElementById('edit-profissao').value = usuario.profissao || '';
+                                                    document.getElementById('edit-cnes').value = usuario.cnes || '';
+                                                    editUserForm.action = `/admin/atualizar_usuario/${usuario.id}`;
+                                                    municipioSelect.innerHTML = '';
+                                                    todosMunicipios.sort().forEach(municipio => {
+                                                        const option = document.createElement('option');
+                                                        option.value = municipio;
+                                                        option.textContent = municipio;
+                                                        if (usuario.municipios?.includes(municipio)) {
+                                                            option.selected = true;
+                                                        }
+                                                        municipioSelect.appendChild(option);
+                                                    });
+                                                    searchUserModal.style.display = 'none';
+                                                    editUserModal.style.display = 'flex';
+                                                    userSearchInput.value = '';
+                                                    autocompleteDropdown.innerHTML = '';
+                                                    autocompleteDropdown.style.display = 'none';
+                                                } else {
+                                                    showFlashMessage('Erro ao carregar dados do usuário.', 'danger');
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Erro ao obter usuário:', error);
+                                                showFlashMessage('Erro ao carregar dados do usuário.', 'danger');
+                                            });
+                                    });
+                                    autocompleteDropdown.appendChild(item);
+                                });
+                                autocompleteDropdown.style.display = 'block';
+                            } else {
+                                autocompleteDropdown.innerHTML = '<div class="autocomplete-item">Nenhum usuário encontrado</div>';
+                                autocompleteDropdown.style.display = 'block';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro na busca de usuários:', error);
+                            autocompleteDropdown.innerHTML = '<div class="autocomplete-item">Erro ao buscar usuários</div>';
+                            autocompleteDropdown.style.display = 'block';
+                        });
+                }, 300);
+            });
+
+            cancelEditBtn.addEventListener('click', () => {
+                editUserModal.style.display = 'none';
+            });
+
+            editUserForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                confirmEditModal.style.display = 'flex';
+            });
+
+            const quickSearchInput = document.getElementById('quick-search');
+            quickSearchInput.addEventListener('input', () => {
+                const query = quickSearchInput.value.trim().toLowerCase();
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    const text = Array.from(cells).map(cell => cell.textContent.toLowerCase()).join(' ');
+                    row.style.display = query === '' || text.includes(query) ? '' : 'none';
+                });
+            });
+
+            function updateTable() {
+                const start = (currentPage - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+                filteredRows.forEach((row, index) => {
+                    row.style.display = (index >= start && index < end) ? '' : 'none';
+                });
+                const totalPages = Math.ceil(filteredRows.length / rowsPerPage) || 1;
+                currentPage = Math.min(currentPage, totalPages);
+            }
+
+            function applyFilter(key, value) {
+                filteredRows = rows.filter(row => {
+                    const cell = row.querySelector(`td:nth-child(${Array.from(headers).findIndex(h => h.getAttribute('data-filter') === key) + 1})`);
+                    return cell?.textContent.trim().toLowerCase() === value.toLowerCase();
+                });
+                currentPage = 1;
+                updateTable();
+            }
+
+            function clearFilters() {
+                filteredRows = rows;
+                currentFilter = null;
+                filterValue = null;
+                headers.forEach(h => h.classList.remove('filter-active'));
+                currentPage = 1;
+                updateTable();
+            }
+
+            function sortTable(key, ascending) {
+                filteredRows.sort((a, b) => {
+                    let aValue = a.querySelector(`td:nth-child(${Array.from(headers).findIndex(h => h.getAttribute('data-sort') === key) + 1})`)?.textContent.trim() || '';
+                    let bValue = b.querySelector(`td:nth-child(${Array.from(headers).findIndex(h => h.getAttribute('data-sort') === key) + 1})`)?.textContent.trim() || '';
+
+                    if (key === 'role') {
+                        const roleMap = {
+                            'Administrador Estadual': 3,
+                            'Administrador Municipal': 2,
+                            'Apoio Saúde Indígena': 1.5,
+                            'Usuário de Apoio': 1,
+                            'Usuário Comum': 0
+                        };
+                        aValue = roleMap[aValue] || 0;
+                        bValue = roleMap[bValue] || 0;
+                    } else if (!isNaN(aValue) && !isNaN(bValue)) {
+                        aValue = parseFloat(aValue);
+                        bValue = parseFloat(bValue);
+                    } else {
+                        aValue = aValue.toLowerCase();
+                        bValue = bValue.toLowerCase();
+                    }
+
+                    if (aValue < bValue) return ascending ? -1 : 1;
+                    if (aValue > bValue) return ascending ? 1 : -1;
+                    return 0;
+                });
+
+                while (tbody.firstChild) {
+                    tbody.removeChild(tbody.firstChild);
+                }
+                filteredRows.forEach(row => tbody.appendChild(row));
+                currentPage = 1;
+                updateTable();
+            }
+
+            headers.forEach(header => {
+                header.addEventListener('click', () => {
+                    const sortKey = header.getAttribute('data-sort');
+                    const filterKey = header.getAttribute('data-filter');
+
+                    if (event.ctrlKey && filterKey) {
+                        const firstRow = filteredRows[0];
+                        if (firstRow) {
+                            const value = firstRow.querySelector(`td:nth-child(${Array.from(headers).findIndex(h => h.getAttribute('data-filter') === filterKey) + 1})`)?.textContent.trim();
+                            if (currentFilter === filterKey && filterValue === value) {
+                                clearFilters();
+                            } else {
+                                headers.forEach(h => h.classList.remove('filter-active'));
+                                header.classList.add('filter-active');
+                                currentFilter = filterKey;
+                                filterValue = value;
+                                applyFilter(filterKey, value);
+                            }
+                        }
+                    } else {
+                        if (currentSort === sortKey) {
+                            sortDirection[sortKey] = !sortDirection[sortKey];
+                        } else {
+                            sortDirection = {};
+                            sortDirection[sortKey] = true;
+                            headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                        }
+                        currentSort = sortKey;
+                        header.classList.add(sortDirection[sortKey] ? 'sort-asc' : 'sort-desc');
+                        sortTable(sortKey, sortDirection[sortKey]);
+                    }
+                });
+            });
+
+            municipioSelect.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                const option = e.target;
+                if (option.tagName === 'OPTION') {
+                    option.selected = !option.selected;
+                    municipioSelect.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+
+        const todosMunicipios = [
+            "Água Branca", "Aguiar", "Alagoa Grande", "Alagoa Nova", "Alagoinha", "Alcantil", "Algodão de Jandaíra", "Alhandra", "Amparo", "Aparecida",
+            "Araçagi", "Arara", "Araruna", "Areia", "Areia de Baraúnas", "Areial", "Aroeiras", "Assunção", "Baía da Traição", "Bananeiras",
+            "Baraúna", "Barra de Santana", "Barra de Santa Rosa", "Barra de São Miguel", "Bayeux", "Belém", "Belém do Brejo do Cruz", "Bernardino Batista",
+            "Boa Ventura", "Boa Vista", "Bom Jesus", "Bom Sucesso", "Bonito de Santa Fé", "Boqueirão", "Borborema", "Brejo do Cruz", "Brejo dos Santos",
+            "Caaporã", "Cabaceiras", "Cabedelo", "Cachoeira dos Índios", "Cacimba de Areia", "Cacimba de Dentro", "Cacimbas", "Caiçara", "Cajazeiras",
+            "Cajazeirinhas", "Caldas Brandão", "Camalaú", "Campina Grande", "Capim", "Caraúbas", "Carrapateira", "Casserengue", "Catingueira",
+            "Catolé do Rocha", "Caturité", "Conceição", "Condado", "Conde", "Congo", "Coremas", "Coxixola", "Cruz do Espírito Santo", "Cubati",
+            "Cuité", "Cuité de Mamanguape", "Cuitegi", "Curral de Cima", "Curral Velho", "Damião", "Desterro", "Diamante", "Dona Inês", "Duas Estradas",
+            "Emas", "Esperança", "Fagundes", "Frei Martinho", "Gado Bravo", "Guarabira", "Gurinhém", "Gurjão", "Ibiara", "Igaracy", "Imaculada",
+            "Ingá", "Itabaiana", "Itaporanga", "Itapororoca", "Itatuba", "Jacaraú", "Jericó", "João Pessoa", "Joca Claudino", "Juarez Távora",
+            "Juazeirinho", "Junco do Seridó", "Juripiranga", "Juru", "Lagoa", "Lagoa de Dentro", "Lagoa Seca", "Lastro", "Livramento", "Logradouro",
+            "Lucena", "Mãe d'Água", "Malta", "Mamanguape", "Manaíra", "Marcação", "Mari", "Marizópolis", "Massaranduba", "Mataraca", "Matinhas",
+            "Mato Grosso", "Maturéia", "Mogeiro", "Montadas", "Monte Horebe", "Monteiro", "Mulungu", "Natuba", "Nazarezinho", "Nova Floresta",
+            "Nova Olinda", "Nova Palmeira", "Olho d'Água", "Olivedos", "Ouro Velho", "Parari", "Passagem", "Patos", "Paulista", "Pedra Branca",
+            "Pedra Lavrada", "Pedras de Fogo", "Pedro Régis", "Piancó", "Picuí", "Pilar", "Pilões", "Pilõezinhos", "Pirpirituba", "Pitimbu",
+            "Pocinhos", "Poço Dantas", "Poço de José de Moura", "Pombal", "Prata", "Princesa Isabel", "Puxinanã", "Queimadas", "Quixabá", "Remígio",
+            "Riachão", "Riachão do Bacamarte", "Riachão do Poço", "Riacho de Santo Antônio", "Riacho dos Cavalos", "Rio Tinto", "Salgadinho",
+            "Salgado de São Félix", "Santa Cecília", "Santa Cruz", "Santa Helena", "Santa Inês", "Santa Luzia", "Santa Rita", "Santa Teresinha",
+            "Santana de Mangueira", "Santana dos Garrotes", "Santo André", "São Bentinho", "São Bento", "São Domingos", "São Domingos do Cariri",
+            "São Francisco", "São João do Cariri", "São João do Rio do Peixe", "São João do Tigre", "São José da Lagoa Tapada", "São José de Caiana",
+            "São José de Espinharas", "São José de Piranhas", "São José de Princesa", "São José do Bonfim", "São José do Brejo do Cruz",
+            "São José do Sabugi", "São José dos Cordeiros", "São José dos Ramos", "São Mamede", "São Miguel de Taipu", "São Sebastião de Lagoa de Roça",
+            "São Sebastião do Umbuzeiro", "São Vicente do Seridó", "Sapé", "Serra Branca", "Serra da Raiz", "Serra Grande", "Serra Redonda",
+            "Serraria", "Sertãozinho", "Sobrado", "Solânea", "Soledade", "Sossêgo", "Sousa", "Sumé", "Tacima", "Taperoá", "Tavares", "Teixeira",
+            "Tenório", "Triunfo", "Uiraúna", "Umbuzeiro", "Várzea", "Vieirópolis", "Vista Serrana", "Zabelê"
+        ];
+
+        function getCsrfToken() {
+            const name = 'csrf_token=';
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const cookies = decodedCookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.indexOf(name) === 0) {
+                    return cookie.substring(name.length, cookie.length);
+                }
+            }
+            return '';
+        }
+
+        function logout() {
+            const logoutBtn = document.getElementById('logout-button');
+            logoutBtn.disabled = true;
+            logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt icon"></i> Saindo...';
+
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': getCsrfToken()
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(response.statusText);
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    throw new Error(data.message || 'Erro ao fazer logout.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao fazer logout:', error);
+                logoutBtn.disabled = false;
+                logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt icon"></i> Sair';
+                showFlashMessage('Erro ao fazer logout: ' + error.message, 'danger');
+            });
+        }
+
+/* ==== PNAR - INÍCIO DO SCRIPT (CORRIGIDO) ==== */
+const pnarModal = document.getElementById('pnar-modal');
+const openPnarModal = document.getElementById('open-pnar-modal');
+const closePnarModal = document.getElementById('close-pnar-modal');
+const openCadastroPnar = document.getElementById('open-cadastro-pnar');
+const cadastroPnarModal = document.getElementById('cadastro-pnar-modal');
+const cancelCadastroPnar = document.getElementById('cancel-cadastro-pnar');
+const cadastroPnarForm = document.getElementById('cadastro-pnar-form');
+const pnarList = document.getElementById('pnar-list');
+
+// MODAIS DE CONFIRMAÇÃO SEPARADOS
+const confirmCadastroPnarModal = document.getElementById('confirm-pnar-modal');
+const confirmPnarBtn = document.getElementById('confirm-pnar'); // Só cadastro
+const cancelConfirmPnar = document.getElementById('cancel-confirm-pnar');
+
+const confirmExclusaoPnarModal = document.createElement('div');
+confirmExclusaoPnarModal.className = 'modal';
+confirmExclusaoPnarModal.id = 'confirm-exclusao-pnar-modal';
+confirmExclusaoPnarModal.innerHTML = `
+    <div class="modal-content">
+        <h3>Confirmar Exclusão</h3>
+        <p>Tem certeza que deseja <strong>excluir</strong> este PNAR?</p>
+        <div class="modal-buttons">
+            <button id="cancel-exclusao-pnar" class="button button--cancel">Não</button>
+            <button id="confirm-exclusao-pnar" class="button button--primary">Sim, Excluir</button>
+        </div>
+    </div>
+`;
+document.body.appendChild(confirmExclusaoPnarModal);
+
+let currentPnarDeleteForm = null;
+
+// ABRIR MODAL GERENCIAMENTO
+openPnarModal.addEventListener('click', () => {
+    pnarModal.style.display = 'flex';
+    loadPnarList();
+});
+
+closePnarModal.addEventListener('click', () => pnarModal.style.display = 'none');
+
+// ABRIR CADASTRO
+openCadastroPnar.addEventListener('click', () => {
+    pnarModal.style.display = 'none';
+    cadastroPnarModal.style.display = 'flex';
+    document.getElementById('pnar-nome').focus();
+});
+
+// CANCELAR CADASTRO
+cancelCadastroPnar.addEventListener('click', () => {
+    cadastroPnarModal.style.display = 'none';
+    cadastroPnarForm.reset();
+    pnarModal.style.display = 'flex';
+    loadPnarList();
+});
+
+// SUBMIT DO FORMULÁRIO → ABRE CONFIRMAÇÃO
+cadastroPnarForm.onsubmit = (e) => {
+    e.preventDefault();
+    const nome = document.getElementById('pnar-nome').value.trim();
+    document.querySelector('#confirm-pnar-modal p').textContent = `Cadastrar ${nome} como PNAR?`;
+    confirmCadastroPnarModal.style.display = 'flex';
+};
+
+// CONFIRMAR CADASTRO
+confirmPnarBtn.onclick = () => {
+    fetch(cadastroPnarForm.action, {
+        method: 'POST',
+        body: new FormData(cadastroPnarForm)
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            const pnarCard = document.querySelector('.card .card-icon[style*="var(--danger-color)"]').closest('.card');
+            const value = pnarCard.querySelector('.card-value');
+            const label = pnarCard.querySelector('.card-label');
+            const novo = (parseInt(value.textContent) || 0) + 1;
+            value.textContent = novo;
+            label.textContent = novo <= 1 ? 'Usuário PNAR' : 'Usuários PNAR';
+
+            confirmCadastroPnarModal.style.display = 'none';
+            cadastroPnarModal.style.display = 'none';
+            cadastroPnarForm.reset();
+            pnarModal.style.display = 'flex';
+            loadPnarList();
+            showFlashMessage(d.message || 'PNAR cadastrado com sucesso!', 'success');
+        } else {
+            showFlashMessage('Erro: ' + (d.message || 'Tente novamente.'), 'danger');
+        }
+    })
+    .catch(() => showFlashMessage('Erro de conexão.', 'danger'));
+};
+
+cancelConfirmPnar.onclick = () => confirmCadastroPnarModal.style.display = 'none';
+
+// EXCLUSÃO COM MODAL SEPARADO
+window.showConfirmDeletePnar = (id) => {
+    currentPnarDeleteForm = document.querySelector(`form input[value="${id}"]`).closest('form');
+    confirmExclusaoPnarModal.style.display = 'flex';
+    return false;
+};
+
+document.getElementById('confirm-exclusao-pnar').onclick = () => {
+    if (currentPnarDeleteForm) {
+        fetch(currentPnarDeleteForm.action, {
+            method: 'POST',
+            body: new FormData(currentPnarDeleteForm)
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                loadPnarList();
+                const pnarCard = document.querySelector('.card .card-icon[style*="var(--danger-color)"]').closest('.card');
+                const value = pnarCard.querySelector('.card-value');
+                const label = pnarCard.querySelector('.card-label');
+                let novo = Math.max(0, (parseInt(value.textContent) || 0) - 1);
+                value.textContent = novo;
+                label.textContent = novo <= 1 ? 'Usuário PNAR' : 'Usuários PNAR';
+                
+                // Usa a mensagem do backend (ou fallback)
+                showFlashMessage(d.message || 'PNAR excluído permanentemente!', 'success');
+            } else {
+                showFlashMessage(d.message || 'Erro ao excluir PNAR.', 'danger');
+            }
+            confirmExclusaoPnarModal.style.display = 'none';
+            currentPnarDeleteForm = null;
+        })
+        .catch(err => {
+            console.error(err);
+            showFlashMessage('Erro de conexão com o servidor.', 'danger');
+            confirmExclusaoPnarModal.style.display = 'none';
+        });
+    } else {
+        confirmExclusaoPnarModal.style.display = 'none';
+    }
+};
+
+document.getElementById('cancel-exclusao-pnar').onclick = () => {
+    confirmExclusaoPnarModal.style.display = 'none';
+    currentPnarDeleteForm = null;
+};
+
+// LISTAR PNAR
+function loadPnarList() {
+    fetch('{{ url_for("listar_pnar") }}')
+        .then(r => r.json())
+        .then(d => {
+            pnarList.innerHTML = '';
+            if (d.success && d.usuarios?.length > 0) {
+                d.usuarios
+                    .sort((a, b) => a.nome.localeCompare(b.nome))
+                    .forEach(u => {
+                        const div = document.createElement('div');
+                        div.className = 'apoio-list-item';
+                        div.innerHTML = `
+                            <span><i class="fas fa-hospital-user"></i> ${u.nome} (${u.servico})</span>
+                            <form class="form-inline" action="{{ url_for('excluir_pnar') }}" method="POST" onsubmit="return showConfirmDeletePnar(${u.id});">
+                                <input type="hidden" name="usuario_id" value="${u.id}">
+                                <button type="submit" class="button button--cancel">Excluir</button>
+                            </form>
+                        `;
+                        pnarList.appendChild(div);
+                    });
+            } else {
+                pnarList.innerHTML = '<div class="apoio-list-empty">Nenhum PNAR cadastrado.</div>';
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            pnarList.innerHTML = '<div class="apoio-list-empty">Erro ao carregar PNAR.</div>';
+        });
+}
+
+// MÁSCARA CPF
+document.getElementById('pnar-cpf').addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length > 11) v = v.slice(0, 11);
+    e.target.value = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+});
+
+// FECHAR AO CLICAR FORA
+document.addEventListener('click', e => {
+    if (e.target === pnarModal) pnarModal.style.display = 'none';
+    if (e.target === cadastroPnarModal) {
+        cadastroPnarModal.style.display = 'none';
+        cadastroPnarForm.reset();
+        pnarModal.style.display = 'flex';
+        loadPnarList();
+    }
+    if (e.target === confirmCadastroPnarModal) confirmCadastroPnarModal.style.display = 'none';
+    if (e.target === confirmExclusaoPnarModal) confirmExclusaoPnarModal.style.display = 'none';
+});
+    </script>
+</body>
+</html>

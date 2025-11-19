@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #f2eabc 0%, #ffffff 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23194756" fill-opacity="0.1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,245.3C960,224,1056,160,1152,149.3C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path><path fill="%2354736e" fill-opacity="0.1" d="M0,256L48,245.3C96,235,192,213,288,213.3C384,213,480,235,576,256C672,277,768,299,864,277.3C960,256,1056,192,1152,181.3C1248,171,1344,213,1392,234.7L1440,256L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            z-index: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 95%;
+            margin: 20px auto;
+            z-index: 1;
+            overflow-y: auto;
+        }
+
+        .container:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15), 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #194756;
+        }
+
+        .button {
+            background-color: #194756;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 5px;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #54736e;
+        }
+
+        .button:disabled {
+            background-color: #a3b1af;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .logout-button {
+            background-color: #d32f2f;
+        }
+
+        .logout-button:hover {
+            background-color: #b71c1c;
+        }
+
+        .compartilhar-button {
+            background-color: #4CAF50;
+        }
+
+        .compartilhar-button:hover {
+            background-color: #45a049;
+        }
+
+        .fora-area-button {
+            background-color: #194756;
+        }
+
+        .fora-area-button:hover {
+            background-color: #54736e;
+        }
+
+        /* BOTÃO PNAR */
+        .pnar-button {
+            background-color: #d32f2f;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .pnar-button:hover {
+            background-color: #b71c1c;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination-button {
+            background-color: #194756;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination-button:hover {
+            background-color: #54736e;
+        }
+
+        .pagination-button:disabled {
+            background-color: #a3b1af;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9rem;
+            background-color: #f2eabc;
+            color: #194756;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #194756;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        th:hover {
+            background-color: #54736e;
+        }
+
+        .sort-icon {
+            margin-left: 5px;
+        }
+
+        td {
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2eabc;
+        }
+
+        tr:hover {
+            background-color: #e6f0e5;
+            transition: background-color 0.2s ease;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #54736e;
+            font-style: italic;
+            font-size: 1rem;
+        }
+
+        /* COLUNA AÇÕES: ALINHAMENTO PERFEITO */
+        .acoes-cell {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            min-height: 60px;
+            gap: 0;
+        }
+
+        .acoes-cell .btn-group {
+            display: flex;
+            gap: 5px;
+            min-width: 340px;
+            flex-shrink: 0;
+        }
+
+        .acoes-cell .btn-group button {
+            flex: 1;
+            min-width: 100px;
+            max-width: 120px;
+            padding: 10px 8px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .acoes-cell .pnar-wrapper {
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-content p {
+            margin: 0 0 20px;
+            color: #194756;
+            font-size: 0.95rem;
+        }
+
+        .modal-content select,
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .modal-content input[readonly] {
+            background-color: #f5f5f5;
+            color: #555;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-buttons .confirm-btn {
+            background-color: #194756;
+            color: white;
+        }
+
+        .modal-buttons .confirm-btn:hover {
+            background-color: #54736e;
+        }
+
+        .modal-buttons .cancel-btn {
+            background-color: #d4a5a5;
+            color: white;
+        }
+
+        .modal-buttons .cancel-btn:hover {
+            background-color: #b58383;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+            }
+
+            .container {
+                padding: 20px;
+                margin: 10px auto;
+                max-width: 98%;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            .container:hover {
+                box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+
+            .button, .pnar-button {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                width: 90%;
+            }
+
+            .button-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .acoes-cell {
+                min-height: 50px;
+                gap: 6px;
+            }
+
+            .acoes-cell .btn-group {
+                min-width: 250px;
+                gap: 6px;
+            }
+
+            .acoes-cell .btn-group button {
+                font-size: 0.8rem;
+                padding: 8px 6px;
+            }
+
+            .pnar-wrapper {
+                padding-right: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Histórico</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- 3 BOTÕES DE CIMA: INALTERADOS -->
+        <div class="button-container">
+            <button class="button" onclick="voltarCalculadora()">Voltar para Calculadora</button>
+            <button class="button compartilhar-button" onclick="abrirModalCompartilharTudo()">Compartilhar</button>
+            <button id="logout-btn" class="button logout-button" onclick="logout()">Sair</button>
+        </div>
+
+        <div id="resultado"></div>
+        <div class="pagination-container" id="pagination"></div>
+    </div>
+
+    <!-- Modal de Desfecho -->
+    <div class="modal" id="desfecho-modal">
+        <div class="modal-content">
+            <p>Selecione o desfecho da gestação:</p>
+            <input type="text" id="nome_gestante" name="nome_gestante" placeholder="Nome da Gestante" readonly>
+            <input type="text" id="data_nasc" name="data_nasc" placeholder="Data de Nascimento (DD/MM/YYYY)" readonly>
+            <select id="desfecho-select" name="desfecho" required>
+                <option value="" disabled selected>Selecione o desfecho</option>
+                <option value="A96">A96 - Morte</option>
+                <option value="W82">W82 - Aborto espontâneo</option>
+                <option value="W83">W83 - Aborto provocado</option>
+                <option value="W90">W90 - Parto sem complicações de nascido vivo</option>
+                <option value="W91">W91 - Parto sem complicações de natimorto</option>
+                <option value="W92">W92 - Parto com complicações de nascido vivo</option>
+                <option value="W93">W93 - Parto com complicações de natimorto</option>
+            </select>
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="confirmarDesfecho()">Enviar</button>
+                <button class="cancel-btn" onclick="fecharModal('desfecho-modal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Desfecho -->
+    <div class="modal" id="confirmacao-desfecho-modal">
+        <div class="modal-content">
+            <p>Você confirma a escolha do desfecho <span id="desfecho-selecionado"></span>? Esta ação removerá a ficha do histórico.</p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="enviarDesfecho()">Confirmar</button>
+                <button class="cancel-btn" onclick="fecharModal('confirmacao-desfecho-modal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Fora de Área -->
+    <div class="modal" id="fora-area-modal">
+        <div class="modal-content">
+            <p>Você confirma que a gestante <span id="nome-gestante-fora-area"></span> está fora da área de acompanhamento, sem necessidade de desfecho?</p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="enviarForaArea()">Confirmar</button>
+                <button class="cancel-btn" onclick="fecharModal('fora-area-modal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PNAR - ATUALIZADO -->
+    <div class="modal" id="pnar-modal">
+        <div class="modal-content">
+            <div style="text-align: center; margin-bottom: 16px;">
+                <img src="/static/imagens/exclamacao.png"
+                 style="width: 53px; height: 53px;">
+            </div>
+            <p style="text-align: justify; line-height: 1.5; font-size: 0.95rem; color: #194756;">
+                <strong>
+                    Sinalize apenas se a gestante estiver em acompanhamento no ambulatório de pré-natal de alto risco (PNAR), identificando o respectivo serviço. 
+                    <span style="text-decoration: underline;">Essa sinalização não realiza regulação</span>, servindo apenas para permitir a visualização do PDF pelo ambulatório correspondente, a fim de facilitar o acompanhamento das informações.
+                </strong>
+            </p>
+            <input type="text" id="pnar-nome" placeholder="Nome da Gestante" readonly>
+            <input type="text" id="pnar-data-nasc" placeholder="Data de Nascimento (DD/MM/YYYY)" readonly>
+            <select id="pnar-servico">
+                <option value="" disabled selected>Selecione o serviço (ou deixe em branco)</option>
+                <option value="Instituto Cândida Vargas">Instituto Cândida Vargas</option>
+                <option value="Hospital da Mulher Dona Creuza Pires">Hospital da Mulher Dona Creuza Pires</option>
+                <option value="Hospital Universitário Lauro Wanderley">Hospital Universitário Lauro Wanderley</option>
+                <option value="Ambulatório Municipal de Guarabira">Ambulatório Municipal de Guarabira</option>
+                <option value="Hospital Regional de Picuí">Hospital Regional de Picuí</option>
+                <option value="Hospital e Maternidade Santa Filomena - Monteiro">Hospital e Maternidade Santa Filomena - Monteiro</option>
+                <option value="Maternidade Peregrino Filho">Maternidade Peregrino Filho</option>
+                <option value="Hospital Distrital de Itaporanga">Hospital Distrital de Itaporanga</option>
+                <option value="Hospital Regional Américo Maia Catolé do Rocha">Hospital Regional Américo Maia Catolé do Rocha</option>
+                <option value="Hospital Regional de Cajazeiras">Hospital Regional de Cajazeiras</option>
+                <option value="Hospital Universitário Júlio Bandeira - HUJB">Hospital Universitário Júlio Bandeira - HUJB</option>
+                <option value="Hospital Regional de Sousa">Hospital Regional de Sousa</option>
+                <option value="Hospital Regional de Itabaiana">Hospital Regional de Itabaiana</option>
+                <option value="Ambulatório Municipal Especializado de Mamanguape">Ambulatório Municipal Especializado de Mamanguape</option>
+                <option value="Hospital Geral de Queimadas">Hospital Geral de Queimadas</option>
+                <option value="Instituto Saúde Elpídio de Almeida - ISEA">Instituto Saúde Elpídio de Almeida - ISEA</option>
+            </select>
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="confirmarPNAR()">Confirmar</button>
+                <button class="cancel-btn" onclick="fecharModal('pnar-modal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL COMPARTILHAR TUDO -->
+    <div class="modal" id="compartilhar-tudo-modal">
+        <div class="modal-content">
+            <p id="compartilhar-texto-tudo">Carregando opções...</p>
+            <select id="admin-select" style="display:none;">
+                <option value="" disabled selected>Selecione o administrador municipal</option>
+            </select>
+            <div class="modal-buttons">
+                <button class="confirm-btn" id="confirmar-compartilhar-tudo" onclick="confirmarCompartilharTudo()" style="display:none;">Compartilhar</button>
+                <button class="cancel-btn" onclick="fecharModal('compartilhar-tudo-modal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let codigoFichaSelecionado = '';
+        let nomeGestanteSelecionado = '';
+        let dataNascSelecionado = '';
+        let currentPage = 1;
+        const rowsPerPage = 100;
+        let sortColumn = 'id';
+        let sortDirection = 'DESC';
+
+        function getCsrfToken() {
+            const name = 'csrf_token=';
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const cookies = decodedCookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.indexOf(name) === 0) {
+                    return cookie.substring(name.length, cookie.length);
+                }
+            }
+            return '';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            carregarHistorico(1, 'id', 'DESC');
+        });
+
+        function carregarHistorico(page = 1, column = sortColumn, direction = sortDirection) {
+            const resultado = document.getElementById('resultado');
+            currentPage = page;
+            sortColumn = column;
+            sortDirection = direction;
+
+            fetch('/buscar_historico', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    page: currentPage,
+                    per_page: rowsPerPage,
+                    sort_column: sortColumn,
+                    sort_direction: sortDirection
+                }),
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    resultado.innerHTML = `<div class="flash-message">Usuário não está autenticado. Redirecionando para login...</div>`;
+                    setTimeout(() => { window.location.href = '/login'; }, 2000);
+                    return Promise.reject(new Error('Não autenticado'));
+                }
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || `Erro ${response.status}: ${response.statusText}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success) {
+                    resultado.innerHTML = `<div class="flash-message">${data.message}</div>`;
+                    document.getElementById('pagination').innerHTML = '';
+                    return;
+                }
+
+                const fichas = data.fichas || [];
+                const totalRecords = data.total_records || 0;
+                const totalPages = Math.ceil(totalRecords / rowsPerPage);
+
+                if (fichas.length === 0) {
+                    resultado.innerHTML = '<p class="no-results">Nenhum registro encontrado para o profissional logado.</p>';
+                    document.getElementById('pagination').innerHTML = '';
+                    return;
+                }
+
+                let html = `
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable('data_envio')" data-column="data_envio">
+                                        Data de Envio ${getSortIcon('data_envio')}
+                                    </th>
+                                    <th onclick="sortTable('nome_gestante')" data-column="nome_gestante">
+                                        Nome da Gestante ${getSortIcon('nome_gestante')}
+                                    </th>
+                                    <th onclick="sortTable('periodo_gestacional')" data-column="periodo_gestacional">
+                                        Período Gestacional ${getSortIcon('periodo_gestacional')}
+                                    </th>
+                                    <th onclick="sortTable('classificacao_risco')" data-column="classificacao_risco">
+                                        Classificação de Risco ${getSortIcon('classificacao_risco')}
+                                    </th>
+                                    <th onclick="sortTable('municipio')" data-column="municipio">
+                                        Município ${getSortIcon('municipio')}
+                                    </th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                const escapeHTML = str => str ? String(str).replace(/[&<>"']/g, match => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                })[match]) : 'N/A';
+
+                fichas.forEach(ficha => {
+                    const isAltoRisco = ficha.classificacao_risco === 'Alto Risco';
+                    const pnarJaSinalizado = ficha.pnar_ambulatorio;
+
+                    html += `
+                        <tr>
+                            <td>${escapeHTML(ficha.data_envio)}</td>
+                            <td>${escapeHTML(ficha.nome_gestante)}</td>
+                            <td>${escapeHTML(ficha.periodo_gestacional)}</td>
+                            <td>${escapeHTML(ficha.classificacao_risco)}</td>
+                            <td>${escapeHTML(ficha.municipio)}</td>
+                            <td class="acoes-cell">
+                                <div class="btn-group">
+                                    <button class="button" onclick="gerarPDF('${escapeHTML(ficha.codigo_ficha)}', this)">Baixar PDF</button>
+                                    <button class="button" onclick="abrirModal('desfecho-modal', '${escapeHTML(ficha.codigo_ficha)}', '${escapeHTML(ficha.nome_gestante)}', '${escapeHTML(ficha.data_nasc)}')">Desfecho</button>
+                                    <button class="button fora-area-button" onclick="abrirModal('fora-area-modal', '${escapeHTML(ficha.codigo_ficha)}', '${escapeHTML(ficha.nome_gestante)}', '${escapeHTML(ficha.data_nasc)}')">Fora de Área</button>
+                                </div>
+                                <div class="pnar-wrapper">
+                                    ${isAltoRisco && !pnarJaSinalizado ? `
+                                        <button class="pnar-button" onclick="abrirPNAR('${escapeHTML(ficha.codigo_ficha)}', '${escapeHTML(ficha.nome_gestante)}', '${escapeHTML(ficha.data_nasc)}')">PNAR</button>
+                                    ` : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table></div>`;
+                resultado.innerHTML = html;
+
+                let paginationHtml = '';
+                if (totalPages > 1) {
+                    paginationHtml = `
+                        <button class="pagination-button" onclick="carregarHistorico(${currentPage - 1}, 'id', 'DESC')" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button>
+                        <span>Página ${currentPage} de ${totalPages}</span>
+                        <button class="pagination-button" onclick="carregarHistorico(${currentPage + 1}, 'id', 'DESC')" ${currentPage === totalPages ? 'disabled' : ''}>Próxima</button>
+                    `;
+                }
+                document.getElementById('pagination').innerHTML = paginationHtml;
+            })
+            .catch(error => {
+                if (error.message !== 'Não autenticado') {
+                    console.error('Erro ao carregar histórico:', error);
+                    resultado.innerHTML = `<div class="flash-message">Erro ao carregar o histórico: ${error.message}. Tente novamente.</div>`;
+                    document.getElementById('pagination').innerHTML = '';
+                }
+            });
+        }
+
+        // PNAR
+        function abrirPNAR(codigo, nome, dataNasc) {
+            codigoFichaSelecionado = codigo;
+            nomeGestanteSelecionado = nome;
+            dataNascSelecionado = dataNasc;
+            document.getElementById('pnar-nome').value = nome;
+            document.getElementById('pnar-data-nasc').value = dataNasc;
+            document.getElementById('pnar-servico').value = '';
+            document.getElementById('pnar-modal').style.display = 'flex';
+        }
+
+function confirmarPNAR() {
+    const servico = document.getElementById('pnar-servico').value;
+    if (!servico) {
+        alert('Selecione um serviço ou cancele.');
+        return;
+    }
+
+    fetch('/registrar_pnar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()  // <-- CORRETO
+        },
+        body: JSON.stringify({
+            codigo_ficha: codigoFichaSelecionado,
+            nome_gestante: nomeGestanteSelecionado,
+            data_nasc: dataNascSelecionado,
+            pnar_servico: servico
+        }),
+        credentials: 'same-origin'
+    })
+    .then(r => r.json())
+    .then(d => {
+        fecharModal('pnar-modal');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'flash-message';
+        msgDiv.textContent = d.success ? d.message : d.message;
+        document.getElementById('resultado').prepend(msgDiv);
+        setTimeout(() => {
+            msgDiv.remove();
+            carregarHistorico(currentPage);  // Recarrega sem flash global
+        }, 2000);
+    })
+    .catch(err => {
+        console.error(err);
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'flash-message';
+        msgDiv.textContent = 'Erro ao registrar PNAR.';
+        document.getElementById('resultado').prepend(msgDiv);
+    });
+}
+
+        // Demais funções
+        function abrirModal(modalId, codigoFicha, nomeGestante, dataNasc) {
+            codigoFichaSelecionado = codigoFicha;
+            nomeGestanteSelecionado = nomeGestante;
+            dataNascSelecionado = dataNasc;
+            if (modalId === 'desfecho-modal') {
+                document.getElementById('nome_gestante').value = nomeGestante || '';
+                document.getElementById('data_nasc').value = dataNasc || '';
+                document.getElementById('desfecho-select').value = '';
+            } else if (modalId === 'fora-area-modal') {
+                document.getElementById('nome-gestante-fora-area').textContent = nomeGestante || '';
+            }
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function confirmarDesfecho() {
+            const desfecho = document.getElementById('desfecho-select').value;
+            if (!desfecho) {
+                document.getElementById('resultado').innerHTML = `<div class="flash-message">Por favor, selecione um desfecho.</div>`;
+                return;
+            }
+            const desfechoText = document.querySelector(`#desfecho-select option[value="${desfecho}"]`).textContent;
+            document.getElementById('desfecho-selecionado').textContent = desfechoText;
+            fecharModal('desfecho-modal');
+            document.getElementById('confirmacao-desfecho-modal').style.display = 'flex';
+        }
+
+        function enviarDesfecho() {
+            const desfecho = document.getElementById('desfecho-select').value;
+            const data = { nome_gestante: nomeGestanteSelecionado, data_nasc: dataNascSelecionado, desfecho: desfecho };
+            fetch('/registrar_desfecho_lote', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() }, body: JSON.stringify(data), credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(d => { fecharModal('confirmacao-desfecho-modal'); if (d.success) { document.getElementById('resultado').innerHTML = `<div class="flash-message">Desfecho registrado com sucesso!</div>`; setTimeout(() => carregarHistorico(currentPage), 2000); } });
+        }
+
+        function enviarForaArea() {
+            const data = { codigo_ficha: codigoFichaSelecionado, nome_gestante: nomeGestanteSelecionado, data_nasc: dataNascSelecionado };
+            fetch('/marcar_fora_area', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() }, body: JSON.stringify(data), credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(d => { fecharModal('fora-area-modal'); if (d.success) { document.getElementById('resultado').innerHTML = `<div class="flash-message">Marcada como fora de área!</div>`; setTimeout(() => carregarHistorico(currentPage), 2000); } });
+        }
+
+        function fecharModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+        function sortTable(column) {
+            const validColumns = ['id', 'data_envio', 'nome_gestante', 'periodo_gestacional', 'classificacao_risco', 'municipio'];
+            if (!validColumns.includes(column)) return;
+            sortDirection = sortColumn === column ? (sortDirection === 'ASC' ? 'DESC' : 'ASC') : (column === 'id' ? 'DESC' : 'ASC');
+            sortColumn = column;
+            carregarHistorico(1, sortColumn, sortDirection);
+        }
+
+        function getSortIcon(column) {
+            return sortColumn === column ? (sortDirection === 'ASC' ? '<i class="fas fa-sort-up sort-icon"></i>' : '<i class="fas fa-sort-down sort-icon"></i>') : '';
+        }
+
+        function voltarCalculadora() { window.location.href = '/calculadora'; }
+
+        function logout() {
+            const btn = document.getElementById('logout-btn');
+            btn.disabled = true; btn.textContent = 'Saindo...';
+            fetch('/logout', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() }, credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(d => { if (d.success) window.location.href = '/'; })
+            .catch(() => { btn.disabled = false; btn.textContent = 'Sair'; });
+        }
+
+        function gerarPDF(codigoFicha, button) {
+            button.disabled = true; button.textContent = 'Baixando...';
+            fetch(`/gerar_pdf/${encodeURIComponent(codigoFicha)}`, { headers: { 'X-CSRFToken': getCsrfToken() }, credentials: 'same-origin' })
+            .then(r => { button.disabled = false; button.textContent = 'Baixar PDF'; return r.blob(); })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = `ficha_${codigoFicha}.pdf`;
+                a.click(); URL.revokeObjectURL(url);
+            });
+        }
+
+        function abrirModalCompartilharTudo() {
+            fetch('/compartilhar_tudo_preview', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() }, body: JSON.stringify({}), credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(data => {
+                const texto = document.getElementById('compartilhar-texto-tudo');
+                const select = document.getElementById('admin-select');
+                const btn = document.getElementById('confirmar-compartilhar-tudo');
+                if (data.success && data.admins.length > 0) {
+                    select.innerHTML = '<option value="" disabled selected>Selecione o administrador municipal</option>' +
+                        data.admins.map(a => `<option value="${a.municipio}">${a.nome} - ${a.municipio}</option>`).join('');
+                    select.style.display = 'block';
+                    texto.innerHTML = '<strong>Selecione para qual administrador compartilhar:</strong>';
+                    btn.style.display = 'inline-block';
+                } else {
+                    texto.innerHTML = data.message || 'Nenhum administrador disponível.';
+                    select.style.display = 'none';
+                    btn.style.display = 'none';
+                }
+                document.getElementById('compartilhar-tudo-modal').style.display = 'flex';
+            });
+        }
+
+        function confirmarCompartilharTudo() {
+            const municipio = document.getElementById('admin-select').value;
+            if (!municipio) return;
+            fetch('/compartilhar_tudo', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() }, body: JSON.stringify({ municipio }), credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(d => {
+                fecharModal('compartilhar-tudo-modal');
+                document.getElementById('resultado').innerHTML = `<div class="flash-message">${d.success ? 'Compartilhado com sucesso!' : d.message}</div>`;
+                setTimeout(() => carregarHistorico(currentPage), 2000);
+            });
+        }
+    </script>
+</body>
+</html>

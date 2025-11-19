@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #194756;
+            --secondary-color: #54736e;
+            --accent-color: #f2eabc;
+            --danger-color: #d32f2f;
+            --danger-hover: #b71c1c;
+            --success-color: #388e3c;
+            --success-hover: #2e7d32;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--accent-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            background: var(--text-light);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            max-width: 1200px;
+            margin: 0 auto;
+            box-shadow: var(--box-shadow);
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin: 20px 0 15px;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+        
+        .button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-right: 8px;
+        }
+        
+        .button--approve {
+            background: var(--secondary-color);
+            color: var(--accent-color);
+        }
+        
+        .button--approve:hover {
+            background: #3e5a54;
+            transform: translateY(-1px);
+        }
+        
+        .button--reject {
+            background: var(--danger-color);
+            color: var(--text-light);
+        }
+        
+        .button--reject:hover {
+            background: var(--danger-hover);
+            transform: translateY(-1px);
+        }
+
+        .button--activate {
+            background: var(--success-color);
+            color: var(--text-light);
+        }
+
+        .button--activate:hover {
+            background: var(--success-hover);
+            transform: translateY(-1px);
+        }
+
+        .button--deactivate {
+            background: var(--danger-color);
+            color: var(--text-light);
+        }
+
+        .button--deactivate:hover {
+            background: var(--danger-hover);
+            transform: translateY(-1px);
+        }
+        
+        .flash-message {
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            font-weight: 600;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+        
+        .flash-message.success {
+            background-color: #e6f0e5;
+            color: var(--primary-color);
+        }
+        
+        .flash-message.danger {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: flex-start;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .button--nav {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: var(--accent-color);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .button--nav:hover {
+            background: #123540;
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .button--nav:active {
+            transform: translateY(0);
+        }
+        
+        .button--nav.disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .button--logout {
+            background: var(--danger-color);
+        }
+        
+        .button--logout:hover {
+            background: var(--danger-hover);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--secondary-color);
+            font-size: 1.1em;
+        }
+        
+        .form-inline {
+            display: inline;
+        }
+        
+        .icon {
+            margin-right: 5px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination .button--nav {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .pagination .button--nav.disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            font-size: 16px;
+            color: var(--secondary-color);
+        }
+
+        .cnes-cell, .municipio-cell {
+            position: relative;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+
+        .cnes-cell .tooltip, .municipio-cell .tooltip {
+            visibility: hidden;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px;
+            position: absolute;
+            z-index: 100;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 12px;
+            max-width: 300px;
+        }
+
+        .cnes-cell:hover .tooltip, .municipio-cell:hover .tooltip {
+            visibility: visible;
+        }
+
+        .accordion {
+            margin-bottom: 30px;
+        }
+
+        .accordion-item {
+            background: var(--text-light);
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            background: var(--secondary-color);
+            color: var(--accent-color);
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:not(.always-open):hover {
+            background: #3e5c57;
+        }
+
+        .accordion-header i {
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-header.active i {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding: 0 20px;
+        }
+
+        .accordion-content.active {
+            padding: 20px;
+        }
+
+        .accordion-content .table-header {
+            display: flex;
+            background: var(--secondary-color);
+            color: var(--accent-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+            padding: 12px 15px;
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .accordion-content .table-header span {
+            flex: 1;
+            text-align: center;
+            padding: 0 5px;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+
+        .accordion-content .table-header span.actions-header {
+            flex: 1.5;
+        }
+
+        .accordion-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .accordion-content li {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .accordion-content li:hover {
+            background-color: rgba(242, 234, 188, 0.2);
+        }
+
+        .accordion-content li:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-content li span {
+            flex: 1;
+            padding: 0 5px;
+            text-align: center;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+
+        .accordion-content li .actions {
+            flex: 1.5;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        .accordion-content li span.email-cell {
+            max-width: 130px;
+        }
+
+        .accordion-content li span.email-cell[data-starts-with="True"] {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .accordion-content li span.email-cell[data-starts-with="True"]::before {
+            content: attr(data-before);
+            display: block;
+            text-align: center;
+        }
+
+        .accordion-content li span.email-cell[data-starts-with="True"] span {
+            display: block;
+            text-align: center;
+        }
+
+        .accordion-item.always-open .accordion-header {
+            cursor: default;
+            background: var(--secondary-color);
+        }
+
+        .accordion-item.always-open .accordion-content {
+            max-height: none !important;
+            padding: 20px;
+        }
+
+        .accordion-item.always-open .accordion-header i {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .pagination {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .accordion-content .table-header {
+                display: none;
+            }
+
+            .accordion-content li {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .accordion-content li span {
+                padding: 0;
+                width: 100%;
+                text-align: left;
+                overflow-wrap: break-word;
+                white-space: normal;
+            }
+
+            .accordion-content li .actions {
+                justify-content: flex-start;
+                width: 100%;
+                padding: 0;
+            }
+
+            .accordion-content li span.email-cell {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h2>Painel Administrativo</h2>
+        </header>
+
+        <!-- Botões no topo -->
+        <div class="button-group">
+            <a href="{{ url_for('calculadora') }}" class="button--nav">
+                <i class="fas fa-calculator icon"></i> Voltar para a Calculadora
+            </a>
+            <a href="{{ url_for('admin_senha') }}" class="button--nav">
+                <i class="fas fa-key icon"></i> Gerenciar Senhas
+            </a>
+            <a href="{{ url_for('admin_relatorio') }}" class="button--nav">
+                <i class="fas fa-chart-bar icon"></i> Relatório
+            </a>
+            {% if session.is_super_admin %}
+            <a href="{{ url_for('admin_gerenciar_usuarios') }}" class="button--nav">
+                <i class="fas fa-users-cog icon"></i> Gerenciar Usuários
+            </a>
+            {% endif %}
+            <button id="logout-btn" class="button--nav button--logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt icon"></i> Sair
+            </button>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <main>
+            <!-- Acordeão -->
+            <div class="accordion">
+                <!-- Cadastros Pendentes (Sempre Aberto) -->
+                <div class="accordion-item always-open">
+                    <div class="accordion-header">
+                        Cadastros Pendentes
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content active">
+                        {% if usuarios_pendentes %}
+                            <div class="table-header">
+                                <span>Nome</span>
+                                <span>E-mail</span>
+                                <span>Profissão</span>
+                                <span>Município</span>
+                                <span>CNES</span>
+                                <span class="actions-header">Ações</span>
+                            </div>
+                            <ul>
+                                {% for usuario in usuarios_pendentes %}
+                                    <li>
+                                        <span>{{ usuario.nome }}</span>
+                                        <span class="email-cell" data-starts-with="{{ 'True' if usuario.email.startswith('@') else 'False' }}" data-before="{{ usuario.email.split('@')[0] if usuario.email.startswith('@') else '' }}">
+                                            <span>{{ usuario.email if not usuario.email.startswith('@') else usuario.email.split('@', 1)[1] }}</span>
+                                        </span>
+                                        <span>{{ usuario.profissao }}</span>
+                                        <span class="municipio-cell">
+                                            {% if usuario.municipio and usuario.municipio|length > 10 %}
+                                                {{ usuario.municipio[:10] }}...
+                                                <span class="tooltip">{{ usuario.municipio }}</span>
+                                            {% else %}
+                                                {{ usuario.municipio or 'N/A' }}
+                                            {% endif %}
+                                        </span>
+                                        <span class="cnes-cell">
+                                            {% if usuario.cnes and usuario.cnes|length > 7 %}
+                                                {{ usuario.cnes[:7] }}...
+                                                <span class="tooltip">{{ usuario.cnes }}</span>
+                                            {% else %}
+                                                {{ usuario.cnes or 'N/A' }}
+                                            {% endif %}
+                                        </span>
+                                        <span class="actions">
+                                            <form class="form-inline" method="POST" action="{{ url_for('admin_aprovar_usuario') }}">
+                                                <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+                                                <button type="submit" class="button button--approve" aria-label="Aprovar usuário">
+                                                    <i class="fas fa-check icon"></i> Aprovar
+                                                </button>
+                                            </form>
+                                            <form class="form-inline" method="POST" action="{{ url_for('admin_rejeitar_usuario') }}">
+                                                <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+                                                <button type="submit" class="button button--reject" aria-label="Rejeitar usuário">
+                                                    <i class="fas fa-times icon"></i> Rejeitar
+                                                </button>
+                                            </form>
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="empty-state">
+                                <p>Nenhum cadastro pendente no momento.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Usuários Cadastrados (Toggle) -->
+                <div class="accordion-item">
+                    <div class="accordion-header" id="usuarios-cadastrados-header">
+                        Usuários Cadastrados
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        {% if usuarios_cadastrados %}
+                            <div class="table-header">
+                                <span>Nome</span>
+                                <span>E-mail</span>
+                                <span>Profissão</span>
+                                <span>Município</span>
+                                <span>CNES</span>
+                                <span>Status</span>
+                                <span class="actions-header">Ações</span>
+                            </div>
+                            <ul id="usuarios-cadastrados-list">
+                                {% for usuario in usuarios_cadastrados %}
+                                    <li data-usuario-id="{{ usuario.id }}">
+                                        <span>{{ usuario.nome }}</span>
+                                        <span class="email-cell" data-starts-with="{{ 'True' if usuario.email.startswith('@') else 'False' }}" data-before="{{ usuario.email.split('@')[0] if usuario.email.startswith('@') else '' }}">
+                                            <span>{{ usuario.email if not usuario.email.startswith('@') else usuario.email.split('@', 1)[1] }}</span>
+                                        </span>
+                                        <span>{{ usuario.profissao }}</span>
+                                        <span class="municipio-cell">
+                                            {% if usuario.municipio and usuario.municipio|length > 10 %}
+                                                {{ usuario.municipio[:10] }}...
+                                                <span class="tooltip">{{ usuario.municipio }}</span>
+                                            {% else %}
+                                                {{ usuario.municipio or 'N/A' }}
+                                            {% endif %}
+                                        </span>
+                                        <span class="cnes-cell">
+                                            {% if usuario.cnes and usuario.cnes|length > 7 %}
+                                                {{ usuario.cnes[:7] }}...
+                                                <span class="tooltip">{{ usuario.cnes }}</span>
+                                            {% else %}
+                                                {{ usuario.cnes or 'N/A' }}
+                                            {% endif %}
+                                        </span>
+                                        <span>{{ 'Ativo' if usuario.ativo else 'Inativo' }}</span>
+                                        <span class="actions">
+                                            {% if usuario.ativo %}
+                                                <button class="button button--deactivate" onclick="desativarUsuario('{{ usuario.id }}', this)" aria-label="Desativar usuário">
+                                                    <i class="fas fa-ban icon"></i> Desativar
+                                                </button>
+                                            {% else %}
+                                                <button class="button button--activate" onclick="ativarUsuario('{{ usuario.id }}', this)" aria-label="Ativar usuário">
+                                                    <i class="fas fa-check-circle icon"></i> Ativar
+                                                </button>
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <div class="pagination" id="cadastrados-pagination">
+                                <button id="prev-page-cadastrados" class="button--nav disabled"><i class="fas fa-chevron-left icon"></i> Anterior</button>
+                                <span id="page-info-cadastrados">Página <span id="current-page-cadastrados">1</span> de <span id="total-pages-cadastrados">1</span></span>
+                                <button id="next-page-cadastrados" class="button--nav"><i class="fas fa-chevron-right icon"></i> Próximo</button>
+                            </div>
+                        {% else %}
+                            <div class="empty-state">
+                                <p>Nenhum usuário cadastrado no momento.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Histórico de Ações (Toggle) -->
+                <div class="accordion-item">
+                    <div class="accordion-header" id="historico-acoes-header">
+                        Histórico de Ações
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        {% if historico_acoes %}
+                            <div class="table-header">
+                                <span>Data</span>
+                                <span>Administrador</span>
+                                <span>Usuário Afetado</span>
+                                <span>Ação</span>
+                                <span>Detalhes</span>
+                            </div>
+                            <ul>
+                                {% for acao in historico_acoes %}
+                                    <li>
+                                        <span>{{ acao.data_acao }}</span>
+                                        <span>{{ acao.admin_nome }}</span>
+                                        <span>{{ acao.usuario_nome }}</span>
+                                        <span>{{ acao.acao }}</span>
+                                        <span>{{ acao.detalhes }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="empty-state">
+                                <p>Nenhuma ação registrada no momento.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script>
+            // Função para obter o token CSRF do cookie
+            function getCsrfToken() {
+                const name = 'csrf_token=';
+                const decodedCookie = decodeURIComponent(document.cookie);
+                const cookies = decodedCookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i].trim();
+                    if (cookie.indexOf(name) === 0) {
+                        return cookie.substring(name.length, cookie.length);
+                    }
+                }
+                return '';
+            }
+
+            // Função para exibir mensagem flash
+            function showFlashMessage(message, category) {
+                const flashContainer = document.querySelector('.container');
+                const flashMessage = document.createElement('div');
+                flashMessage.className = `flash-message ${category}`;
+                flashMessage.textContent = message;
+                flashContainer.insertBefore(flashMessage, flashContainer.querySelector('main'));
+                setTimeout(() => flashMessage.remove(), 5000);
+            }
+
+            // Função para logout
+            function logout() {
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-Token': getCsrfToken()
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/login';
+                    } else {
+                        showFlashMessage('Erro ao fazer logout.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao fazer logout:', error);
+                    showFlashMessage('Erro ao fazer logout: ' + error.message, 'danger');
+                });
+            }
+
+            // Função para ativar usuário
+            function ativarUsuario(usuarioId, button) {
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin icon"></i> Ativando...';
+
+                fetch('/admin/ativar_usuario', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-Token': getCsrfToken()
+                    },
+                    body: `usuario_id=${encodeURIComponent(usuarioId)}`,
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || `Erro na requisição: ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const li = button.closest('li');
+                        const statusCell = li.querySelector('span:nth-child(6)'); // Coluna de status
+                        const actionsCell = li.querySelector('.actions');
+                        const accordionItem = li.closest('.accordion-item');
+                        const accordionContent = accordionItem.querySelector('.accordion-content');
+                        const accordionHeader = accordionItem.querySelector('.accordion-header');
+
+                        // Atualizar status
+                        statusCell.textContent = 'Ativo';
+
+                        // Substituir botão Ativar por Desativar
+                        actionsCell.innerHTML = `
+                            <button class="button button--deactivate" onclick="desativarUsuario('${usuarioId}', this)" aria-label="Desativar usuário">
+                                <i class="fas fa-ban icon"></i> Desativar
+                            </button>
+                        `;
+
+                        // Fechar o acordeão
+                        accordionItem.classList.remove('active');
+                        accordionContent.classList.remove('active');
+                        accordionContent.style.maxHeight = null;
+
+                        showFlashMessage('Usuário ativado com sucesso.', 'success');
+                    } else {
+                        throw new Error(data.message || 'Erro ao ativar usuário.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao ativar usuário:', error);
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-check-circle icon"></i> Ativar';
+                    showFlashMessage(`Erro ao ativar usuário: ${error.message}`, 'danger');
+                });
+            }
+
+            // Função para desativar usuário
+            function desativarUsuario(usuarioId, button) {
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin icon"></i> Desativando...';
+
+                fetch('/admin/desativar_usuario', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-Token': getCsrfToken()
+                    },
+                    body: `usuario_id=${encodeURIComponent(usuarioId)}`,
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || `Erro na requisição: ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const li = button.closest('li');
+                        const statusCell = li.querySelector('span:nth-child(6)'); // Coluna de status
+                        const actionsCell = li.querySelector('.actions');
+                        const accordionItem = li.closest('.accordion-item');
+                        const accordionContent = accordionItem.querySelector('.accordion-content');
+                        const accordionHeader = accordionItem.querySelector('.accordion-header');
+
+                        // Atualizar status
+                        statusCell.textContent = 'Inativo';
+
+                        // Substituir botão Desativar por Ativar
+                        actionsCell.innerHTML = `
+                            <button class="button button--activate" onclick="ativarUsuario('${usuarioId}', this)" aria-label="Ativar usuário">
+                                <i class="fas fa-check-circle icon"></i> Ativar
+                            </button>
+                        `;
+
+                        // Fechar o acordeão
+                        accordionItem.classList.remove('active');
+                        accordionContent.classList.remove('active');
+                        accordionContent.style.maxHeight = null;
+
+                        showFlashMessage('Usuário desativado com sucesso.', 'success');
+                    } else {
+                        throw new Error(data.message || 'Erro ao desativar usuário.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao desativar usuário:', error);
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-ban icon"></i> Desativar';
+                    showFlashMessage(`Erro ao desativar usuário: ${error.message}`, 'danger');
+                });
+            }
+
+            // JavaScript para o acordeão e paginação
+            document.addEventListener('DOMContentLoaded', function () {
+                // Acordeão
+                const accordionHeaders = document.querySelectorAll('.accordion-header:not(.always-open)');
+                accordionHeaders.forEach(header => {
+                    header.addEventListener('click', () => {
+                        const item = header.parentElement;
+                        const content = item.querySelector('.accordion-content');
+                        const isActive = item.classList.contains('active');
+
+                        // Fecha outros itens, exceto os com 'always-open'
+                        document.querySelectorAll('.accordion-item:not(.always-open)').forEach(otherItem => {
+                            if (otherItem !== item) {
+                                otherItem.classList.remove('active');
+                                otherItem.querySelector('.accordion-content').classList.remove('active');
+                                otherItem.querySelector('.accordion-content').style.maxHeight = null;
+                            }
+                        });
+
+                        // Alterna o estado do item clicado
+                        item.classList.toggle('active');
+                        content.classList.toggle('active');
+                        if (!isActive) {
+                            content.style.maxHeight = content.scrollHeight + 'px';
+                        } else {
+                            content.style.maxHeight = null;
+                        }
+                    });
+                });
+
+                // Define a altura inicial para o item always-open
+                document.querySelectorAll('.accordion-item.always-open .accordion-content').forEach(content => {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                });
+
+                // Atualiza a altura do conteúdo always-open em caso de redimensionamento
+                window.addEventListener('resize', () => {
+                    document.querySelectorAll('.accordion-item.always-open .accordion-content').forEach(content => {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                    });
+                });
+
+                // Paginação para Usuários Cadastrados
+                const usuariosList = document.getElementById('usuarios-cadastrados-list');
+                if (usuariosList) {
+                    const rows = Array.from(usuariosList.querySelectorAll('li'));
+                    const rowsPerPage = 100;
+                    let currentPage = 1;
+                    const totalPagesSpan = document.getElementById('total-pages-cadastrados');
+                    const currentPageSpan = document.getElementById('current-page-cadastrados');
+                    const prevPageBtn = document.getElementById('prev-page-cadastrados');
+                    const nextPageBtn = document.getElementById('next-page-cadastrados');
+
+                    function updateTable() {
+                        const start = (currentPage - 1) * rowsPerPage;
+                        const end = start + rowsPerPage;
+                        rows.forEach((row, index) => {
+                            row.style.display = (index >= start && index < end) ? '' : 'none';
+                        });
+
+                        const totalPages = Math.ceil(rows.length / rowsPerPage) || 1;
+                        totalPagesSpan.textContent = totalPages;
+                        currentPageSpan.textContent = currentPage;
+                        prevPageBtn.disabled = currentPage === 1;
+                        nextPageBtn.disabled = currentPage === totalPages;
+
+                        // Atualiza a altura do accordion-content após paginação
+                        const content = usuariosList.closest('.accordion-content');
+                        if (content.classList.contains('active')) {
+                            content.style.maxHeight = content.scrollHeight + 'px';
+                        }
+                    }
+
+                    updateTable();
+
+                    prevPageBtn.addEventListener('click', () => {
+                        if (currentPage > 1) {
+                            currentPage--;
+                            updateTable();
+                        }
+                    });
+
+                    nextPageBtn.addEventListener('click', () => {
+                        if (currentPage < Math.ceil(rows.length / rowsPerPage)) {
+                            currentPage++;
+                            updateTable();
+                        }
+                    });
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

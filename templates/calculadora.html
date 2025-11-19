@@ -1,0 +1,2869 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estratificação de Risco Gestacional</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary: #194756;
+      --secondary: #54736e;
+      --accent: #f2eabc;
+      --light: #f8f9fa;
+      --white: #ffffff;
+      --text: #333333;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--accent);
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .left {
+      background: linear-gradient(135deg, var(--primary) 0%, #0f2b36 100%);
+      color: var(--accent);
+      flex: 1;
+      padding: 60px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 3px solid var(--secondary);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 1;
+      animation: fadeInLeft 1s ease-out;
+    }
+
+    .gestante-img {
+      max-width: 150px;
+      width: 100%;
+      height: auto;
+      margin: 0 auto 20px;
+      display: block;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .left h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .left p {
+      font-size: 1.1rem;
+      margin-top: 15px;
+      text-align: center;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    .right {
+      flex: 2;
+      padding: 40px;
+      overflow-y: auto;
+      max-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .container {
+      background-color: var(--white);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .flash-message {
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .flash-message.success {
+      background-color: #e6f0e5;
+      color: var(--primary);
+    }
+
+    .flash-message.danger {
+      background-color: #f2eabc;
+      color: var(--primary);
+    }
+
+    .flash-message.warning {
+      background-color: #f2eabc;
+      color: var(--primary);
+    }
+
+    h2, h3 {
+      color: var(--secondary);
+      margin-top: 20px;
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 500;
+      color: var(--primary);
+    }
+
+    label.required::after {
+      content: '*';
+      color: var(--primary);
+      margin-left: 5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--secondary);
+      box-sizing: border-box;
+      font-size: 0.95rem;
+      background-color: #f8f9fa;
+      transition: var(--transition);
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(84, 115, 110, 0.2);
+      background-color: var(--white);
+    }
+
+    input[readonly] {
+      background-color: #e6f0e5;
+    }
+
+    .checkbox-group {
+      margin-top: 15px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      background-color: var(--white);
+      border: 1px solid var(--secondary);
+      border-radius: 6px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .checkbox-item:hover {
+      background-color: #e6f0e5;
+      transform: translateY(-2px);
+    }
+
+    .checkbox-item.selected {
+      background-color: var(--primary);
+      color: var(--accent);
+      border-color: var(--primary);
+    }
+
+    .checkbox-item span {
+      flex: 1;
+      text-align: left;
+      padding-right: 20px;
+      font-size: 0.95rem;
+    }
+
+    .periodo-gestacional .checkbox-item {
+      cursor: pointer;
+    }
+
+    .periodo-gestacional .checkbox-item:hover {
+      background-color: #e6f0e5;
+    }
+
+    .periodo-gestacional .checkbox-item.selected {
+      background-color: var(--primary);
+      color: var(--accent);
+      border-color: var(--primary);
+    }
+
+    .score-box {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: #e6f0e5;
+      border: 1px solid var(--secondary);
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .btn-container {
+      position: relative;
+      width: 100%;
+      max-width: 215px;
+      height: 50px;
+      perspective: 1000px;
+      margin-top: 20px;
+    }
+
+    .btn-entrar {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: var(--accent);
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+      box-shadow: var(--shadow);
+      transform-style: preserve-3d;
+      z-index: 1;
+    }
+
+    .btn-entrar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      clip-path: circle(0% at 50% 50%);
+      transition: clip-path 0.7s ease-in-out;
+      z-index: -1;
+    }
+
+    .btn-entrar:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(25, 71, 86, 0.4);
+    }
+
+    .btn-entrar:hover::before {
+      clip-path: circle(100% at 50% 50%);
+    }
+
+    .btn-entrar:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s ease;
+    }
+
+    .btn-entrar:hover .btn-content {
+      animation: pulse 1s infinite alternate;
+    }
+
+    .icon {
+      transition: transform 0.3s ease;
+    }
+
+    .btn-entrar:hover .icon {
+      transform: rotate(360deg);
+    }
+
+    .btn-entrar::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0) 60%
+      );
+      transform: rotate(30deg);
+      transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+      z-index: 2;
+    }
+
+    .btn-entrar:hover::after {
+      left: 100%;
+      top: 100%;
+    }
+
+    /* Estilo específico para o botão Histórico */
+    #historicoBtn {
+      background: var(--primary) !important;
+      background-image: none !important;
+      color: var(--white) !important;
+      transform: translateY(0);
+      box-shadow: var(--shadow);
+      position: relative;
+      opacity: 1;
+    }
+
+    #historicoBtn::before {
+      content: none !important;
+    }
+
+    #historicoBtn:hover {
+      background: var(--primary) !important;
+      background-image: none !important;
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(25, 71, 86, 0.4);
+    }
+
+    #historicoBtn .btn-content {
+      color: var(--white) !important;
+      animation: none;
+    }
+
+    #historicoBtn:hover .btn-content {
+      animation: pulse 1s infinite alternate;
+      color: var(--white) !important;
+    }
+
+    #historicoBtn::after {
+      background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0) 60%
+      );
+    }
+
+    #particles-historico div {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    #historicoBtn div[style*="position: absolute"][style*="width: 20px"] {
+      background: rgba(25, 71, 86, 0.7);
+    }
+
+#painelBtn {
+  background: var(--primary) !important;
+  background-image: none !important;
+  color: var(--white) !important;
+  transform: translateY(0);
+  box-shadow: var(--shadow);
+  position: relative;
+  opacity: 1;
+}
+
+#painelBtn::before {
+  content: none !important;
+}
+
+#painelBtn:hover {
+  background: var(--primary) !important;
+  background-image: none !important;
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(25, 71, 86, 0.4);
+}
+
+#painelBtn .btn-content {
+  color: var(--white) !important;
+  animation: none;
+}
+
+#painelBtn:hover .btn-content {
+  animation: pulse 1s infinite alternate;
+  color: var(--white) !important;
+}
+
+#painelBtn::after {
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 60%
+  );
+}
+
+#particles-painel div {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+#painelBtn div[style*="position: absolute"][style*="width: 20px"] {
+  background: rgba(25, 71, 86, 0.7);
+}
+
+    .info-icon {
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--accent);
+      background-color: var(--primary);
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+      vertical-align: middle;
+      transition: var(--transition);
+      z-index: 10;
+    }
+
+    .info-icon:hover {
+      background-color: var(--secondary);
+    }
+
+    .info-tooltip {
+      display: none;
+      position: fixed;
+      background-color: var(--white);
+      padding: 10px;
+      border: 1px solid var(--secondary);
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+      font-size: 0.9rem;
+      width: 300px;
+      max-width: 80vw;
+      color: var(--primary);
+      z-index: 1000;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .info-tooltip p {
+      margin-bottom: 10px;
+    }
+
+    .close-tooltip {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--primary);
+    }
+
+    .info-container {
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      z-index: 10;
+    }
+
+    .info-container:hover .info-tooltip {
+      display: block;
+      opacity: 1;
+    }
+
+    .imc-calculator {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: var(--white);
+      border-radius: 8px;
+      border: 1px solid var(--secondary);
+    }
+
+    .imc-calculator label {
+      margin-right: 10px;
+    }
+
+    .imc-calculator input {
+      width: 100px;
+      display: inline-block;
+    }
+
+    .imc-result {
+      margin-top: 10px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .disabled-section {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: var(--white);
+      padding: 20px;
+      border-radius: 8px;
+      width: 400px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-content p {
+      margin: 0 0 20px;
+      color: var(--primary);
+      font-size: 0.95rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .modal-buttons button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-buttons .confirm-btn {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+
+    .modal-buttons .confirm-btn:hover {
+      background-color: var(--secondary);
+    }
+
+    .modal-buttons .cancel-btn {
+      background-color: #dc3545;
+      color: var(--white);
+    }
+
+    .modal-buttons .cancel-btn:hover {
+      background-color: #c82333;
+    }
+
+    .carregar-ficha {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      align-items: center;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.05); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @media (max-width: 992px) {
+      body {
+        flex-direction: column;
+      }
+
+      .left, .right {
+        padding: 30px 20px;
+      }
+
+      .left {
+        border-right: none;
+        border-bottom: 3px solid var(--secondary);
+      }
+
+      .gestante-img {
+        max-width: 120px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .left {
+        padding: 20px 15px;
+      }
+
+      .left h1 {
+        font-size: 2rem;
+      }
+
+      .gestante-img {
+        max-width: 100px;
+      }
+
+      .right {
+        padding: 20px 15px;
+      }
+
+      .modal-content {
+        width: 90%;
+      }
+
+      .info-tooltip {
+        width: 90vw;
+      }
+
+.submenu-situacao-rua {
+  animation: slideDown 0.3s ease-out;
+}
+
+.submenu-item {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  padding: 8px 12px;
+}
+
+.submenu-item:hover {
+  background-color: #e6f0e5;
+}
+
+.submenu-item.selected {
+  background-color: var(--secondary);
+  color: var(--white);
+  border-color: var(--secondary);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+    margin-top: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
+
+.checkbox-item.has-submenu.selected::after {
+  content: '▼';
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.checkbox-item.has-submenu:not(.selected)::after {
+  content: '▶';
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #999;
+}
+
+/* ========== ESTILOS PARA CAMPO ETNIA ========= */
+#etnia-container {
+  margin-top: 8px;
+  animation: slideDown 0.3s ease-out;
+  display: none; /* ← OCULTO por padrão */
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-out;
+}
+
+#etnia-container.visible {
+  display: block !important;
+  opacity: 1;
+  max-height: 200px;
+}
+
+#etnia-container.show {
+  display: block !important; /* ← FORÇA VISIBILIDADE */
+}
+
+#etnia-container label.required::after {
+  content: '*';
+  color: #dc3545;
+  margin-left: 5px;
+}
+
+#etnia-container select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-top: 5px;
+  border: 1px solid var(--secondary);
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  box-sizing: border-box;
+}
+
+#etnia-container select:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(25, 71, 86, 0.2);
+  background-color: var(--white);
+}
+
+#etnia-loading {
+  padding: 15px;
+  text-align: center;
+  color: var(--primary);
+  font-style: italic;
+  background-color: #e6f0e5;
+  border-radius: 6px;
+  border: 1px solid var(--secondary);
+  display: none;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+    margin-top: 8px;
+  }
+}
+
+/* Ícone de info para etnia */
+.info-icon-etnia {
+  font-size: 0.8rem !important;
+  color: var(--primary) !important;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: var(--transition);
+}
+
+.info-icon-etnia:hover {
+  color: var(--secondary) !important;
+}
+  </style>
+</head>
+<body>
+  <div class="left">
+    <img src="{{ url_for('static', filename='imagens/gestante.png') }}" alt="Gestante" class="gestante-img">
+    <div style="display: flex; align-items: center; justify-content: center;">
+      <h1>Classificação de<br>Risco Gestacional</h1>
+      <div class="info-container">
+        <span class="info-icon">i</span>
+        <div class="info-tooltip">
+          <button class="close-tooltip">×</button>
+          <p><strong>Risco Habitual:</strong> Atendimento de pré-natal na APS pelo Enfermeiro intercalado com médico (ATÉ 4 PONTOS).</p>
+          <p><strong>Médio Risco:</strong> Atendimento de pré-natal na APS pelo médico intercalado com enfermeiro e monitoramento pela REDE CUIDAR (5 A 9 PONTOS).</p>
+          <p><strong>Alto Risco:</strong> Encaminhamento ao PNAR e contato com plantonista da REDE CUIDAR até a primeira consulta (10 OU + PONTOS).</p>
+        </div>
+      </div>
+    </div>
+    <p>Preenchimento para acompanhamento na APS</p>
+  </div>
+
+  <div class="right">
+  <div class="container">
+    <h2>Dados da Gestante</h2>
+    <div class="carregar-ficha">
+      <div class="btn-container">
+        <button type="button" class="btn-entrar" id="historicoBtn" aria-label="Ver histórico">
+          <div class="btn-content">
+            <span class="icon"><i class="fas fa-history"></i></span>
+            <span>Histórico</span>
+          </div>
+          <div class="particles" id="particles-historico"></div>
+        </button>
+      </div>
+      {% if session.is_admin %}
+      <div class="btn-container">
+        <button type="button" class="btn-entrar" id="painelBtn" aria-label="Voltar para o Painel">
+          <div class="btn-content">
+            <span class="icon"><i class="fas fa-tachometer-alt"></i></span>
+            <span>Voltar para o Painel</span>
+          </div>
+          <div class="particles" id="particles-painel"></div>
+        </button>
+      </div>
+      {% endif %}
+    </div>
+    <form id="form-risco" action="{{ url_for('salvar_calculadora') }}" method="POST">
+        <input type="hidden" name="pontuacao_total" id="pontuacao_total" value="">
+        <input type="hidden" name="classificacao_risco" id="classificacao_risco" value="">
+        <input type="hidden" name="imc" id="imc" value="">
+        <input type="hidden" name="codigo_ficha" id="codigo_ficha" value="">
+
+        <div id="dados-iniciais">
+          <label class="required">Nome da Gestante</label>
+          <input type="text" name="nome_gestante" required>
+
+  <label class="required">Identidade de Gênero</label>
+  <select name="genero" required>
+    <option value="" disabled selected>Selecione o Gênero</option>
+    <option value="mulher_cisgenero">Mulher Cisgênero</option>
+    <option value="homem_trans">Homem Trans</option>
+    <option value="pessoa_nao_binaria">Pessoa Não-Binária</option>
+    <option value="outro">Outro</option>
+    <option value="nao_informado">Não Informado</option>
+  </select>
+
+  <label class="required">Orientação Sexual</label>
+  <select name="sexualidade" required>
+    <option value="" disabled selected>Selecione a Sexualidade</option>
+    <option value="Heterossexual">Heterossexual</option>
+    <option value="Homossexual">Homossexual</option>
+    <option value="Bissexual">Bissexual</option>
+    <option value="Assexual">Assexual</option>
+    <option value="Outro">Outro</option>
+    <option value="Prefiro não declarar">Prefiro não declarar</option>
+  </select>
+
+  <label class="required">Pessoa com Deficiência?</label>
+  <select name="deficiencia" required>
+    <option value="" disabled selected>Selecione</option>
+    <option value="Sim">Sim</option>
+    <option value="Não">Não</option>
+  </select>
+
+<!-- Seção de Raça/Cor/Etnia -->
+<label class="required">Raça/Cor/Etnia</label>
+<select name="raca_cor_etnia" id="raca_cor_etnia" onchange="updateLabels()" required>
+  <option value="" disabled selected>Selecione a Raça/Cor/Etnia</option>
+  <option value="Branca">Branca</option>
+  <option value="Preta">Preta</option>
+  <option value="Parda">Parda</option>
+  <option value="Amarela">Amarela</option>
+  <option value="Indígena">Indígena</option>
+</select>
+
+<!-- Campo Etnia Indígena (oculto por padrão) -->
+<div id="etnia-container">
+  <label class="required" id="etnia-label">
+    Etnia Indígena 
+    <i class="fas fa-info-circle info-icon-etnia" 
+       title="Selecionar a etnia específica"></i>
+  </label>
+  <select name="etnia_indigena" id="etnia_indigena" style="display: none;">
+    <option value="" disabled selected>Selecione a Etnia Indígena</option>
+  </select>
+  <div id="etnia-loading" style="display: none;">
+    <i class="fas fa-spinner fa-spin"></i> Carregando etnias indígenas...
+  </div>
+</div>
+          <label class="required">Data de Nascimento</label>
+          <input type="text" name="data_nasc" required placeholder="DD/MM/YYYY" maxlength="10" oninput="mascaraData(this)" onblur="validarData(this)">
+
+	  <label class="required">CPF</label>
+  	  <input type="text" name="cpf" required placeholder="999.999.999-99" maxlength="14" oninput="mascaraCPF(this)" onblur="validarCPF(this)">
+
+          <label class="required">Telefone</label>
+          <input type="text" name="telefone" required placeholder="(83) 9 9999-9999" maxlength="16" oninput="mascaraTelefone(this)" onblur="validarTelefone(this)">
+
+          <label class="required">Município</label>
+<select name="municipio" id="municipio" required>
+    <option value="" disabled selected>Selecione o Município</option>
+    <option value="Água Branca">Água Branca</option>
+    <option value="Aguiar">Aguiar</option>
+    <option value="Alagoa Grande">Alagoa Grande</option>
+    <option value="Alagoa Nova">Alagoa Nova</option>
+    <option value="Alagoinha">Alagoinha</option>
+    <option value="Alcantil">Alcantil</option>
+    <option value="Algodão de Jandaíra">Algodão de Jandaíra</option>
+    <option value="Alhandra">Alhandra</option>
+    <option value="Amparo">Amparo</option>
+    <option value="Aparecida">Aparecida</option>
+    <option value="Araçagi">Araçagi</option>
+    <option value="Arara">Arara</option>
+    <option value="Araruna">Araruna</option>
+    <option value="Areia">Areia</option>
+    <option value="Areia de Baraúnas">Areia de Baraúnas</option>
+    <option value="Areial">Areial</option>
+    <option value="Aroeiras">Aroeiras</option>
+    <option value="Assunção">Assunção</option>
+    <option value="Baía da Traição">Baía da Traição</option>
+    <option value="Bananeiras">Bananeiras</option>
+    <option value="Baraúna">Baraúna</option>
+    <option value="Barra de Santana">Barra de Santana</option>
+    <option value="Barra de Santa Rosa">Barra de Santa Rosa</option>
+    <option value="Barra de São Miguel">Barra de São Miguel</option>
+    <option value="Bayeux">Bayeux</option>
+    <option value="Belém">Belém</option>
+    <option value="Belém do Brejo do Cruz">Belém do Brejo do Cruz</option>
+    <option value="Bernardino Batista">Bernardino Batista</option>
+    <option value="Boa Ventura">Boa Ventura</option>
+    <option value="Boa Vista">Boa Vista</option>
+    <option value="Bom Jesus">Bom Jesus</option>
+    <option value="Bom Sucesso">Bom Sucesso</option>
+    <option value="Bonito de Santa Fé">Bonito de Santa Fé</option>
+    <option value="Boqueirão">Boqueirão</option>
+    <option value="Borborema">Borborema</option>
+    <option value="Brejo do Cruz">Brejo do Cruz</option>
+    <option value="Brejo dos Santos">Brejo dos Santos</option>
+    <option value="Caaporã">Caaporã</option>
+    <option value="Cabaceiras">Cabaceiras</option>
+    <option value="Cabedelo">Cabedelo</option>
+    <option value="Cachoeira dos Índios">Cachoeira dos Índios</option>
+    <option value="Cacimba de Areia">Cacimba de Areia</option>
+    <option value="Cacimba de Dentro">Cacimba de Dentro</option>
+    <option value="Cacimbas">Cacimbas</option>
+    <option value="Caiçara">Caiçara</option>
+    <option value="Cajazeiras">Cajazeiras</option>
+    <option value="Cajazeirinhas">Cajazeirinhas</option>
+    <option value="Caldas Brandão">Caldas Brandão</option>
+    <option value="Camalaú">Camalaú</option>
+    <option value="Campina Grande">Campina Grande</option>
+    <option value="Capim">Capim</option>
+    <option value="Caraúbas">Caraúbas</option>
+    <option value="Carrapateira">Carrapateira</option>
+    <option value="Casserengue">Casserengue</option>
+    <option value="Catingueira">Catingueira</option>
+    <option value="Catolé do Rocha">Catolé do Rocha</option>
+    <option value="Caturité">Caturité</option>
+    <option value="Conceição">Conceição</option>
+    <option value="Condado">Condado</option>
+    <option value="Conde">Conde</option>
+    <option value="Congo">Congo</option>
+    <option value="Coremas">Coremas</option>
+    <option value="Coxixola">Coxixola</option>
+    <option value="Cruz do Espírito Santo">Cruz do Espírito Santo</option>
+    <option value="Cubati">Cubati</option>
+    <option value="Cuité">Cuité</option>
+    <option value="Cuité de Mamanguape">Cuité de Mamanguape</option>
+    <option value="Cuitegi">Cuitegi</option>
+    <option value="Curral de Cima">Curral de Cima</option>
+    <option value="Curral Velho">Curral Velho</option>
+    <option value="Damião">Damião</option>
+    <option value="Desterro">Desterro</option>
+    <option value="Diamante">Diamante</option>
+    <option value="Dona Inês">Dona Inês</option>
+    <option value="Duas Estradas">Duas Estradas</option>
+    <option value="Emas">Emas</option>
+    <option value="Esperança">Esperança</option>
+    <option value="Fagundes">Fagundes</option>
+    <option value="Frei Martinho">Frei Martinho</option>
+    <option value="Gado Bravo">Gado Bravo</option>
+    <option value="Guarabira">Guarabira</option>
+    <option value="Gurinhém">Gurinhém</option>
+    <option value="Gurjão">Gurjão</option>
+    <option value="Ibiara">Ibiara</option>
+    <option value="Igaracy">Igaracy</option>
+    <option value="Imaculada">Imaculada</option>
+    <option value="Ingá">Ingá</option>
+    <option value="Itabaiana">Itabaiana</option>
+    <option value="Itaporanga">Itaporanga</option>
+    <option value="Itapororoca">Itapororoca</option>
+    <option value="Itatuba">Itatuba</option>
+    <option value="Jacaraú">Jacaraú</option>
+    <option value="Jericó">Jericó</option>
+    <option value="João Pessoa">João Pessoa</option>
+    <option value="Joca Claudino">Joca Claudino</option>
+    <option value="Juarez Távora">Juarez Távora</option>
+    <option value="Juazeirinho">Juazeirinho</option>
+    <option value="Junco do Seridó">Junco do Seridó</option>
+    <option value="Juripiranga">Juripiranga</option>
+    <option value="Juru">Juru</option>
+    <option value="Lagoa">Lagoa</option>
+    <option value="Lagoa de Dentro">Lagoa de Dentro</option>
+    <option value="Lagoa Seca">Lagoa Seca</option>
+    <option value="Lastro">Lastro</option>
+    <option value="Livramento">Livramento</option>
+    <option value="Logradouro">Logradouro</option>
+    <option value="Lucena">Lucena</option>
+    <option value="Mãe d'Água">Mãe d'Água</option>
+    <option value="Malta">Malta</option>
+    <option value="Mamanguape">Mamanguape</option>
+    <option value="Manaíra">Manaíra</option>
+    <option value="Marcação">Marcação</option>
+    <option value="Mari">Mari</option>
+    <option value="Marizópolis">Marizópolis</option>
+    <option value="Massaranduba">Massaranduba</option>
+    <option value="Mataraca">Mataraca</option>
+    <option value="Matinhas">Matinhas</option>
+    <option value="Mato Grosso">Mato Grosso</option>
+    <option value="Maturéia">Maturéia</option>
+    <option value="Mogeiro">Mogeiro</option>
+    <option value="Montadas">Montadas</option>
+    <option value="Monte Horebe">Monte Horebe</option>
+    <option value="Monteiro">Monteiro</option>
+    <option value="Mulungu">Mulungu</option>
+    <option value="Natuba">Natuba</option>
+    <option value="Nazarezinho">Nazarezinho</option>
+    <option value="Nova Floresta">Nova Floresta</option>
+    <option value="Nova Olinda">Nova Olinda</option>
+    <option value="Nova Palmeira">Nova Palmeira</option>
+    <option value="Olho d'Água">Olho d'Água</option>
+    <option value="Olivedos">Olivedos</option>
+    <option value="Ouro Velho">Ouro Velho</option>
+    <option value="Parari">Parari</option>
+    <option value="Passagem">Passagem</option>
+    <option value="Patos">Patos</option>
+    <option value="Paulista">Paulista</option>
+    <option value="Pedra Branca">Pedra Branca</option>
+    <option value="Pedra Lavrada">Pedra Lavrada</option>
+    <option value="Pedras de Fogo">Pedras de Fogo</option>
+    <option value="Pedro Régis">Pedro Régis</option>
+    <option value="Piancó">Piancó</option>
+    <option value="Picuí">Picuí</option>
+    <option value="Pilar">Pilar</option>
+    <option value="Pilões">Pilões</option>
+    <option value="Pilõezinhos">Pilõezinhos</option>
+    <option value="Pirpirituba">Pirpirituba</option>
+    <option value="Pitimbu">Pitimbu</option>
+    <option value="Pocinhos">Pocinhos</option>
+    <option value="Poço Dantas">Poço Dantas</option>
+    <option value="Poço de José de Moura">Poço de José de Moura</option>
+    <option value="Pombal">Pombal</option>
+    <option value="Prata">Prata</option>
+    <option value="Princesa Isabel">Princesa Isabel</option>
+    <option value="Puxinanã">Puxinanã</option>
+    <option value="Queimadas">Queimadas</option>
+    <option value="Quixabá">Quixabá</option>
+    <option value="Remígio">Remígio</option>
+    <option value="Riachão">Riachão</option>
+    <option value="Riachão do Bacamarte">Riachão do Bacamarte</option>
+    <option value="Riachão do Poço">Riachão do Poço</option>
+    <option value="Riacho de Santo Antônio">Riacho de Santo Antônio</option>
+    <option value="Riacho dos Cavalos">Riacho dos Cavalos</option>
+    <option value="Rio Tinto">Rio Tinto</option>
+    <option value="Salgadinho">Salgadinho</option>
+    <option value="Salgado de São Félix">Salgado de São Félix</option>
+    <option value="Santa Cecília">Santa Cecília</option>
+    <option value="Santa Cruz">Santa Cruz</option>
+    <option value="Santa Helena">Santa Helena</option>
+    <option value="Santa Inês">Santa Inês</option>
+    <option value="Santa Luzia">Santa Luzia</option>
+    <option value="Santa Rita">Santa Rita</option>
+    <option value="Santa Teresinha">Santa Teresinha</option>
+    <option value="Santana de Mangueira">Santana de Mangueira</option>
+    <option value="Santana dos Garrotes">Santana dos Garrotes</option>
+    <option value="Santo André">Santo André</option>
+    <option value="São Bentinho">São Bentinho</option>
+    <option value="São Bento">São Bento</option>
+    <option value="São Domingos">São Domingos</option>
+    <option value="São Domingos do Cariri">São Domingos do Cariri</option>
+    <option value="São Francisco">São Francisco</option>
+    <option value="São João do Cariri">São João do Cariri</option>
+    <option value="São João do Rio do Peixe">São João do Rio do Peixe</option>
+    <option value="São João do Tigre">São João do Tigre</option>
+    <option value="São José da Lagoa Tapada">São José da Lagoa Tapada</option>
+    <option value="São José de Caiana">São José de Caiana</option>
+    <option value="São José de Espinharas">São José de Espinharas</option>
+    <option value="São José de Piranhas">São José de Piranhas</option>
+    <option value="São José de Princesa">São José de Princesa</option>
+    <option value="São José do Bonfim">São José do Bonfim</option>
+    <option value="São José do Brejo do Cruz">São José do Brejo do Cruz</option>
+    <option value="São José do Sabugi">São José do Sabugi</option>
+    <option value="São José dos Cordeiros">São José dos Cordeiros</option>
+    <option value="São José dos Ramos">São José dos Ramos</option>
+    <option value="São Mamede">São Mamede</option>
+    <option value="São Miguel de Taipu">São Miguel de Taipu</option>
+    <option value="São Sebastião de Lagoa de Roça">São Sebastião de Lagoa de Roça</option>
+    <option value="São Sebastião do Umbuzeiro">São Sebastião do Umbuzeiro</option>
+    <option value="São Vicente do Seridó">São Vicente do Seridó</option>
+    <option value="Sapé">Sapé</option>
+    <option value="Serra Branca">Serra Branca</option>
+    <option value="Serra da Raiz">Serra da Raiz</option>
+    <option value="Serra Grande">Serra Grande</option>
+    <option value="Serra Redonda">Serra Redonda</option>
+    <option value="Serraria">Serraria</option>
+    <option value="Sertãozinho">Sertãozinho</option>
+    <option value="Sobrado">Sobrado</option>
+    <option value="Solânea">Solânea</option>
+    <option value="Soledade">Soledade</option>
+    <option value="Sossêgo">Sossêgo</option>
+    <option value="Sousa">Sousa</option>
+    <option value="Sumé">Sumé</option>
+    <option value="Tacima">Tacima</option>
+    <option value="Taperoá">Taperoá</option>
+    <option value="Tavares">Tavares</option>
+    <option value="Teixeira">Teixeira</option>
+    <option value="Tenório">Tenório</option>
+    <option value="Triunfo">Triunfo</option>
+    <option value="Uiraúna">Uiraúna</option>
+    <option value="Umbuzeiro">Umbuzeiro</option>
+    <option value="Várzea">Várzea</option>
+    <option value="Vieirópolis">Vieirópolis</option>
+    <option value="Vista Serrana">Vista Serrana</option>
+    <option value="Zabelê">Zabelê</option>
+</select>
+
+<!-- Campo UBS de Origem -->
+<label class="required" id="ubs-label">UBS de Origem</label>
+<input type="text" name="ubs" required>
+
+<!-- Campo ACS -->
+<label class="required" id="acs-label">ACS (Agente Comunitário de Saúde)</label>
+<input type="text" name="acs" required>
+
+          <label class="required">Período Gestacional</label>
+          <div class="checkbox-group periodo-gestacional">
+            <div class="checkbox-item" onclick="selectPeriodo(this, '1º Trimestre')">
+              <span>1º Trimestre</span>
+              <input type="hidden" name="periodo_gestacional" value="1º Trimestre">
+            </div>
+            <div class="checkbox-item" onclick="selectPeriodo(this, '2º Trimestre')">
+              <span>2º Trimestre</span>
+              <input type="hidden" value="2º Trimestre">
+            </div>
+            <div class="checkbox-item" onclick="selectPeriodo(this, '3º Trimestre')">
+              <span>3º Trimestre</span>
+              <input type="hidden" value="3º Trimestre">
+            </div>
+          </div>
+
+          <label class="required">Data do Preenchimento</label>
+          <input type="text" name="data_envio" id="data_envio" required placeholder="DD/MM/YYYY" maxlength="10" oninput="mascaraData(this)" onblur="validarData(this)">
+
+          <div class="btn-container">
+            <button type="button" class="btn-entrar" id="continuarBtn" onclick="continuar()" aria-label="Continuar para próximas seções">
+              <div class="btn-content">
+                <span class="icon"><i class="fas fa-arrow-right"></i></span>
+                <span>Continuar</span>
+              </div>
+              <div class="particles" id="particles-continuar"></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Seção 1 - Características Individuais -->
+        <div class="checkbox-group section disabled-section" id="section1">
+          <h3>1. Características Individuais, Condições Socioeconômicas e Familiares</h3>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>≤ 15 anos</span>
+            <input type="hidden" name="caracteristicas" value="15anos">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>≥ 40 anos</span>
+            <input type="hidden" name="caracteristicas" value="40anos">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Não aceitação da gravidez</span>
+            <input type="hidden" name="caracteristicas" value="nao_aceita_gravidez">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Indícios de Violência Doméstica</span>
+            <input type="hidden" name="caracteristicas" value="violencia_domestica">
+          </div>
+          <div class="checkbox-item has-submenu" onclick="toggleCheckboxEspecial(this)">
+            <span>Situação de rua / indígena ou quilombola</span>
+            <input type="hidden" name="caracteristicas" value="rua_indigena_quilombola" class="checkbox-principal">
+          </div>
+<!-- Submenu oculto para seleção específica -->
+<div class="submenu-situacao-rua" id="submenu-situacao-rua" style="display: none; margin-left: 20px; margin-top: 10px; padding: 10px; background-color: #f8f9fa; border-radius: 6px; border-left: 4px solid var(--primary);">
+  <h4 style="margin: 0 0 10px 0; color: var(--primary); font-size: 1rem;">Selecione as condições específicas:</h4>
+  <div class="checkbox-item submenu-item" onclick="toggleSubmenuCheckbox(this, 'situacao_rua')">
+    <span>Situação de rua</span>
+    <input type="hidden" name="situacao_especifica" value="situacao_rua" class="submenu-checkbox">
+  </div>
+  <div class="checkbox-item submenu-item" onclick="toggleSubmenuCheckbox(this, 'indigena')">
+    <span>Indígena</span>
+    <input type="hidden" name="situacao_especifica" value="indigena" class="submenu-checkbox">
+  </div>
+  <div class="checkbox-item submenu-item" onclick="toggleSubmenuCheckbox(this, 'quilombola')">
+    <span>Quilombola</span>
+    <input type="hidden" name="situacao_especifica" value="quilombola" class="submenu-checkbox">
+  </div>
+</div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Sem escolaridade</span>
+            <input type="hidden" name="caracteristicas" value="sem_escolaridade">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Tabagista ativo</span>
+            <input type="hidden" name="caracteristicas" value="tabagista_ativo">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Raça negra</span>
+            <input type="hidden" name="caracteristicas" value="raca_negra">
+          </div>
+        </div>
+
+        <!-- Seção 2 - Avaliação Nutricional -->
+        <div class="checkbox-group section disabled-section" id="section2">
+          <h3>2. Avaliação Nutricional</h3>
+          <div class="imc-calculator">
+            <label>Peso (kg):</label>
+            <input type="number" id="peso" name="peso" step="0.1" min="0">
+            <label>Altura (cm):</label>
+            <input type="number" id="altura" name="altura" step="1" min="0">
+            <div class="btn-container">
+              <button type="button" class="btn-entrar" id="calcularImcBtn" onclick="calcularIMC()" aria-label="Calcular IMC">
+                <div class="btn-content">
+                  <span class="icon"><i class="fas fa-calculator"></i></span>
+                  <span>Calcular IMC</span>
+                </div>
+                <div class="particles" id="particles-imc"></div>
+              </button>
+            </div>
+            <div class="imc-result" id="imc-result">IMC: ---</div>
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Baixo Peso (IMC < 18.5)</span>
+            <input type="hidden" name="avaliacao_nutricional" value="baixo_peso">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Sobrepeso (IMC 25-29.9)</span>
+            <input type="hidden" name="avaliacao_nutricional" value="sobrepeso">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Obesidade Grau I e II (IMC 30-39.9)</span>
+            <input type="hidden" name="avaliacao_nutricional" value="obesidade1">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Obesidade Mórbida (IMC ≥ 40)</span>
+            <input type="hidden" name="avaliacao_nutricional" value="obesidade_morbida">
+          </div>
+        </div>
+
+        <!-- Seção 3 - Comorbidades Prévias à Gestação Atual -->
+        <div class="checkbox-group section disabled-section" id="section3">
+          <h3>3. Comorbidades Prévias à Gestação Atual (Doenças Preexistentes)</h3>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>AIDS/HIV</span>
+            <input type="hidden" name="comorbidades" value="aids_hiv">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Alterações da tireoide (hipotireoidismo sem controle e hipertireoidismo)</span>
+            <input type="hidden" name="comorbidades" value="alteracoes_tireoide">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Diabetes Mellitus</span>
+            <input type="hidden" name="comorbidades" value="diabetes_mellitus">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Endocrinopatias sem controle</span>
+            <input type="hidden" name="comorbidades" value="endocrinopatias">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Cardiopatia diagnosticada</span>
+            <input type="hidden" name="comorbidades" value="cardiopatia">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Câncer Diagnosticado</span>
+            <input type="hidden" name="comorbidades" value="cancer">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Cirurgia Bariátrica há menos de 1 ano</span>
+            <input type="hidden" name="comorbidades" value="cirurgia_bariatrica">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Doenças Autoimunes (colagenoses)</span>
+            <input type="hidden" name="comorbidades" value="doencas_autoimunes">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Doenças Psiquiátricas (Encaminhar ao CAPS)</span>
+            <input type="hidden" name="comorbidades" value="doencas_psiquiatricas">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Doença Renal Grave</span>
+            <input type="hidden" name="comorbidades" value="doenca_renal">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Dependência de Drogas (Encaminhar ao CAPS)</span>
+            <input type="hidden" name="comorbidades" value="dependencia_drogas">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Epilepsia e doenças neurológicas graves de difícil controle</span>
+            <input type="hidden" name="comorbidades" value="epilepsia">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Hepatites (encaminhar ao infectologista)</span>
+            <input type="hidden" name="comorbidades" value="hepatites">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>HAS crônica controlada (Sem hipotensor e exames normais)</span>
+            <input type="hidden" name="comorbidades" value="has_controlada">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>HAS crônica complicada</span>
+            <input type="hidden" name="comorbidades" value="has_complicada">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Ginecopatia (Miomatose ≥ 7cm, malformação uterina, massa anexial ≥ 8cm ou com características complexas)</span>
+            <input type="hidden" name="comorbidades" value="ginecopatia">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Pneumopatia grave de difícil controle</span>
+            <input type="hidden" name="comorbidades" value="pneumopatia">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Tuberculose em tratamento ou com diagnóstico na gestação (Encaminhar ao Pneumologista)</span>
+            <input type="hidden" name="comorbidades" value="tuberculose">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Trombofilia ou Tromboembolia</span>
+            <input type="hidden" name="comorbidades" value="trombofilia">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Uso de medicações com potencial efeito teratogênico</span>
+            <input type="hidden" name="comorbidades" value="teratogenico">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Varizes acentuadas</span>
+            <input type="hidden" name="comorbidades" value="varizes">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Doenças hematológicas (PTI, Anemia Falciforme, PTT, Coagulopatias, Talassemias)</span>
+            <input type="hidden" name="comorbidades" value="doencas_hematologicas">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Transplantada em uso de imunossupressor</span>
+            <input type="hidden" name="comorbidades" value="transplantada">
+          </div>
+        </div>
+
+        <!-- Seção 4 - Condições Clínicas Específicas e Relacionadas às Gestações Prévias -->
+        <div class="checkbox-group section disabled-section" id="section4">
+          <h3>4. Condições Clínicas Específicas e Relacionadas às Gestações Prévias</h3>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>2 abortamentos espontâneos consecutivos ou 3 não consecutivos (confirmados clínico/laboratorial)</span>
+            <input type="hidden" name="historia_obstetrica" value="abortamentos">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>3 ou mais abortamentos espontâneos consecutivos</span>
+            <input type="hidden" name="historia_obstetrica" value="abortamentos_consecutivos">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Mais de um Prematuro com menos de 36 semanas</span>
+            <input type="hidden" name="historia_obstetrica" value="prematuros">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Óbito Fetal sem causa determinada</span>
+            <input type="hidden" name="historia_obstetrica" value="obito_fetal">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Pré-eclâmpsia ou Pré-eclâmpsia superposta</span>
+            <input type="hidden" name="historia_obstetrica" value="preeclampsia">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Eclâmpsia</span>
+            <input type="hidden" name="historia_obstetrica" value="eclampsia">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Hipertensão Gestacional</span>
+            <input type="hidden" name="historia_obstetrica" value="hipertensao_gestacional">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Acretismo placentário</span>
+            <input type="hidden" name="historia_obstetrica" value="acretismo">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Descolamento prematuro de placenta</span>
+            <input type="hidden" name="historia_obstetrica" value="descolamento_placenta">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Insuficiência Istmo Cervical</span>
+            <input type="hidden" name="historia_obstetrica" value="insuficiencia_istmo">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Restrição de Crescimento Intrauterino</span>
+            <input type="hidden" name="historia_obstetrica" value="restricao_crescimento">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>História de malformação Fetal complexa</span>
+            <input type="hidden" name="historia_obstetrica" value="malformacao_fetal">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Isoimunização em gestação anterior</span>
+            <input type="hidden" name="historia_obstetrica" value="isoimunizacao">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Diabetes gestacional</span>
+            <input type="hidden" name="historia_obstetrica" value="diabetes_gestacional">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Psicose Puerperal</span>
+            <input type="hidden" name="historia_obstetrica" value="psicose_puerperal">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>História de tromboembolia</span>
+            <input type="hidden" name="historia_obstetrica" value="tromboembolia">
+          </div>
+        </div>
+
+        <!-- Seção 5 - Condições Clínicas Específicas e Relacionadas à Gestação Atual -->
+        <div class="checkbox-group section disabled-section" id="section5">
+          <h3>5. Condições Clínicas Específicas e Relacionadas à Gestação Atual</h3>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Ameaça de aborto - Encaminhar URGÊNCIA</span>
+            <input type="hidden" name="condicoes_gestacionais" value="ameaca_aborto">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Acretismo Placentário</span>
+            <input type="hidden" name="condicoes_gestacionais" value="acretismo_placentario_atual">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Placenta Prévia após 28 semanas</span>
+            <input type="hidden" name="condicoes_gestacionais" value="placenta_previa">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Anemia não responsiva à tratamento (Hb≤ 8) e hemopatia</span>
+            <input type="hidden" name="condicoes_gestacionais" value="anemia_grave">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Citologia Cervical anormal (LIEAG) – Encaminhar para PTGI</span>
+            <input type="hidden" name="condicoes_gestacionais" value="citologia_anormal">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Doenças da tireoide diagnosticada na gestação</span>
+            <input type="hidden" name="condicoes_gestacionais" value="tireoide_gestacao">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Diabetes gestacional</span>
+            <input type="hidden" name="condicoes_gestacionais" value="diabetes_gestacional_atual">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Doença Hipertensiva na Gestação (Pré-eclâmpsia, Hipertensão gestacional e Pré-eclâmpsia superposta)</span>
+            <input type="hidden" name="condicoes_gestacionais" value="doenca_hipertensiva">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Alteração no doppler das Artérias uterinas (aumento da resistência) e/ou alto risco para Pré-eclâmpsia</span>
+            <input type="hidden" name="condicoes_gestacionais" value="doppler_anormal">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Doença Hemolítica</span>
+            <input type="hidden" name="condicoes_gestacionais" value="doenca_hemolitica">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Gemelar</span>
+            <input type="hidden" name="condicoes_gestacionais" value="gemelar">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Isoimunização Rh</span>
+            <input type="hidden" name="condicoes_gestacionais" value="isoimunizacao_rh">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Insuficiência Istmo cervical</span>
+            <input type="hidden" name="condicoes_gestacionais" value="insuficiencia_istmo_atual">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Colo curto no morfológico 2T</span>
+            <input type="hidden" name="condicoes_gestacionais" value="colo_curto">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Malformação Congênita Fetal</span>
+            <input type="hidden" name="condicoes_gestacionais" value="malformacao_congenita">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Neoplasia ginecológica ou Câncer diagnosticado na gestação</span>
+            <input type="hidden" name="condicoes_gestacionais" value="neoplasia_cancer">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Polidrâmnio/Oligodrâmnio</span>
+            <input type="hidden" name="condicoes_gestacionais" value="polidramnio_oligodramnio">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Restrição de crescimento fetal Intrauterino</span>
+            <input type="hidden" name="condicoes_gestacionais" value="restricao_crescimento_atual">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Toxoplasmose</span>
+            <input type="hidden" name="condicoes_gestacionais" value="toxoplasmose">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Sífilis terciária, Alterações ultrassonográficas sugestivas de sífilis neonatal ou resistência ao tratamento com Penicilina Benzatina</span>
+            <input type="hidden" name="condicoes_gestacionais" value="sifilis_complicada">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Infecção Urinária de repetição (pielonefrite ou ITU≥3x)</span>
+            <input type="hidden" name="condicoes_gestacionais" value="infeccao_urinaria_repeticao">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>HIV, HTLV ou Hepatites Agudas</span>
+            <input type="hidden" name="condicoes_gestacionais" value="hiv_htlv_hepatites">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Condiloma acuminado (no canal vaginal/colo ou lesões extensas em região genital/perianal) – Encaminhar para PTGI</span>
+            <input type="hidden" name="condicoes_gestacionais" value="condiloma_acuminado">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Feto com percentil > P90 (GIG) ou entre P3 e P10, com doppler normal (PIG)</span>
+            <input type="hidden" name="condicoes_gestacionais" value="feto_percentil">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Hepatopatias (colestase ou aumento das transaminases)</span>
+            <input type="hidden" name="condicoes_gestacionais" value="hepatopatias">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Hanseníase diagnosticada na gestação</span>
+            <input type="hidden" name="condicoes_gestacionais" value="hanseníase">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Tuberculose diagnosticada na gestação</span>
+            <input type="hidden" name="condicoes_gestacionais" value="tuberculose_gestacao">
+          </div>
+          <div class="checkbox-item" onclick="toggleCheckbox(this)">
+            <span>Dependência e/ou uso abusivo de drogas lícitas e ilícitas</span>
+            <input type="hidden" name="condicoes_gestacionais" value="dependencia_drogas_atual">
+          </div>
+        </div>
+
+        <div class="score-box section disabled-section">
+          <p>Pontuação Total: <span id="pontuacao">{{ ficha.pontuacao_total if ficha else '0' }}</span></p>
+          <p>Classificação de Risco: <span id="risco">{{ ficha.classificacao_risco if ficha else 'Risco Habitual' }}</span></p>
+        </div>
+
+        <div class="btn-container">
+          <button type="submit" class="btn-entrar" id="submit-button" style="display: none;" aria-label="Enviar formulário">
+            <div class="btn-content">
+              <span class="icon"><i class="fas fa-paper-plane"></i></span>
+              <span>Enviar</span>
+            </div>
+            <div class="particles" id="particles-enviar"></div>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação -->
+  <div class="modal" id="confirm-modal">
+    <div class="modal-content">
+      <p>Tem certeza que deseja continuar para as próximas seções?</p>
+      <div class="modal-buttons">
+        <button class="confirm-btn" id="confirmBtn" onclick="enableSections()">Confirmar</button>
+        <button class="cancel-btn" id="cancelConfirmBtn" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de LGPD -->
+  <div class="modal" id="lgpd-modal">
+    <div class="modal-content">
+      <p>Os dados informados serão tratados exclusivamente para fins assistenciais, em conformidade com a Lei nº 13.709/2018 (LGPD), garantindo-se sigilo, segurança e uso restrito por profissionais autorizados.</p>
+      <div class="modal-buttons">
+        <button class="confirm-btn" id="lgpdConfirmBtn" onclick="submitForm()">Concordo</button>
+        <button class="cancel-btn" id="cancelLgpdBtn" onclick="closeLgpdModal()">Não Concordo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Erro -->
+  <div class="modal" id="error-modal">
+    <div class="modal-content">
+      <p id="error-message"></p>
+      <div class="modal-buttons">
+        <button class="confirm-btn" id="closeErrorBtn" onclick="closeErrorModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+let codigoFichaGlobal = '';
+let dadosGestante = {};
+let currentSection = 0;
+const sections = ['dados-iniciais', 'section1', 'section2', 'section3', 'section4', 'section5', 'score-box'];
+
+// ========== ARRAY COMPLETO DAS ETNIAS INDÍGENAS ==========
+const etniasIndigenas = [
+  { codigo: "nao_declarar", descricao: "Não declarar" },
+  { codigo: "0001", descricao: "1 - ACONA (WAKONAS, NACONAS, JAKONA, ACORANES)" },
+  { codigo: "0002", descricao: "2 - AIKANA (AIKANA, MAS SAKA,TUBARAO)" },
+  { codigo: "0003", descricao: "3 - AJURU" },
+  { codigo: "0004", descricao: "4 - AKUNSU (AKUNT''SU)" },
+  { codigo: "0005", descricao: "5 - AMANAYE" },
+  { codigo: "0006", descricao: "6 - AMONDAWA" },
+  { codigo: "0007", descricao: "7 - ANAMBE" },
+  { codigo: "0008", descricao: "8 - APARAI (APALAI)" },
+  { codigo: "0009", descricao: "9 - APIAKA (APIACA)" },
+  { codigo: "0010", descricao: "10 - APINAYE (APINAJE/APINAIE/APINAGE)" },
+  { codigo: "0011", descricao: "11 - APURINA (APORINA, IPURINA, IPURINA, IPURINAN)" },
+  { codigo: "0012", descricao: "12 - ARANA (ARACUAI DO VALE DO JEQUITINHONHA)" },
+  { codigo: "0013", descricao: "13 - ARAPASO (ARAPACO)" },
+  { codigo: "0014", descricao: "14 - ARARA DE RONDONIA (KARO, URUCU, URUKU)" },
+  { codigo: "0015", descricao: "15 - ARARA DO ACRE (SHAWANAUA, AMAWAKA)" },
+  { codigo: "0016", descricao: "16 - ARARA DO ARIPUANA (ARARA DO BEIRADAO/ARI-PUANA)" },
+  { codigo: "0017", descricao: "17 - ARARA DO PARA (UKARAGMA, UKARAMMA)" },
+  { codigo: "0018", descricao: "18 - ARAWETE (ARAUETE)" },
+  { codigo: "0019", descricao: "19 - ARIKAPU (ARICAPU, ARIKAPO, MASUBI, MAXUBI)" },
+  { codigo: "0020", descricao: "20 - ARIKEM (ARIQUEN, ARIQUEME, ARIKEME)" },
+  { codigo: "0021", descricao: "21 - ARIKOSE (ARICOBE)" },
+  { codigo: "0022", descricao: "22 - ARUA" },
+  { codigo: "0023", descricao: "23 - ARUAK (ARAWAK)" },
+  { codigo: "0024", descricao: "24 - ASHANINKA (KAMPA)" },
+  { codigo: "0025", descricao: "25 - ASURINI DO TOCANTINS (AKUAWA/AKWAWA)" },
+  { codigo: "0026", descricao: "26 - ASURINI DO XINGU (AWAETE)" },
+  { codigo: "0027", descricao: "27 - ATIKUM (ATICUM)" },
+  { codigo: "0028", descricao: "28 - AVA - CANOEIRO" },
+  { codigo: "0029", descricao: "29 - AWETI (AUETI/AUETO)" },
+  { codigo: "0030", descricao: "30 - BAKAIRI (KURA, BACAIRI)" },
+  { codigo: "0031", descricao: "31 - BANAWA YAFI (BANAWA, BANAWA-JAFI)" },
+  { codigo: "0032", descricao: "32 - BANIWA (BANIUA, BANIVA, WALIMANAI, WAKUENAI)" },
+  { codigo: "0033", descricao: "33 - BARA (WAIPINOMAKA)" },
+  { codigo: "0034", descricao: "34 - BARASANA (HANERA)" },
+  { codigo: "0035", descricao: "35 - BARE" },
+  { codigo: "0036", descricao: "36 - BORORO (BOE)" },
+  { codigo: "0037", descricao: "37 - BOTOCUDO (GEREN)" },
+  { codigo: "0038", descricao: "38 - CANOE" },
+  { codigo: "0039", descricao: "39 - CASSUPA" },
+  { codigo: "0040", descricao: "40 - CHAMACOCO" },
+  { codigo: "0041", descricao: "41 - CHIQUITANO (XIQUITANO)" },
+  { codigo: "0042", descricao: "42 - CIKIYANA (SIKIANA)" },
+  { codigo: "0043", descricao: "43 - CINTA LARGA (MATETAMAE)" },
+  { codigo: "0044", descricao: "44 - COLUMBIARA (CORUMBIARA)" },
+  { codigo: "0045", descricao: "45 - DENI" },
+  { codigo: "0046", descricao: "46 - DESANA (DESANA, DESANO, DESSANO, WIRA, UMUKOMASA)" },
+  { codigo: "0047", descricao: "47 - DIAHUI (JAHOI, JAHUI, DIARROI)" },
+  { codigo: "0048", descricao: "48 - ENAWENE-NAWE (SALUMA)" },
+  { codigo: "0049", descricao: "49 - FULNI-O" },
+  { codigo: "0050", descricao: "50 - GALIBI (GALIBI DO OIAPOQUE, KARINHA)" },
+  { codigo: "0051", descricao: "51 - GALIBI MARWORNO (GALIBI DO UACA, ARUA)" },
+  { codigo: "0052", descricao: "52 - GAVIAO DE RONDONIA (DIGUT)" },
+  { codigo: "0053", descricao: "53 - GAVIAO KRIKATEJE" },
+  { codigo: "0054", descricao: "54 - GAVIAO PARKATEJE (PARKATEJE)" },
+  { codigo: "0055", descricao: "55 - GAVIAO PUKOBIE (PUKOBIE, PYKOPJE, GAVIAO DO MARANHAO)" },
+  { codigo: "0056", descricao: "56 - GUAJA (AWA, AVA)" },
+  { codigo: "0057", descricao: "57 - GUAJAJARA (TENETEHARA)" },
+  { codigo: "0058", descricao: "58 - GUARANI KAIOWA (PAI TAVYTERA)" },
+  { codigo: "0059", descricao: "59 - GUARANI M''BYA" },
+  { codigo: "0060", descricao: "60 - GUARANI NANDEVA (AVAKATUETE, CHIRIPA,NHANDEWA, AVA GUARANI)" },
+  { codigo: "0061", descricao: "61 - GUATO" },
+  { codigo: "0062", descricao: "62 - HIMARIMA (HIMERIMA)" },
+  { codigo: "0063", descricao: "63 - INGARIKO (INGARICO, AKAWAIO, KAPON)" },
+  { codigo: "0064", descricao: "64 - IRANXE (IRANTXE)" },
+  { codigo: "0065", descricao: "65 - ISSE" },
+  { codigo: "0066", descricao: "66 - JABOTI (JABUTI, KIPIU, YABYTI)" },
+  { codigo: "0067", descricao: "67 - JAMAMADI (YAMAMADI, DJEOROMITXI)" },
+  { codigo: "0068", descricao: "68 - JARAWARA" },
+  { codigo: "0069", descricao: "69 - JIRIPANCO (JERIPANCO, GERIPANCO)" },
+  { codigo: "0070", descricao: "70 - JUMA (YUMA)" },
+  { codigo: "0071", descricao: "71 - JURUNA" },
+  { codigo: "0072", descricao: "72 - JURUTI (YURITI)" },
+  { codigo: "0073", descricao: "73 - KAAPOR (URUBU-KAAPOR, KA''APOR, KAAPORTE)" },
+  { codigo: "0074", descricao: "74 - KADIWEU (CADUVEO, CADIUEU)" },
+  { codigo: "0075", descricao: "75 - KAIABI (CAIABI, KAYABI)" },
+  { codigo: "0076", descricao: "76 - KAIMBE (CAIMBE)" },
+  { codigo: "0077", descricao: "77 - KAINGANG (CAINGANGUE)" },
+  { codigo: "0078", descricao: "78 - KAIXANA (CAIXANA)" },
+  { codigo: "0079", descricao: "79 - KALABASSA (CALABASSA, CALABACAS)" },
+  { codigo: "0080", descricao: "80 - KALANCO" },
+  { codigo: "0081", descricao: "81 - KALAPALO (CALAPALO)" },
+  { codigo: "0082", descricao: "82 - KAMAYURA (CAMAIURA, KAMAIURA)" },
+  { codigo: "0083", descricao: "83 - KAMBA (CAMBA)" },
+  { codigo: "0084", descricao: "84 - KAMBEBA (CAMBEBA, OMAGUA)" },
+  { codigo: "0085", descricao: "85 - KAMBIWA (CAMBIUA)" },
+  { codigo: "0086", descricao: "86 - KAMBIWA PIPIPA (PIPIPA)" },
+  { codigo: "0087", descricao: "87 - KAMPE" },
+  { codigo: "0088", descricao: "88 - KANAMANTI (KANAMATI, CANAMANTI)" },
+  { codigo: "0089", descricao: "89 - KANAMARI (CANAMARI, KANAMARY, TUKUNA)" },
+  { codigo: "0090", descricao: "90 - KANELA APANIEKRA (CANELA)" },
+  { codigo: "0091", descricao: "91 - KANELA RANKOKAMEKRA (CANELA)" },
+  { codigo: "0092", descricao: "92 - KANINDE" },
+  { codigo: "0093", descricao: "93 - KANOE (CANOE)" },
+  { codigo: "0094", descricao: "94 - KANTARURE (CANTARURE)" },
+  { codigo: "0095", descricao: "95 - KAPINAWA (CAPINAUA)" },
+  { codigo: "0096", descricao: "96 - KARAJA (CARAJA)" },
+  { codigo: "0097", descricao: "97 - KARAJA/JAVAE (JAVAE)" },
+  { codigo: "0098", descricao: "98 - KARAJA/XAMBIOA (KARAJA DO NORTE)" },
+  { codigo: "0099", descricao: "99 - KARAPANA (CARAPANA, MUTEAMASA, UKOPINOPONA)" },
+  { codigo: "0100", descricao: "100 - KARAPOTO (CARAPOTO)" },
+  { codigo: "0101", descricao: "101 - KARIPUNA (CARIPUNA)" },
+  { codigo: "0102", descricao: "102 - KARIPUNA DO AMAPA (CARIPUNA)" },
+  { codigo: "0103", descricao: "103 - KARIRI (CARIRI)" },
+  { codigo: "0104", descricao: "104 - KARIRI-XOCO (CARIRI-CHOCO)" },
+  { codigo: "0105", descricao: "105 - KARITIANA (CARITIANA)" },
+  { codigo: "0106", descricao: "106 - KATAWIXI (KATAUIXI,KATAWIN, KATAWISI, CATAUICHI)" },
+  { codigo: "0107", descricao: "107 - KATUENA (CATUENA, KATWENA)" },
+  { codigo: "0108", descricao: "108 - KATUKINA (PEDA DJAPA)" },
+  { codigo: "0109", descricao: "109 - KATUKINA DO ACRE" },
+  { codigo: "0110", descricao: "110 - KAXARARI (CAXARARI)" },
+  { codigo: "0111", descricao: "111 - KAXINAWA (HUNI-KUIN, CASHINAUA, CAXINAUA)" },
+  { codigo: "0112", descricao: "112 - KAXIXO" },
+  { codigo: "0113", descricao: "113 - KAXUYANA (CAXUIANA)" },
+  { codigo: "0114", descricao: "114 - KAYAPO (CAIAPO)" },
+  { codigo: "0115", descricao: "115 - KAYAPO KARARAO (KARARAO)" },
+  { codigo: "0116", descricao: "116 - KAYAPO TXUKAHAMAE (TXUKAHAMAE)" },
+  { codigo: "0117", descricao: "117 - KAYAPO XICRIM (XIKRIN)" },
+  { codigo: "0118", descricao: "118 - KAYUISANA (CAIXANA, CAUIXANA, KAIXANA)" },
+  { codigo: "0119", descricao: "119 - KINIKINAWA (GUAN, KOINUKOEN, KINIKINAO)" },
+  { codigo: "0120", descricao: "120 - KIRIRI" },
+  { codigo: "0121", descricao: "121 - KOCAMA (COCAMA, KOKAMA)" },
+  { codigo: "0122", descricao: "122 - KOKUIREGATEJE" },
+  { codigo: "0123", descricao: "123 - KORUBO" },
+  { codigo: "0124", descricao: "124 - KRAHO (CRAO, KRAO)" },
+  { codigo: "0125", descricao: "125 - KREJE (KRENYE)" },
+  { codigo: "0126", descricao: "126 - KRENAK (BORUN, CRENAQUE)" },
+  { codigo: "0127", descricao: "127 - KRIKATI (KRINKATI)" },
+  { codigo: "0128", descricao: "128 - KUBEO (CUBEO, COBEWA, KUBEWA, PAMIWA, CUBEU)" },
+  { codigo: "0129", descricao: "129 - KUIKURO (KUIKURU, CUICURO)" },
+  { codigo: "0130", descricao: "130 - KUJUBIM (KUYUBI, CUJUBIM)" },
+  { codigo: "0131", descricao: "131 - KULINA PANO (CULINA)" },
+  { codigo: "0132", descricao: "132 - KULINA/MADIHA (CULINA, MADIJA, MADIHA)" },
+  { codigo: "0133", descricao: "133 - KURIPAKO (CURIPACO, CURRIPACO, CORIPACO, WAKUENAI)" },
+  { codigo: "0134", descricao: "134 - KURUAIA (CURUAIA)" },
+  { codigo: "0135", descricao: "135 - KWAZA (COAIA, KOAIA)" },
+  { codigo: "0136", descricao: "136 - MACHINERI (MANCHINERI, MANXINERI)" },
+  { codigo: "0137", descricao: "137 - MACURAP (MAKURAP)" },
+  { codigo: "0138", descricao: "138 - MAKU DOW (DOW)" },
+  { codigo: "0139", descricao: "139 - MAKU HUPDA (HUPDA)" },
+  { codigo: "0140", descricao: "140 - MAKU NADEB (NADEB)" },
+  { codigo: "0141", descricao: "141 - MAKU YUHUPDE (YUHUPDE)" },
+  { codigo: "0142", descricao: "142 - MAKUNA (MACUNA, YEBA-MASA)" },
+  { codigo: "0143", descricao: "143 - MAKUXI (MACUXI, MACHUSI, PEMON)" },
+  { codigo: "0144", descricao: "144 - MARIMAM (MARIMA)" },
+  { codigo: "0145", descricao: "145 - MARUBO" },
+  { codigo: "0146", descricao: "146 - MATIPU" },
+  { codigo: "0147", descricao: "147 - MATIS" },
+  { codigo: "0148", descricao: "148 - MATSE (MAYORUNA)" },
+  { codigo: "0149", descricao: "149 - MAXAKALI (MAXACALI)" },
+  { codigo: "0150", descricao: "150 - MAYA (MAYA)" },
+  { codigo: "0151", descricao: "151 - MAYTAPU" },
+  { codigo: "0152", descricao: "152 - MEHINAKO (MEINAKU, MEINACU)" },
+  { codigo: "0153", descricao: "153 - MEKEN (MEQUEM, MEKHEM, MICHENS)" },
+  { codigo: "0154", descricao: "154 - MENKY (MYKY, MUNKU, MENKI, MYNKY)" },
+  { codigo: "0155", descricao: "155 - MIRANHA (MIRANHA, MIRANA)" },
+  { codigo: "0156", descricao: "156 - MIRITI TAPUIA (MIRITI-TAPUYA, BUIA-TAPUYA)" },
+  { codigo: "0157", descricao: "157 - MUNDURUKU (MUNDURUCU)" },
+  { codigo: "0158", descricao: "158 - MURA" },
+  { codigo: "0159", descricao: "159 - NAHUKWA (NAFUQUA)" },
+  { codigo: "0160", descricao: "160 - NAMBIKWARA DO CAMPO (HALOTESU, KITHAULU, WAKALITESU, SAWENTES, MANDUKA)" },
+  { codigo: "0161", descricao: "161 - NAMBIKWARA DO NORTE (NEGAROTE ,MAMAINDE, LATUNDE, SABANE E MANDUKA, TAWANDE)" },
+  { codigo: "0162", descricao: "162 - NAMBIKWARA DO SUL (WASUSU ,HAHAINTESU, ALANTESU, WAIKISU, ALAKETESU, WASUSU, SARARE)" },
+  { codigo: "0163", descricao: "163 - NARAVUTE (NARUVOTO)" },
+  { codigo: "0164", descricao: "164 - NAWA (NAUA)" },
+  { codigo: "0165", descricao: "165 - NUKINI (NUQUINI, NUKUINI)" },
+  { codigo: "0166", descricao: "166 - OFAIE (OFAYE-XAVANTE)" },
+  { codigo: "0167", descricao: "167 - ORO WIN" },
+  { codigo: "0168", descricao: "168 - PAIAKU (JENIPAPO-KANINDE)" },
+  { codigo: "0169", descricao: "169 - PAKAA NOVA (WARI, PACAAS NOVOS)" },
+  { codigo: "0170", descricao: "170 - PALIKUR (AUKWAYENE, AUKUYENE, PALIKU''ENE)" },
+  { codigo: "0171", descricao: "171 - PANARA (KRENHAKARORE , KRENAKORE, KRENA-KARORE)" },
+  { codigo: "0172", descricao: "172 - PANKARARE (PANCARARE)" },
+  { codigo: "0173", descricao: "173 - PANKARARU (PANCARARU)" },
+  { codigo: "0174", descricao: "174 - PANKARARU KALANKO (KALANKO)" },
+  { codigo: "0175", descricao: "175 - PANKARARU KARUAZU (KARUAZU)" },
+  { codigo: "0176", descricao: "176 - PANKARU (PANCARU)" },
+  { codigo: "0177", descricao: "177 - PARAKANA (PARACANA, APITEREWA, AWAETE)" },
+  { codigo: "0178", descricao: "178 - PARECI (PARESI, HALITI)" },
+  { codigo: "0179", descricao: "179 - PARINTINTIN" },
+  { codigo: "0180", descricao: "180 - PATAMONA (KAPON)" },
+  { codigo: "0181", descricao: "181 - PATAXO" },
+  { codigo: "0182", descricao: "182 - PATAXO HA-HA-HAE" },
+  { codigo: "0183", descricao: "183 - PAUMARI (PALMARI)" },
+  { codigo: "0184", descricao: "184 - PAUMELENHO" },
+  { codigo: "0185", descricao: "185 - PIRAHA (MURA PIRAHA)" },
+  { codigo: "0186", descricao: "186 - PIRATUAPUIA (PIRATAPUYA, PIRATAPUYO, PIRA-TAPUYA, WAIKANA)" },
+  { codigo: "0187", descricao: "187 - PITAGUARI" },
+  { codigo: "0188", descricao: "188 - POTIGUARA" },
+  { codigo: "0189", descricao: "189 - POYANAWA (POIANAUA)" },
+  { codigo: "0190", descricao: "190 - RIKBAKTSA (CANOEIROS, ERIGPAKTSA)" },
+  { codigo: "0191", descricao: "191 - SAKURABIAT(MEKENS, SAKIRABIAP, SAKIRABIAR)" },
+  { codigo: "0192", descricao: "192 - SATERE-MAWE (SATERE-MAUE)" },
+  { codigo: "0193", descricao: "193 - SHANENAWA (KATUKINA)" },
+  { codigo: "0194", descricao: "194 - SIRIANO (SIRIA-MASA)" },
+  { codigo: "0195", descricao: "195 - SURIANA" },
+  { codigo: "0196", descricao: "196 - SURUI DE RONDONIA (PAITER)" },
+  { codigo: "0197", descricao: "197 - SURUI DO PARA (AIKEWARA)" },
+  { codigo: "0198", descricao: "198 - SUYA (SUIA/KISEDJE)" },
+  { codigo: "0199", descricao: "199 - TAPAYUNA (BEICO-DE-PAU)" },
+  { codigo: "0200", descricao: "200 - TAPEBA" },
+  { codigo: "0201", descricao: "201 - TAPIRAPE (TAPI''IRAPE)" },
+  { codigo: "0202", descricao: "202 - TAPUIA (TAPUIA-XAVANTE, TAPUIO)" },
+  { codigo: "0203", descricao: "203 - TARIANO (TARIANA, TALIASERI)" },
+  { codigo: "0204", descricao: "204 - TAUREPANG (TAULIPANG, PEMON, AREKUNA, PAGEYN)" },
+  { codigo: "0205", descricao: "205 - TEMBE" },
+  { codigo: "0206", descricao: "206 - TENHARIM" },
+  { codigo: "0207", descricao: "207 - TERENA" },
+  { codigo: "0208", descricao: "208 - TICUNA (TIKUNA, TUKUNA, MAGUTA)" },
+  { codigo: "0209", descricao: "209 - TINGUI BOTO" },
+  { codigo: "0210", descricao: "210 - TIRIYO EWARHUYANA (TIRIYO, TRIO, TARONA, YAWI, PIANOKOTO)" },
+  { codigo: "0211", descricao: "211 - TIRIYO KAH''YANA (TIRIYO, TRIO, TARONA, YAWI, PIANOKOTO)" },
+  { codigo: "0212", descricao: "212 - TIRIYO TSIKUYANA (TIRIYO, TRIO, TARONA, YAWI, PIANOKOTO)" },
+  { codigo: "0213", descricao: "213 - TORA" },
+  { codigo: "0214", descricao: "214 - TREMEMBE" },
+  { codigo: "0215", descricao: "215 - TRUKA" },
+  { codigo: "0216", descricao: "216 - TRUMAI" },
+  { codigo: "0217", descricao: "217 - TSOHOM DJAPA (TSUNHUM-DJAPA)" },
+  { codigo: "0218", descricao: "218 - TUKANO (TUCANO, YE''PA-MASA, DASEA)" },
+  { codigo: "0219", descricao: "219 - TUMBALALA" },
+  { codigo: "0220", descricao: "220 - TUNAYANA" },
+  { codigo: "0221", descricao: "221 - TUPARI" },
+  { codigo: "0222", descricao: "222 - TUPINAMBA" },
+  { codigo: "0223", descricao: "223 - TUPINIQUIM" },
+  { codigo: "0224", descricao: "224 - TURIWARA" },
+  { codigo: "0225", descricao: "225 - TUXA" },
+  { codigo: "0226", descricao: "226 - TUYUKA (TUIUCA, DOKAPUARA, UTAPINOMAKAPHONA)" },
+  { codigo: "0227", descricao: "227 - TXIKAO (TXICAO, IKPENG)" },
+  { codigo: "0228", descricao: "228 - UMUTINA (OMOTINA, BARBADOS)" },
+  { codigo: "0229", descricao: "229 - URU-EU-WAU-WAU (URUEU-UAU-UAU, URUPAIN, URUPA)" },
+  { codigo: "0230", descricao: "230 - WAI WAI HIXKARYANA (HIXKARYANA)" },
+  { codigo: "0231", descricao: "231 - WAI WAI KARAFAWYANA (KARAFAWYANA, KARA-PAWYANA)" },
+  { codigo: "0232", descricao: "232 - WAI WAI XEREU (XEREU)" },
+  { codigo: "0233", descricao: "233 - WAI WAI KATUENA (KATUENA)" },
+  { codigo: "0234", descricao: "234 - WAI WAI MAWAYANA (MAWAYANA)" },
+  { codigo: "0235", descricao: "235 - WAIAPI (WAYAMPI, OYAMPI, WAYAPY, )" },
+  { codigo: "0236", descricao: "236 - WAIMIRI ATROARI (KINA)" },
+  { codigo: "0237", descricao: "237 - WANANO (UANANO, WANANA)" },
+  { codigo: "0238", descricao: "238 - WAPIXANA (UAPIXANA, VAPIDIANA, WAPISIANA, WAPISHANA)" },
+  { codigo: "0239", descricao: "239 - WAREKENA (UAREQUENA, WEREKENA)" },
+  { codigo: "0240", descricao: "240 - WASSU" },
+  { codigo: "0241", descricao: "241 - WAURA (UAURA, WAUJA)" },
+  { codigo: "0242", descricao: "242 - WAYANA (WAIANA, UAIANA)" },
+  { codigo: "0243", descricao: "243 - WITOTO (UITOTO, HUITOTO)" },
+  { codigo: "0244", descricao: "244 - XAKRIABA (XACRIABA)" },
+  { codigo: "0245", descricao: "245 - XAVANTE (A''UWE, AKWE, AWEN, AKWEN)" },
+  { codigo: "0246", descricao: "246 - XERENTE (AKWE, AWEN, AKWEN)" },
+  { codigo: "0247", descricao: "247 - XETA" },
+  { codigo: "0248", descricao: "248 - XIPAIA (SHIPAYA, XIPAYA)" },
+  { codigo: "0249", descricao: "249 - XOKLENG (SHOKLENG, XOCLENG)" },
+  { codigo: "0250", descricao: "250 - XOKO (XOCO, CHOCO)" },
+  { codigo: "0251", descricao: "251 - XUKURU (XUCURU)" },
+  { codigo: "0252", descricao: "252 - XUKURU KARIRI (XUCURU-KARIRI)" },
+  { codigo: "0253", descricao: "253 - YAIPIYANA" },
+  { codigo: "0254", descricao: "254 - YAMINAWA (JAMINAWA, IAMINAWA)" },
+  { codigo: "0255", descricao: "255 - YANOMAMI NINAM (IANOMAMI, IANOAMA, XIRIANA)" },
+  { codigo: "0256", descricao: "256 - YANOMAMI SANUMA (IANOMAMI, IANOAMA, XIRIANA)" },
+  { codigo: "0257", descricao: "257 - YANOMAMI YANOMAM (IANOMAMI, IANOAMA, XIRIANA)" },
+  { codigo: "0258", descricao: "258 - YAWALAPITI (IAUALAPITI)" },
+  { codigo: "0259", descricao: "259 - YAWANAWA (IAUANAUA)" },
+  { codigo: "0260", descricao: "260 - YEKUANA (MAIONGON, YE''KUANA, YEKWANA, MAYONGONG)" },
+  { codigo: "0261", descricao: "261 - YUDJA (JURUNA, YURUNA)" },
+  { codigo: "0262", descricao: "262 - ZO''E (POTURU)" },
+  { codigo: "0263", descricao: "263 - ZORO (PAGEYN)" },
+  { codigo: "0264", descricao: "264 - ZURUAHA (SOROWAHA, SURUWAHA)" },
+  { codigo: "X265", descricao: "265 - AHANENAWA" },
+  { codigo: "X266", descricao: "266 - AICABA" },
+  { codigo: "X267", descricao: "267 - AIKANÃ-KWASÁ" },
+  { codigo: "X268", descricao: "268 - AKUNTSU" },
+  { codigo: "X269", descricao: "269 - ALANTESU" },
+  { codigo: "X271", descricao: "271 - AMAWÁKA" },
+  { codigo: "X272", descricao: "272 - ANACÉ" },
+  { codigo: "X273", descricao: "273 - APURINÃ" },
+  { codigo: "X274", descricao: "274 - ARANÃ" },
+  { codigo: "X275", descricao: "275 - ARAPAÇO" },
+  { codigo: "X276", descricao: "276 - ARARA APOLIMA" },
+  { codigo: "X277", descricao: "277 - ARARA DO ARIPUANA" },
+  { codigo: "X278", descricao: "278 - ARIPUANÁ" },
+    { codigo: "X279", descricao: "279 - ASSURINI" },
+  { codigo: "X280", descricao: "280 - AWUARÁ" },
+  { codigo: "X281", descricao: "281 - BORBA" },
+  { codigo: "X282", descricao: "282 - CABIXI" },
+  { codigo: "X283", descricao: "283 - CAMARARÉ" },
+  { codigo: "X284", descricao: "284 - CAMASURI" },
+  { codigo: "X285", descricao: "285 - CARA PRETA" },
+  { codigo: "X286", descricao: "286 - CHARRUA" },
+  { codigo: "X287", descricao: "287 - CUJUBIM" },
+  { codigo: "X288", descricao: "288 - DAW" },
+  { codigo: "X289", descricao: "289 - GAVIÃO" },
+  { codigo: "X290", descricao: "290 - GUARANI" },
+  { codigo: "X291", descricao: "291 - HALANTESU" },
+  { codigo: "X292", descricao: "292 - HALOTESU" },
+  { codigo: "X293", descricao: "293 - HENGATÚ" },
+  { codigo: "X294", descricao: "294 - HIXKARYANA" },
+  { codigo: "X295", descricao: "295 - HUPDE" },
+  { codigo: "X296", descricao: "296 - HUPDES" },
+  { codigo: "X297", descricao: "297 - IAUANAUA" },
+  { codigo: "X298", descricao: "298 - IAUARETE AÇU" },
+  { codigo: "X299", descricao: "299 - IKPENG" },
+  { codigo: "X300", descricao: "300 - INAMBU" },
+  { codigo: "X301", descricao: "301 - INHABARANA" },
+  { codigo: "X302", descricao: "302 - JAVAE" },
+  { codigo: "X303", descricao: "303 - JENIPAPO" },
+  { codigo: "X304", descricao: "304 - JENIPAPO-KANINDE" },
+  { codigo: "X305", descricao: "305 - JIAHOI" },
+  { codigo: "X306", descricao: "306 - KAIOWA" },
+  { codigo: "X307", descricao: "307 - KAMPA" },
+  { codigo: "X308", descricao: "308 - KANELA" },
+  { codigo: "X309", descricao: "309 - KARAFAWYANA" },
+  { codigo: "X310", descricao: "310 - KARARAO" },
+  { codigo: "X311", descricao: "311 - KARUBO" },
+  { codigo: "X312", descricao: "312 - KASSUPÁ" },
+  { codigo: "X313", descricao: "313 - KATITHÃULU" },
+  { codigo: "X314", descricao: "314 - KATOKIN" },
+  { codigo: "X315", descricao: "315 - KATUKINA PANO" },
+  { codigo: "X316", descricao: "316 - KATUKINA PEDA DJAPA" },
+  { codigo: "X317", descricao: "317 - KATUKINA SHANENAUWA" },
+  { codigo: "X318", descricao: "318 - KAXAGO" },
+  { codigo: "X319", descricao: "319 - KAYABI" },
+  { codigo: "X320", descricao: "320 - KINÃ (WAIMIRI-ATROARI)" },
+  { codigo: "X321", descricao: "321 - KIRIRI-BARRA" },
+  { codigo: "X322", descricao: "322 - KITHÃULU" },
+  { codigo: "X323", descricao: "323 - KOIAIÁ" },
+  { codigo: "X324", descricao: "324 - KOIUPANKÁ" },
+  { codigo: "X325", descricao: "325 - KONTANAWA" },
+  { codigo: "X326", descricao: "326 - KRAHÔ KANELA" },
+  { codigo: "X327", descricao: "327 - KULINA" },
+  { codigo: "X328", descricao: "328 - LATUNDÊ" },
+  { codigo: "X329", descricao: "329 - MAKU" },
+  { codigo: "X330", descricao: "330 - MAKUNAMBÉ" },
+  { codigo: "X331", descricao: "331 - MAMAINDÊ" },
+  { codigo: "X332", descricao: "332 - MAMURI" },
+  { codigo: "X333", descricao: "333 - MANACAPURU" },
+  { codigo: "X334", descricao: "334 - MANAIRISSU" },
+  { codigo: "X335", descricao: "335 - MANCHINERI" },
+  { codigo: "X336", descricao: "336 - MANDUCA" },
+  { codigo: "X337", descricao: "337 - MARIBONDO" },
+  { codigo: "X338", descricao: "338 - MASSAKA" },
+  { codigo: "X339", descricao: "339 - MAWAYANA" },
+  { codigo: "X340", descricao: "340 - MAWÉ" },
+  { codigo: "X341", descricao: "341 - MAYORUNA" },
+  { codigo: "X342", descricao: "342 - MIQUELENO" },
+  { codigo: "X343", descricao: "343 - MOKURIÑ" },
+  { codigo: "X344", descricao: "344 - MON ORO WARAM" },
+  { codigo: "X345", descricao: "345 - MUTUM" },
+  { codigo: "X346", descricao: "346 - MYKY" },
+  { codigo: "X347", descricao: "347 - NADEB" },
+  { codigo: "X348", descricao: "348 - NAMBIKWARA" },
+  { codigo: "X349", descricao: "349 - NEGAROTÊ" },
+  { codigo: "X350", descricao: "350 - NHENGATU" },
+  { codigo: "X351", descricao: "351 - OFAIE XAVANTE" },
+  { codigo: "X352", descricao: "352 - ONÇA" },
+  { codigo: "X353", descricao: "353 - ORO AT" },
+  { codigo: "X354", descricao: "354 - ORO EO" },
+  { codigo: "X355", descricao: "355 - ORO JOWIN" },
+  { codigo: "X356", descricao: "356 - ORO MIYLIN" },
+  { codigo: "X357", descricao: "357 - ORO MON" },
+  { codigo: "X358", descricao: "358 - ORO NÁO" },
+  { codigo: "X359", descricao: "359 - ORO WAM" },
+  { codigo: "X360", descricao: "360 - ORO WARAM" },
+  { codigo: "X361", descricao: "361 - ORO WARAM XIJEIN" },
+  { codigo: "X362", descricao: "362 - PACA" },
+  { codigo: "X363", descricao: "363 - PANKARÁ" },
+  { codigo: "X364", descricao: "364 - PAPAGAIO" },
+  { codigo: "X365", descricao: "365 - PAYAYÁ" },
+  { codigo: "X366", descricao: "366 - PIPIPAN" },
+  { codigo: "X367", descricao: "367 - PIRATA" },
+  { codigo: "X368", descricao: "368 - PUROBORÁ" },
+  { codigo: "X369", descricao: "369 - SABANÊ" },
+  { codigo: "X370", descricao: "370 - SANUMA" },
+  { codigo: "X371", descricao: "371 - SAWENTESÚ" },
+  { codigo: "X372", descricao: "372 - SILCY-TAPUYA" },
+  { codigo: "X373", descricao: "373 - SIUCI" },
+  { codigo: "X374", descricao: "374 - TABAJARA" },
+  { codigo: "X375", descricao: "375 - TAKUARA" },
+  { codigo: "X376", descricao: "376 - TATU" },
+  { codigo: "X377", descricao: "377 - TAWANDÊ" },
+  { codigo: "X378", descricao: "378 - TEFÉ" },
+  { codigo: "X379", descricao: "379 - TIMBIRA" },
+  { codigo: "X380", descricao: "380 - TORÁ DO BAIXO GRANDE" },
+  { codigo: "X381", descricao: "381 - TSUNHUM-DJAPÁ" },
+  { codigo: "X382", descricao: "382 - TUBARÃO" },
+  { codigo: "X383", descricao: "383 - TUPAIU" },
+  { codigo: "X384", descricao: "384 - TUPI" },
+  { codigo: "X385", descricao: "385 - TUPINAMBÁ DE BELMONTE" },
+  { codigo: "X386", descricao: "386 - URUBU" },
+  { codigo: "X387", descricao: "387 - URUBU KAAPOR" },
+  { codigo: "X388", descricao: "388 - URUPÁ" },
+  { codigo: "X389", descricao: "389 - WAI WAI" },
+  { codigo: "X390", descricao: "390 - WAIKISU" },
+  { codigo: "X391", descricao: "391 - WAKALITESÚ" },
+  { codigo: "X392", descricao: "392 - WASSUSU" },
+  { codigo: "X393", descricao: "393 - XEREU" },
+  { codigo: "X394", descricao: "394 - XI EIN" },
+  { codigo: "X395", descricao: "395 - XICRIN" },
+  { codigo: "X396", descricao: "396 - XIPAYA" },
+  { codigo: "X397", descricao: "397 - XIRIANA" },
+  { codigo: "X398", descricao: "398 - XIRUAI" },
+  { codigo: "X399", descricao: "399 - YEPAMASSÃ" },
+  { codigo: "X400", descricao: "400 - TIRIYÓ" },
+  { codigo: "X401", descricao: "401 - YANOMAMI" },
+  { codigo: "X402", descricao: "402 - ARARA" },
+  { codigo: "X403", descricao: "403 - SAKIRIABAR" },
+  { codigo: "X404", descricao: "404 - TATZ" },
+  { codigo: "X405", descricao: "405 - SEM INFORMACAO" },
+  { codigo: "0304", descricao: "406 - PURI" },
+  { codigo: "0315", descricao: "407 - WARAO" }
+];
+
+// ========== VALIDAÇÕES E MÁSCARAS ==========
+function validarData(input) {
+  const value = input.value;
+  const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+  if (!regex.test(value)) {
+    input.value = '';
+    showErrorModal('Data inválida. Use o formato DD/MM/YYYY.');
+    return false;
+  }
+  const [, dia, mes, ano] = value.match(regex);
+  const date = new Date(ano, mes - 1, dia);
+  if (
+    date.getDate() != dia ||
+    date.getMonth() + 1 != mes ||
+    date.getFullYear() != ano ||
+    ano < 1900 ||
+    ano > new Date().getFullYear()
+  ) {
+    input.value = '';
+    showErrorModal('Data inválida. Insira uma data válida.');
+    return false;
+  }
+  return true;
+}
+
+function validarTelefone(input) {
+  const value = input.value;
+  const regex = /^\(83\) 9 \d{4}-\d{4}$/;
+  if (!regex.test(value)) {
+    input.value = '';
+    showErrorModal('Telefone inválido. Use o formato (83) 9 9999-9999.');
+    return false;
+  }
+  return true;
+}
+
+function mascaraData(input) {
+  let value = input.value.replace(/\D/g, '');
+  if (value.length > 8) value = value.slice(0, 8);
+  if (value.length > 4) {
+    value = value.slice(0, 2) + '/' + value.slice(2, 4) + '/' + value.slice(4);
+  } else if (value.length > 2) {
+    value = value.slice(0, 2) + '/' + value.slice(2);
+  }
+  input.value = value;
+}
+
+function mascaraTelefone(input) {
+  let value = input.value.replace(/\D/g, '');
+  if (value.length > 11) value = value.slice(0, 11);
+  if (value.length > 7) {
+    value = `(83) 9 ${value.slice(3, 7)}-${value.slice(7)}`;
+  } else if (value.length > 3) {
+    value = `(83) 9 ${value.slice(3)}`;
+  } else if (value.length > 2) {
+    value = `(83) ${value.slice(2)}`;
+  } else if (value.length > 0) {
+    value = `(${value}`;
+  }
+  input.value = value;
+}
+
+function mascaraCPF(input) {
+  let value = input.value.replace(/\D/g, '');
+  if (value.length > 11) value = value.slice(0, 11);
+  if (value.length > 9) {
+    value = value.slice(0, 3) + '.' + value.slice(3, 6) + '.' + value.slice(6, 9) + '-' + value.slice(9);
+  } else if (value.length > 6) {
+    value = value.slice(0, 3) + '.' + value.slice(3, 6) + '.' + value.slice(6);
+  } else if (value.length > 3) {
+    value = value.slice(0, 3) + '.' + value.slice(3);
+  }
+  input.value = value;
+}
+
+function validarCPF(input) {
+  const value = input.value;
+  const regex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+  if (!regex.test(value)) {
+    input.value = '';
+    showErrorModal('CPF inválido. Use o formato 999.999.999-99.');
+    return false;
+  }
+  return true;
+}
+
+function updateLabels() {
+  const racaCorEtnia = document.getElementById('raca_cor_etnia').value;
+  const etniaContainer = document.getElementById('etnia-container');
+  const etniaSelect = document.getElementById('etnia_indigena');
+  const etniaLoading = document.getElementById('etnia-loading');
+  const ubsLabel = document.getElementById('ubs-label');
+  const acsLabel = document.getElementById('acs-label');
+
+  console.log('🔍 Raça/Cor/Etnia selecionada:', racaCorEtnia); // DEBUG
+
+  // ========== LOGÍCA DO CAMPO ETNIA ==========
+  if (racaCorEtnia === 'Indígena') {
+    console.log('✅ MOSTRANDO campo Etnia Indígena'); // DEBUG
+    
+    // ✅ PASSO 1: Remover classe anterior + mostrar container
+    etniaContainer.classList.remove('visible');
+    etniaContainer.style.display = 'block';
+    
+    // ✅ PASSO 2: Mostrar loading
+    etniaLoading.style.display = 'block';
+    etniaSelect.style.display = 'none';
+    
+    // ✅ PASSO 3: Tornar OBRIGATÓRIO
+    etniaSelect.required = true;
+    
+    // ✅ PASSO 4: Popular com etnias (após delay visual)
+    setTimeout(() => {
+      console.log('✅ Carregando etnias...'); // DEBUG
+      etniaLoading.style.display = 'none';
+      etniaSelect.style.display = 'block';
+      
+      // LIMPAR e POPULAR
+      etniaSelect.innerHTML = '<option value="" disabled selected>Selecione a Etnia Indígena</option>';
+      etniasIndigenas.forEach(etnia => {
+        const option = document.createElement('option');
+        option.value = etnia.codigo;
+        option.textContent = etnia.descricao;
+        etniaSelect.appendChild(option);
+      });
+      
+      // ✅ PASSO 5: FINALMENTE mostrar o container completo
+      etniaContainer.classList.add('visible');
+      
+      console.log('✅ Etnia carregada com', etniasIndigenas.length, 'opções'); // DEBUG
+    }, 600); // 0.6s de loading visual
+
+  } else {
+    console.log('❌ ESCONDENDO campo Etnia Indígena'); // DEBUG
+    
+    // ✅ PASSO 1: Remover classe e esconder
+    etniaContainer.classList.remove('visible');
+    etniaLoading.style.display = 'none';
+    etniaSelect.style.display = 'none';
+    
+    // ✅ PASSO 2: Limpar valor e tornar NÃO OBRIGATÓRIO
+    etniaSelect.value = '';
+    etniaSelect.required = false;
+    
+    // ✅ PASSO 3: Esconder container completamente
+    setTimeout(() => {
+      etniaContainer.style.display = 'none';
+    }, 300);
+  }
+
+  // ========== LOGÍCA DOS LABELS UBS/ACS ==========
+  if (racaCorEtnia === 'Indígena') {
+    ubsLabel.textContent = 'UBS/UBSI de Origem';
+    acsLabel.textContent = 'Agente Comunitário de Saúde (ACS)/Agente Indígena de Saúde (AIS)';
+  } else {
+    ubsLabel.textContent = 'UBS de Origem';
+    acsLabel.textContent = 'ACS';
+  }
+}
+
+function preencherComUltimaFicha(ficha) {
+  // === 1. LIMPAR TUDO ===
+  document.querySelectorAll('.checkbox-item, .submenu-item').forEach(el => {
+    el.classList.remove('selected');
+    const input = el.querySelector('input');
+    if (input) {
+      input.classList.remove('selected');
+      input.checked = false;
+    }
+  });
+
+  // === 2. Período Gestacional ===
+  const periodo = ficha.periodo_gestacional;
+  if (periodo) {
+    document.querySelectorAll('.periodo-gestacional .checkbox-item').forEach(item => {
+      const span = item.querySelector('span').textContent.trim();
+      if (span === periodo) {
+        selectPeriodo(item, periodo);
+      }
+    });
+  }
+
+  // === 3. IMC ===
+  if (ficha.imc) {
+    document.getElementById('imc-result').textContent = `IMC: ${ficha.imc}`;
+    document.getElementById('imc').value = ficha.imc;
+  }
+
+  // === 4. MARCAR E DISPARAR EVENTO ===
+  function marcarCheckboxes(valores) {
+    if (!Array.isArray(valores)) return;
+
+    const subitens = ['situacao_rua', 'indigena', 'quilombola'];
+    const temSubitem = valores.some(v => subitens.includes(v));
+
+    // === SE TIVER SUBITEM → MARCA PRINCIPAL E ABRE ===
+    if (temSubitem) {
+      const principal = document.querySelector('.checkbox-item.has-submenu');
+      const submenu = document.getElementById('submenu-situacao-rua');
+      const inputPrincipal = principal.querySelector('input');
+
+      principal.classList.add('selected');
+      inputPrincipal.classList.add('selected');
+      inputPrincipal.checked = true;
+      submenu.style.display = 'block';
+
+      // Dispara evento no principal
+      inputPrincipal.dispatchEvent(new Event('change', { bubbles: true }));
+
+      valores.forEach(valor => {
+        if (subitens.includes(valor)) {
+          const subInput = document.querySelector(`input[value="${valor}"].submenu-checkbox`);
+          if (subInput) {
+            const subItem = subInput.closest('.submenu-item');
+            subItem.classList.add('selected');
+            subInput.classList.add('selected');
+            subInput.checked = true;
+            subInput.dispatchEvent(new Event('change', { bubbles: true })); // ← CRÍTICO
+          }
+        }
+      });
+    }
+
+    // === ITENS NORMAIS ===
+    valores.forEach(valor => {
+      if (subitens.includes(valor) || valor === 'rua_indigena_quilombola') return;
+
+      const input = document.querySelector(`input[value="${valor}"]:not(.submenu-checkbox)`);
+      if (input) {
+        const item = input.closest('.checkbox-item');
+        if (item && !item.classList.contains('has-submenu')) {
+          item.classList.add('selected');
+          input.classList.add('selected');
+          input.checked = true;
+          input.dispatchEvent(new Event('change', { bubbles: true })); // ← CRÍTICO
+        }
+      }
+    });
+  }
+
+  // === APLICAR EM TODAS AS SEÇÕES ===
+  marcarCheckboxes(ficha.caracteristicas);
+  marcarCheckboxes(ficha.avaliacao_nutricional);
+  marcarCheckboxes(ficha.comorbidades);
+  marcarCheckboxes(ficha.historia_obstetrica);
+  marcarCheckboxes(ficha.condicoes_gestacionais);
+
+  // === FORÇA RECÁLCULO (por segurança) ===
+  setTimeout(() => {
+    calcularPontuacao();
+  }, 150);
+
+  // === ROLAGEM ===
+  document.querySelector('#section1').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ========== FUNÇÕES DO SUBMENU ==========
+function toggleCheckboxEspecial(element) {
+  const input = element.querySelector('input');
+  const submenu = document.getElementById('submenu-situacao-rua');
+  
+  if (element.classList.contains('selected')) {
+    // DESMARCAR: -2 pontos + fecha submenu + limpa subitens
+    element.classList.remove('selected');
+    input.classList.remove('selected');
+    submenu.style.display = 'none';
+    
+    // LIMPA TODOS OS SUBITENS
+    document.querySelectorAll('.submenu-item').forEach(item => {
+      item.classList.remove('selected');
+    });
+    document.querySelectorAll('.submenu-checkbox').forEach(cb => {
+      cb.classList.remove('selected');
+    });
+  } else {
+    // MARCAR: +2 pontos + abre submenu
+    element.classList.add('selected');
+    input.classList.add('selected');
+    submenu.style.display = 'block';
+  }
+  
+  calcularPontuacao();
+}
+
+function toggleSubmenuCheckbox(element, value) {
+  element.classList.toggle('selected');
+  const input = element.querySelector('input');
+  input.classList.toggle('selected');
+  
+  // SUBITENS NÃO AFETAM PONTUAÇÃO - apenas especificam
+}
+
+// ========== CHECKBOXES NORMAIS ==========
+function toggleCheckbox(element) {
+  const input = element.querySelector('input');
+  if (input.classList.contains('selected')) {
+    input.classList.remove('selected');
+    element.classList.remove('selected');
+  } else {
+    input.classList.add('selected');
+    element.classList.add('selected');
+  }
+  calcularPontuacao();
+}
+
+function selectPeriodo(element, value) {
+  document.querySelectorAll('.periodo-gestacional .checkbox-item').forEach(item => {
+    item.classList.remove('selected');
+    const input = item.querySelector('input');
+    input.classList.remove('selected');
+    input.name = '';
+  });
+
+  element.classList.add('selected');
+  const input = element.querySelector('input');
+  input.classList.add('selected');
+  input.name = 'periodo_gestacional';
+  input.value = value;
+}
+
+// ========== PONTUAÇÃO ==========
+function calcularPontuacao() {
+  let pontuacao = 0;
+  
+  // SÓ CONTA CHECKBOXES QUE PONTUAM (NÃO conta submenu)
+  const checkboxesPrincipais = document.querySelectorAll(
+    'input[name="caracteristicas"]:not(.submenu-checkbox).selected, ' +
+    'input[name="avaliacao_nutricional"].selected, ' +
+    'input[name="comorbidades"].selected, ' +
+    'input[name="historia_obstetrica"].selected, ' +
+    'input[name="condicoes_gestacionais"].selected'
+  );
+  
+  const valoresPontuacao = {
+    // Seção 1: Características Individuais
+    '15anos': 3,
+    '40anos': 2,
+    'nao_aceita_gravidez': 1,
+    'violencia_domestica': 2,
+    'rua_indigena_quilombola': 2,  // ← PRINCIPAL PONTUA 2
+    'sem_escolaridade': 1,
+    'tabagista_ativo': 2,
+    'raca_negra': 2,
+    
+    // Seção 2: Avaliação Nutricional
+    'baixo_peso': 2,
+    'sobrepeso': 1,
+    'obesidade1': 5,
+    'obesidade_morbida': 10,
+    
+    // Seção 3: Comorbidades Prévias
+    'aids_hiv': 10,
+    'alteracoes_tireoide': 10,
+    'diabetes_mellitus': 10,
+    'endocrinopatias': 10,
+    'cardiopatia': 10,
+    'cancer': 10,
+    'cirurgia_bariatrica': 10,
+    'doencas_autoimunes': 10,
+    'doencas_psiquiatricas': 5,
+    'doenca_renal': 10,
+    'dependencia_drogas': 10,
+    'epilepsia': 10,
+    'hepatites': 5,
+    'has_controlada': 5,
+    'has_complicada': 10,
+    'ginecopatia': 5,
+    'pneumopatia': 10,
+    'tuberculose': 10,
+    'trombofilia': 10,
+    'teratogenico': 5,
+    'varizes': 1,
+    'doencas_hematologicas': 10,
+    'transplantada': 10,
+    
+    // Seção 4: Condições Clínicas Prévias
+    'abortamentos': 5,
+    'abortamentos_consecutivos': 10,
+    'prematuros': 10,
+    'obito_fetal': 10,
+    'preeclampsia': 10,
+    'eclampsia': 10,
+    'hipertensao_gestacional': 5,
+    'acretismo': 2,
+    'descolamento_placenta': 5,
+    'insuficiencia_istmo': 10,
+    'restricao_crescimento': 2,
+    'malformacao_fetal': 2,
+    'isoimunizacao': 10,
+    'diabetes_gestacional': 2,
+    'psicose_puerperal': 5,
+    'tromboembolia': 10,
+    
+    // Seção 5: Condições Clínicas Atuais
+    'ameaca_aborto': 2,
+    'acretismo_placentario_atual': 10,
+    'placenta_previa': 10,
+    'anemia_grave': 10,
+    'citologia_anormal': 3,
+    'tireoide_gestacao': 10,
+    'diabetes_gestacional_atual': 10,
+    'doenca_hipertensiva': 10,
+    'doppler_anormal': 5,
+    'doenca_hemolitica': 10,
+    'gemelar': 10,
+    'isoimunizacao_rh': 10,
+    'insuficiencia_istmo_atual': 10,
+    'colo_curto': 10,
+    'malformacao_congenita': 10,
+    'neoplasia_cancer': 10,
+    'polidramnio_oligodramnio': 10,
+    'restricao_crescimento_atual': 10,
+    'toxoplasmose': 10,
+    'sifilis_complicada': 10,
+    'infeccao_urinaria_repeticao': 10,
+    'hiv_htlv_hepatites': 10,
+    'condiloma_acuminado': 5,
+    'feto_percentil': 5,
+    'hepatopatias': 10,
+    'hanseníase': 10,
+    'tuberculose_gestacao': 10,
+    'dependencia_drogas_atual': 10
+  };
+
+  checkboxesPrincipais.forEach(checkbox => {
+    const valor = checkbox.value;
+    pontuacao += valoresPontuacao[valor] || 0;
+  });
+
+  let classificacao = 'Risco Habitual';
+  if (pontuacao >= 5 && pontuacao <= 9) {
+    classificacao = 'Médio Risco';
+  } else if (pontuacao > 9) {
+    classificacao = 'Alto Risco';
+  }
+
+  document.getElementById('pontuacao').textContent = pontuacao;
+  document.getElementById('risco').textContent = classificacao;
+  document.getElementById('pontuacao_total').value = pontuacao;
+  document.getElementById('classificacao_risco').value = classificacao;
+}
+
+// ========== CALCULAR IMC ==========
+function calcularIMC() {
+  const peso = parseFloat(document.getElementById('peso').value);
+  const altura = parseFloat(document.getElementById('altura').value) / 100;
+  if (peso && altura) {
+    const imc = (peso / (altura * altura)).toFixed(1);
+    document.getElementById('imc-result').textContent = `IMC: ${imc}`;
+    document.getElementById('imc').value = imc;
+
+    // Resetar seleções anteriores
+    const baixoPeso = document.querySelector('input[value="baixo_peso"]').parentElement;
+    const sobrepeso = document.querySelector('input[value="sobrepeso"]').parentElement;
+    const obesidade1 = document.querySelector('input[value="obesidade1"]').parentElement;
+    const obesidadeMorbida = document.querySelector('input[value="obesidade_morbida"]').parentElement;
+
+    [baixoPeso, sobrepeso, obesidade1, obesidadeMorbida].forEach(item => {
+      item.classList.remove('selected');
+      item.querySelector('input').classList.remove('selected');
+    });
+
+    // Marcar a classificação correta do IMC
+    if (imc < 18.5) {
+      baixoPeso.classList.add('selected');
+      baixoPeso.querySelector('input').classList.add('selected');
+    } else if (imc >= 25 && imc <= 29.9) {
+      sobrepeso.classList.add('selected');
+      sobrepeso.querySelector('input').classList.add('selected');
+    } else if (imc >= 30 && imc <= 39.9) {
+      obesidade1.classList.add('selected');
+      obesidade1.querySelector('input').classList.add('selected');
+    } else if (imc >= 40) {
+      obesidadeMorbida.classList.add('selected');
+      obesidadeMorbida.querySelector('input').classList.add('selected');
+    }
+
+    calcularPontuacao();
+  } else {
+    showErrorModal('Por favor, insira peso e altura válidos.');
+  }
+}
+
+// ========== VALIDAÇÃO DO FORMULÁRIO ==========
+function validateForm() {
+  try {
+    const requiredFields = [
+      { name: 'nome_gestante', label: 'Nome da Gestante', type: 'input' },
+      { name: 'genero', label: 'Gênero', type: 'select' },
+      { name: 'sexualidade', label: 'Sexualidade', type: 'select' },
+      { name: 'deficiencia', label: 'Pessoa com Deficiência?', type: 'select' },
+      { name: 'raca_cor_etnia', label: 'Raça/Cor/Etnia', type: 'select' },
+      { name: 'data_nasc', label: 'Data de Nascimento', type: 'input' },
+      { name: 'cpf', label: 'CPF', type: 'input' },
+      { name: 'telefone', label: 'Telefone', type: 'input' },
+      { name: 'municipio', label: 'Município', type: 'select' },
+      { name: 'ubs', label: 'UBS de Origem', type: 'input' },
+      { name: 'acs', label: 'ACS', type: 'input' },
+      // ✅ REMOVIDO periodo_gestacional daqui - validado separadamente
+      { name: 'data_envio', label: 'Data de Envio', type: 'input' }
+    ];
+
+    let isValid = true;
+    let errorMessage = '';
+
+    // ✅ VALIDAÇÃO BÁSICA DOS CAMPOS OBRIGATÓRIOS
+    requiredFields.forEach(field => {
+      const selector = field.type === 'select' ? 
+        `select[name="${field.name}"]` : 
+        `input[name="${field.name}"]`;
+      const input = document.querySelector(selector);
+      
+      if (!input) {
+        console.error(`Campo ${field.name} não encontrado.`);
+        isValid = false;
+        errorMessage += `❌ Campo ${field.label} não encontrado.<br>`;
+        return;
+      }
+      
+      if (!input.value.trim()) {
+        isValid = false;
+        errorMessage += `❌ O campo ${field.label} é obrigatório.<br>`;
+      } else if (field.name === 'data_nasc' || field.name === 'data_envio') {
+        if (!validarData(input)) {
+          isValid = false;
+          errorMessage += `❌ O campo ${field.label} contém data inválida.<br>`;
+        }
+      } else if (field.name === 'cpf') {
+        if (!validarCPF(input)) {
+          isValid = false;
+          errorMessage += `❌ O campo ${field.label} contém CPF inválido.<br>`;
+        }
+      } else if (field.name === 'telefone') {
+        if (!validarTelefone(input)) {
+          isValid = false;
+          errorMessage += `❌ O campo ${field.label} contém telefone inválido.<br>`;
+        }
+      }
+    });
+
+    // ✅ VALIDAÇÃO ESPECÍFICA: PERÍODO GESTACIONAL (CHECKBOX)
+    const periodoGestacional = document.querySelector('input[name="periodo_gestacional"].selected');
+    if (!periodoGestacional || !periodoGestacional.value) {
+      isValid = false;
+      errorMessage += `❌ <strong>Período Gestacional</strong> é obrigatório. Selecione 1º, 2º ou 3º Trimestre.<br>`;
+    }
+
+    // ✅ VALIDAÇÃO ESPECÍFICA: ETNIA INDÍGENA (SÓ SE INDÍGENA FOR SELECIONADO)
+    const racaCorEtniaSelect = document.getElementById('raca_cor_etnia');
+    if (racaCorEtniaSelect && racaCorEtniaSelect.value === 'Indígena') {
+      const etniaIndigena = document.getElementById('etnia_indigena');
+      if (!etniaIndigena || !etniaIndigena.value || etniaIndigena.value === '') {
+        isValid = false;
+        errorMessage += `❌ Quando Raça/Cor/Etnia é "<strong>Indígena</strong>", o campo <strong>Etnia Indígena</strong> é OBRIGATÓRIO.<br>`;
+      }
+    }
+
+    // ✅ MOSTRAR ERROS SE HOUVER
+    if (!isValid) {
+      showErrorModal(errorMessage);
+      return false;
+    }
+
+    console.log('✅ Formulário validado com sucesso!');
+    return true;
+
+  } catch (error) {
+    console.error('❌ Erro na validação:', error);
+    showErrorModal('❌ Erro ao validar formulário. Tente novamente.');
+    return false;
+  }
+}
+
+// ========== MODAIS ==========
+function continuar() {
+  if (!validateForm()) return;
+
+  const cpfLimpo = document.querySelector('input[name="cpf"]').value.replace(/\D/g, '');
+  console.log('Buscando CPF:', cpfLimpo);
+
+  fetch('/buscar_por_cpf', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cpf: cpfLimpo })
+  })
+  .then(async response => {
+    const text = await response.text(); // Lê como texto
+    console.log('Resposta raw:', text); // DEBUG
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      console.error('JSON inválido:', e);
+      data = { success: false, message: 'Erro no servidor.' };
+    }
+
+    if (data.success && data.found) {
+      preencherComUltimaFicha(data.ficha);
+      showSuccessMessage('Dados carregados!');
+    } else {
+      console.log('Nenhum dado encontrado ou erro:', data.message);
+    }
+    enableSections(); // SEMPRE LIBERA
+  })
+  .catch(err => {
+    console.error('Erro de rede:', err);
+    showErrorModal('Última estratificação recuperada...');
+    enableSections(); // SEMPRE LIBERA
+  });
+}
+
+function enableSections() {
+  document.querySelectorAll('.section').forEach(section => {
+    section.classList.remove('disabled-section');
+  });
+  document.getElementById('submit-button').style.display = 'block';
+  closeModal();
+}
+
+function closeModal() {
+  const modal = document.getElementById('confirm-modal');
+  modal.style.display = 'none';
+}
+
+function openLgpdModal() {
+  const modal = document.getElementById('lgpd-modal');
+  modal.style.display = 'flex';
+}
+
+function closeLgpdModal() {
+  const modal = document.getElementById('lgpd-modal');
+  modal.style.display = 'none';
+}
+
+function showErrorModal(message) {
+  const errorMessage = document.getElementById('error-message');
+  errorMessage.innerHTML = message;
+  const modal = document.getElementById('error-modal');
+  modal.style.display = 'flex';
+}
+
+function closeErrorModal() {
+  const modal = document.getElementById('error-modal');
+  modal.style.display = 'none';
+}
+
+// ========== SUBMIT FORMULÁRIO ==========
+function submitForm() {
+  closeLgpdModal();
+  const form = document.getElementById('form-risco');
+  const formData = new FormData(form);
+
+  // ✅ CORREÇÃO: SUBSTITUIR SUBMENU PELO SELECIONADO
+  const subitensSelecionados = [];
+  document.querySelectorAll('input[name="situacao_especifica"].selected').forEach(input => {
+    subitensSelecionados.push(input.value);
+  });
+
+  // ✅ COLETAR CARACTERÍSTICAS NORMAIS + SUBSTITUIR SUBMENU
+  const caracteristicas = [];
+  document.querySelectorAll('input[name="caracteristicas"].selected').forEach(input => {
+    if (input.value === 'rua_indigena_quilombola') {
+      // ❌ NÃO ADICIONAR o principal SE tiver subitens selecionados
+      if (subitensSelecionados.length === 0) {
+        caracteristicas.push('rua_indigena_quilombola');
+      }
+    } else {
+      // ✅ Adicionar outros itens normais
+      caracteristicas.push(input.value);
+    }
+  });
+
+  // ✅ ADICIONAR OS SUBITENS SELECIONADOS (SUBSTITUI O PRINCIPAL)
+  subitensSelecionados.forEach(subitem => {
+    caracteristicas.push(subitem);
+  });
+
+  console.log('✅ Características finais:', caracteristicas); // DEBUG
+  formData.set('caracteristicas', JSON.stringify(caracteristicas));
+
+  // ✅ RESTO DOS CAMPOS (sem mudanças)
+  const avaliacaoNutricional = [];
+  document.querySelectorAll('input[name="avaliacao_nutricional"].selected').forEach(input => {
+    avaliacaoNutricional.push(input.value);
+  });
+  formData.set('avaliacao_nutricional', JSON.stringify(avaliacaoNutricional));
+
+  const comorbidades = [];
+  document.querySelectorAll('input[name="comorbidades"].selected').forEach(input => {
+    comorbidades.push(input.value);
+  });
+  formData.set('comorbidades', JSON.stringify(comorbidades));
+
+  const historiaObstetrica = [];
+  document.querySelectorAll('input[name="historia_obstetrica"].selected').forEach(input => {
+    historiaObstetrica.push(input.value);
+  });
+  formData.set('historia_obstetrica', JSON.stringify(historiaObstetrica));
+
+  const condicoesGestacionais = [];
+  document.querySelectorAll('input[name="condicoes_gestacionais"].selected').forEach(input => {
+    condicoesGestacionais.push(input.value);
+  });
+  formData.set('condicoes_gestacionais', JSON.stringify(condicoesGestacionais));
+
+  fetch(form.action, {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      codigoFichaGlobal = data.codigo_ficha;
+      document.getElementById('codigo_ficha').value = codigoFichaGlobal;
+      showErrorModal('Formulário enviado com sucesso! Código da ficha: ' + codigoFichaGlobal);
+      resetForm();
+      const rightContainer = document.querySelector('.right');
+      rightContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      showErrorModal(data.message || 'Erro ao enviar o formulário.');
+    }
+  })
+  .catch(error => {
+    console.error('Erro ao enviar formulário:', error);
+    showErrorModal('Erro ao enviar o formulário. Tente novamente.');
+  });
+}
+// ========== RESET FORMULÁRIO ==========
+function resetForm() {
+  const form = document.getElementById('form-risco');
+  form.reset();
+
+  // Desmarcar todos os checkboxes
+  document.querySelectorAll('.checkbox-item.selected').forEach(item => {
+    item.classList.remove('selected');
+    const input = item.querySelector('input');
+    input.classList.remove('selected');
+    input.name = '';
+  });
+
+  // Resetar período gestacional
+  document.querySelectorAll('.periodo-gestacional .checkbox-item').forEach(item => {
+    item.classList.remove('selected');
+    const input = item.querySelector('input');
+    input.classList.remove('selected');
+    input.name = '';
+  });
+
+  // Resetar campos hidden
+  document.getElementById('pontuacao_total').value = '';
+  document.getElementById('classificacao_risco').value = '';
+  document.getElementById('imc').value = '';
+  document.getElementById('codigo_ficha').value = '';
+
+  // Resetar exibição de IMC
+  document.getElementById('imc-result').textContent = 'IMC: ---';
+
+  // Resetar pontuação
+  document.getElementById('pontuacao').textContent = '0';
+  document.getElementById('risco').textContent = 'Risco Habitual';
+
+  // Desabilitar seções
+  document.querySelectorAll('.section').forEach(section => {
+    section.classList.add('disabled-section');
+  });
+  document.getElementById('submit-button').style.display = 'none';
+
+  // Fechar submenu
+  const submenu = document.getElementById('submenu-situacao-rua');
+  submenu.style.display = 'none';
+}
+
+// ========== REDIRECIONAMENTOS ==========
+function verHistorico() {
+  window.location.href = '{{ url_for("historico") }}';
+}
+
+function verPainel() {
+  window.location.href = '{{ url_for("admin_painel") }}';
+}
+
+// ========== EVENTOS ==========
+document.addEventListener('DOMContentLoaded', function () {
+  // Tooltips
+  document.addEventListener('click', function(event) {
+    const infoContainers = document.querySelectorAll('.info-container');
+    infoContainers.forEach(container => {
+      if (!container.contains(event.target)) {
+        const tooltip = container.querySelector('.info-tooltip');
+        if (tooltip) {
+          tooltip.style.display = 'none';
+          tooltip.style.opacity = '0';
+        }
+      }
+    });
+  });
+
+  document.querySelectorAll('.info-tooltip').forEach(tooltip => {
+    tooltip.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  });
+
+  document.querySelectorAll('.close-tooltip').forEach(button => {
+    button.addEventListener('click', function() {
+      this.closest('.info-tooltip').style.display = 'none';
+      this.closest('.info-tooltip').style.opacity = '0';
+    });
+  });
+
+  document.querySelectorAll('.info-icon').forEach(icon => {
+    icon.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const tooltip = this.closest('.info-container').querySelector('.info-tooltip');
+      tooltip.style.display = 'block';
+      tooltip.style.opacity = '1';
+    });
+  });
+
+  // Botões
+  const historicoBtn = document.getElementById('historicoBtn');
+  if (historicoBtn) {
+    historicoBtn.addEventListener('click', verHistorico);
+  }
+
+  const painelBtn = document.getElementById('painelBtn');
+  if (painelBtn) {
+    painelBtn.addEventListener('click', verPainel);
+  }
+
+  // Formulário
+  const form = document.getElementById('form-risco');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      openLgpdModal();
+    });
+  }
+
+  // Data atual no campo data_envio
+  const dataEnvio = document.getElementById('data_envio');
+  if (dataEnvio) {
+    const hoje = new Date();
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const ano = hoje.getFullYear();
+    dataEnvio.value = `${dia}/${mes}/${ano}`;
+  }
+
+  // Inicializar pontuação
+  calcularPontuacao();
+
+  // ✅ INICIALIZAR ETNIA OCULTA ← COLOQUE AQUI
+  const etniaContainer = document.getElementById('etnia-container');
+  const etniaSelect = document.getElementById('etnia_indigena');
+  etniaContainer.style.display = 'none';
+  etniaSelect.required = false;
+  etniaSelect.value = '';
+});
+</script>
+</body>
+</html>

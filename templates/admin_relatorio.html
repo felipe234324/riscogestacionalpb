@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório Administrativo - Gestantes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary: #194756;
+      --secondary: #54736e;
+      --accent: #f2eabc;
+      --light: #f8f9fa;
+      --white: #ffffff;
+      --text: #333333;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+      --danger-color: #d32f2f;
+      --danger-hover: #b71c1c;
+      --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      --success-color: #ffc107;
+      --warning-color: #f28c38;
+      --danger-background: #f8d7da;
+      --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--accent);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container {
+      background-color: var(--white);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 1250px;
+      margin: 40px 20px;
+      animation: fadeIn 0.5s ease-out;
+    }
+    h2 {
+      color: var(--secondary);
+      margin-bottom: 30px;
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    h3 {
+      color: var(--primary);
+      margin-bottom: 15px;
+      font-weight: 500;
+    }
+    .flash-message {
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    .flash-message.success { background-color: #e6f0e5; color: var(--primary); }
+    .flash-message.danger { background-color: #f8d7da; color: #721c24; }
+    .flash-message.warning { background-color: #f2eabc; color: var(--primary); }
+    .flash-message.info { background-color: #d1ecf1; color: #0c5460; }
+    .flash-message.error { background-color: #f8d7da; color: #721c24; }
+
+    .form-group {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 15px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    select {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--secondary);
+      font-size: 0.95rem;
+      background-color: #f8f9fa;
+      transition: var(--transition);
+      height: 40px;
+      box-sizing: border-box;
+    }
+    select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(84, 115, 110, 0.2);
+      background-color: var(--white);
+    }
+    .date-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 150px;
+    }
+    .date-input-group label {
+      font-size: 0.9rem;
+      color: var(--secondary);
+      font-weight: 500;
+    }
+    input[type="date"] {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--secondary);
+      font-size: 0.95rem;
+      background-color: #f8f9fa;
+      transition: var(--transition);
+      width: 100%;
+      height: 40px;
+      box-sizing: border-box;
+    }
+    input[type="date"]:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(84, 115, 110, 0.2);
+      background-color: var(--white);
+    }
+    .btn-container {
+      width: 120px;
+      height: 40px;
+    }
+    .btn-entrar {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-primary);
+      color: var(--accent);
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      overflow: hidden;
+      transition: var(--transition);
+      box-shadow: var(--box-shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    .btn-entrar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+      clip-path: circle(0% at 50% 50%);
+      transition: clip-path 0.5s ease-in-out;
+      z-index: 1;
+    }
+    .btn-entrar:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(25, 71, 86, 0.3);
+    }
+    .btn-entrar:hover::before {
+      clip-path: circle(100% at 50% 50%);
+    }
+    .btn-entrar:active {
+      transform: translateY(0);
+    }
+    .btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      z-index: 2;
+    }
+    .btn-entrar:hover .btn-content {
+      animation: pulse 1s infinite alternate;
+    }
+    .icon {
+      transition: transform 0.3s ease;
+    }
+    .btn-entrar:hover .icon {
+      transform: scale(1.2);
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--white);
+    }
+    th, td {
+      border: 1px solid var(--secondary);
+      padding: 12px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    th {
+      background-color: #e6f0e5;
+      color: var(--primary);
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+    th:hover {
+      background-color: #d4e6d4;
+    }
+    th.sortable::after {
+      content: '\f0dc';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      margin-left: 5px;
+      font-size: 0.8rem;
+      color: var(--primary);
+    }
+    th.sort-asc::after { content: '\f0de'; }
+    th.sort-desc::after { content: '\f0dd'; }
+    tr:nth-child(even) { background-color: #f8f9fa; }
+    tr:hover { background-color: #e6f0e5; }
+    td.risco-habitual { color: #856404; background-color: #fff3cd; font-weight: 500; }
+    td.risco-intermediario { color: #d94801; background-color: #ffd8a8; font-weight: 500; }
+    td.risco-alto { color: #721c24; background-color: #f8d7da; font-weight: 500; }
+.pdf-button {
+    background-color: white !important;
+    color: #194756 !important;
+    border: 1.5px solid #194756;
+    padding: 0 12px;
+    font-size: 0.8rem;
+    min-width: 90px;
+    min-height: 36px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+.pdf-button:hover {
+    background-color: #f2eabc !important;
+    border-color: #54736e;
+    color: #194756 !important;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+}
+
+.pdf-button i {
+    color: #d32f2f;
+    font-size: 0.9rem;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+    .pdf-button {
+        font-size: 0.75rem;
+        min-width: 80px;
+        min-height: 32px;
+        padding: 0 10px;
+    }
+}
+
+    .button-group {
+      display: flex;
+      justify-content: flex-start;
+      gap: 15px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+    .button--nav {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      background: var(--primary);
+      color: var(--accent);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: var(--transition);
+      border: none;
+      cursor: pointer;
+    }
+    .button--nav:hover {
+      background: #123540;
+      transform: translateY(-2px);
+      box-shadow: var(--box-shadow);
+    }
+    .button--nav:active { transform: translateY(0); }
+    .button--nav .icon { margin-right: 5px; }
+    .button--logout { background: var(--danger-color); }
+    .button--logout:hover { background: var(--danger-hover); }
+
+    .pagination-container {
+      position: sticky;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      z-index: 10;
+      background-color: var(--white);
+      padding: 10px 0;
+    }
+    .pagination {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      background-color: var(--white);
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: var(--box-shadow);
+    }
+    .pagination button {
+      padding: 8px 15px;
+      font-size: 0.95rem;
+    }
+    .pagination button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #page-info { font-size: 0.95rem; color: var(--primary); }
+
+    .info-icon {
+      position: relative;
+      display: inline-block;
+      margin-left: 10px;
+      cursor: help;
+    }
+    .info-icon i {
+      color: var(--primary);
+      transition: var(--transition);
+    }
+    .info-icon:hover i { color: #123540; }
+    .tooltip {
+      visibility: hidden;
+      width: 300px;
+      background-color: #333;
+      color: var(--white);
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px;
+      position: absolute;
+      z-index: 100;
+      top: 50%;
+      left: calc(100% + 10px);
+      transform: translateY(-50%);
+      opacity: 0;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      font-size: 0.85rem;
+      box-shadow: var(--box-shadow);
+    }
+    .info-icon:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--box-shadow);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      animation: slideIn 0.5s ease-out;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-primary);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 0;
+    }
+    .stat-card:hover::before { opacity: 0.1; }
+    .stat-card-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .stat-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+    .stat-card:hover .stat-card-icon { transform: scale(1.15); }
+    .stat-card-icon.total { background: var(--primary); }
+    .stat-card-icon.high { background: var(--danger-color); }
+    .stat-card-icon.intermediate { background: var(--warning-color); }
+    .stat-card-icon.habitual { background: var(--success-color); }
+    .stat-card-text { flex: 1; }
+    .stat-card-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+    .stat-card-label {
+      font-size: 0.9rem;
+      color: #6b7280;
+      font-weight: 400;
+    }
+
+    .accordion { margin-bottom: 30px; }
+    .accordion-item {
+      background: var(--white);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .accordion-header {
+      padding: 15px 20px;
+      background: #f8f9fa;
+      color: var(--primary);
+      font-weight: 500;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s ease;
+    }
+    .accordion-header:hover { background: #e6f0e5; }
+    .accordion-header i { transition: transform 0.3s ease; }
+    .accordion-header.active i { transform: rotate(180deg); }
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      padding: 0 20px;
+    }
+    .accordion-content.active { padding: 20px; }
+    .accordion-content ul { list-style: none; padding: 0; }
+    .accordion-content li {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .accordion-content li:last-child { border-bottom: none; }
+    .accordion-content li span:last-child {
+      font-weight: 500;
+      color: var(--primary);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.05); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 576px) {
+      .container { margin: 20px 15px; padding: 20px; }
+      h2 { font-size: 1.5rem; }
+      h3 { font-size: 1.2rem; }
+      .btn-container { width: 120px; height: 40px; }
+      .btn-entrar { font-size: 0.9rem; }
+      th, td { padding: 8px; font-size: 0.9rem; }
+      .button-group { flex-direction: column; gap: 10px; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-card-value { font-size: 1.3rem; }
+      .stat-card-icon { width: 40px; height: 40px; font-size: 1rem; }
+      .form-group { flex-direction: column; align-items: stretch; }
+      select, .date-input-group, input[type="date"] { width: 100%; min-width: unset; height: 40px; }
+      .btn-container { width: 120px; height: 40px; align-self: flex-end; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>
+      Relatório Administrativo - {{ current_user.name }}
+      <span class="info-icon">
+        <i class="fas fa-info-circle"></i>
+        <span class="tooltip">
+          Os dados consideram apenas o último registro das gestantes sem desfecho e com pelo menos uma ficha não marcada como 'Fora de Área', enquanto a planilha apresenta o consolidado de todas as fichas, com ou sem desfecho aplicado.
+        </span>
+      </span>
+    </h2>
+<!-- CARDS DE RESUMO GERAL -->
+<div class="stats-grid" style="margin-top: 20px; grid-template-columns: repeat(3, 1fr);">
+  <div class="stat-card">
+    <div class="stat-card-content">
+      <div class="stat-card-icon total">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-card-text">
+        <div class="stat-card-value">{{ estatisticas.total_registros }}</div>
+        <div class="stat-card-label">Gestantes Ativas</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-content">
+      <div class="stat-card-icon" style="background: #6c757d;">
+        <i class="fas fa-map-marker-alt"></i>
+      </div>
+      <div class="stat-card-text">
+        <div class="stat-card-value">{{ estatisticas.municipios_unicos }}</div>
+        <div class="stat-card-label">Municípios Distintos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-content">
+      <div class="stat-card-icon" style="background: #17a2b8;">
+        <i class="fas fa-calculator"></i>
+      </div>
+      <div class="stat-card-text">
+        <div class="stat-card-value">{{ estatisticas.media_pontuacao }}</div>
+        <div class="stat-card-label">Média de Pontuação</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- CARDS DE RISCO -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-card-icon habitual">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+          <div class="stat-card-text">
+            <div class="stat-card-value">
+              {{ estatisticas.classificacao_risco.risco_habitual }} ({{ estatisticas.classificacao_risco.porcentagem_habitual }}%)
+            </div>
+            <div class="stat-card-label">Risco Habitual</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-card-icon intermediate">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="stat-card-text">
+            <div class="stat-card-value">
+              {{ estatisticas.classificacao_risco.risco_intermediario }} ({{ estatisticas.classificacao_risco.porcentagem_intermediario }}%)
+            </div>
+            <div class="stat-card-label">Risco Intermediário</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-card-icon high">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="stat-card-text">
+            <div class="stat-card-value">
+              {{ estatisticas.classificacao_risco.risco_alto }} ({{ estatisticas.classificacao_risco.porcentagem_alto }}%)
+            </div>
+            <div class="stat-card-label">Risco Alto</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCORDIONS -->
+    <div class="accordion">
+      <!-- GÊNERO -->
+      <div class="accordion-item">
+        <div class="accordion-header">Identidade de Gênero <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, dados in estatisticas.genero_counts.items() %}
+              <li><span>{{ item }}</span><span>{{ dados.count }} ({{ dados.porcentagem }}%)</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- SEXUALIDADE -->
+      <div class="accordion-item">
+        <div class="accordion-header">Orientação Sexual <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, dados in estatisticas.sexualidade_counts.items() %}
+              <li><span>{{ item }}</span><span>{{ dados.count }} ({{ dados.porcentagem }}%)</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- RAÇA/COR/ETNIA -->
+      <div class="accordion-item">
+        <div class="accordion-header">Raça/Cor/Etnia <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, dados in estatisticas.raca_cor_etnia_counts.items() %}
+              <li><span>{{ item }}</span><span>{{ dados.count }} ({{ dados.porcentagem }}%)</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+<!-- ETNIA INDÍGENA -->
+<div class="accordion-item">
+  <div class="accordion-header">Etnia Indígena <i class="fas fa-chevron-down"></i></div>
+  <div class="accordion-content">
+    <ul>
+      {% for etnia, dados in estatisticas.etnia_indigena_counts.items() %}
+        {% if etnia != 'Nenhuma etnia indígena registrada' and dados.count > 0 %}
+          <li>
+            <span>{{ etnia }}</span>
+            <span>{{ dados.count }} ({{ dados.porcentagem }}%)</span>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<!-- PCD -->
+<div class="accordion-item">
+  <div class="accordion-header">Pessoa com Deficiência <i class="fas fa-chevron-down"></i></div>
+  <div class="accordion-content">
+    <ul>
+      {% set counts = estatisticas.deficiencia_counts %}
+      {% set total = (counts.Sim | default(0)) + (counts.Não | default(0)) + (counts['Não informado'] | default(0)) %}
+      <li><span>Sim</span><span>{{ counts.Sim | default(0) }} {% if total > 0 %}({{ '%.1f' % (counts.Sim | default(0) / total * 100) }}%){% endif %}</span></li>
+      <li><span>Não</span><span>{{ counts.Não | default(0) }} {% if total > 0 %}({{ '%.1f' % (counts.Não | default(0) / total * 100) }}%){% endif %}</span></li>
+      <li><span>Não informado</span><span>{{ counts['Não informado'] | default(0) }} {% if total > 0 %}({{ '%.1f' % (counts['Não informado'] | default(0) / total * 100) }}%){% endif %}</span></li>
+    </ul>
+  </div>
+</div>
+
+      <!-- PERÍODO GESTACIONAL -->
+      <div class="accordion-item">
+        <div class="accordion-header">Período Gestacional <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for periodo, count in estatisticas.periodo_gestacional.items() %}
+              <li><span>{{ periodo }}</span><span>{{ count }}</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+<!-- CARACTERÍSTICAS -->
+<div class="accordion-item">
+  <div class="accordion-header">Características individuais, condições socioeconômicas e familiares <i class="fas fa-chevron-down"></i></div>
+  <div class="accordion-content">
+    <ul>
+      {% set counts = estatisticas.caracteristicas_counts %}
+      {% if counts %}
+        {% for item, count in counts.items() %}
+          {% if item != '-' and item not in ['Situação de rua', 'Indígena', 'Quilombola'] %}
+            <li><span>{{ item }}</span><span>{{ count }}</span></li>
+          {% endif %}
+        {% endfor %}
+
+        {# Soma de Situação de rua + Indígena + Quilombola #}
+        {% set soma_especial = 
+          (counts.get('Situação de rua', 0) + 
+           counts.get('Indígena', 0) + 
+           counts.get('Quilombola', 0))
+        %}
+        {% if soma_especial > 0 %}
+          <li><span>Situação de rua / Indígena ou Quilombola</span><span>{{ soma_especial }}</span></li>
+        {% endif %}
+      {% else %}
+        <li class="text-muted"><em>Nenhuma característica registrada</em></li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+
+      <!-- AVALIAÇÃO NUTRICIONAL -->
+      <div class="accordion-item">
+        <div class="accordion-header">Avaliação Nutricional <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, count in estatisticas.avaliacao_nutricional_counts.items() %}
+              {% if item != '-' %}
+                <li><span>{{ item }}</span><span>{{ count }}</span></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- COMORBIDADES -->
+      <div class="accordion-item">
+        <div class="accordion-header">Comorbidades prévias à gestação atual <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, count in estatisticas.comorbidades_counts.items() %}
+              {% if item != '-' %}
+                <li><span>{{ item }}</span><span>{{ count }}</span></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- HISTÓRIA OBSTÉTRICA -->
+      <div class="accordion-item">
+        <div class="accordion-header">Condições clínicas específicas e relacionadas às gestações prévias <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, count in estatisticas.historia_obstetrica_counts.items() %}
+              {% if item != '-' %}
+                <li><span>{{ item }}</span><span>{{ count }}</span></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- CONDIÇÕES GESTACIONAIS -->
+      <div class="accordion-item">
+        <div class="accordion-header">Condições clínicas específicas e relacionadas à gestação atual <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for item, count in estatisticas.condicoes_gestacionais_counts.items() %}
+              {% if item != '-' %}
+                <li><span>{{ item }}</span><span>{{ count }}</span></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- FORA DE ÁREA -->
+      <div class="accordion-item">
+        <div class="accordion-header">Fora de Área <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            <li><span>Gestantes fora de área</span><span>{{ estatisticas.fora_area_count }}</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- DESFECHOS -->
+      <div class="accordion-item">
+        <div class="accordion-header">Desfechos <i class="fas fa-chevron-down"></i></div>
+        <div class="accordion-content">
+          <ul>
+            {% for desfecho, count in estatisticas.desfecho_counts.items() %}
+              <li><span>{{ desfecho }}</span><span>{{ count }} ({{ '{:.1f}'.format(count / estatisticas.total_desfechos * 100 if estatisticas.total_desfechos > 0 else 0) }}%)</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- FILTROS -->
+    <form method="POST" action="{{ url_for('admin_relatorio') }}" class="form-group">
+      <select name="municipio">
+        <option value="">Todos os Municípios</option>
+        {% for municipio in municipios %}
+          <option value="{{ municipio }}" {% if municipio == filtro_municipio %}selected{% endif %}>{{ municipio }}</option>
+        {% endfor %}
+      </select>
+      <div class="date-input-group">
+        <label for="data_inicio">Data Início</label>
+        <input type="date" id="data_inicio" name="data_inicio" value="{{ filtro_data_inicio if filtro_data_inicio else '' }}">
+      </div>
+      <div class="date-input-group">
+        <label for="data_fim">Data Fim</label>
+        <input type="date" id="data_fim" name="data_fim" value="{{ filtro_data_fim if filtro_data_fim else '' }}">
+      </div>
+      <div class="btn-container">
+        <button type="submit" class="btn-entrar" aria-label="Filtrar registros">
+          <div class="btn-content">
+            <span class="icon"><i class="fas fa-filter"></i></span>
+            <span>Filtrar</span>
+          </div>
+        </button>
+      </div>
+    </form>
+
+    <!-- BOTÕES -->
+    <div class="button-group">
+      <a href="{{ url_for('calculadora') }}" class="button--nav" aria-label="Voltar para Calculadora">
+        <i class="fas fa-calculator icon"></i> Voltar para a Calculadora
+      </a>
+      <a href="{{ url_for('admin_painel') }}" class="button--nav" aria-label="Voltar para o Painel">
+        <i class="fas fa-tachometer-alt icon"></i> Voltar para o Painel
+      </a>
+      <button id="export-csv" class="button--nav" aria-label="Exportar para CSV">
+        <i class="fas fa-download icon"></i> Exportar para CSV
+      </button>
+      <button id="logout-btn" class="button--nav button--logout" onclick="logout()" aria-label="Sair">
+        <i class="fas fa-sign-out-alt icon"></i> Sair
+      </button>
+    </div>
+
+    <!-- TABELA -->
+    <div class="table-container">
+      <table id="relatorio-table">
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="user_id">ID Usuário</th>
+            <th class="sortable" data-sort="codigo_ficha">Código Ficha</th>
+            <th class="sortable" data-sort="nome_gestante">Nome Gestante</th>
+            <th class="sortable" data-sort="genero">Identidade de Gênero</th>
+            <th class="sortable" data-sort="sexualidade">Orientação Sexual</th>
+            <th class="sortable" data-sort="raca_cor_etnia">Raça/Cor/Etnia</th>
+            <th class="sortable" data-sort="etnia_indigena">Etnia Indígena</th>
+            <th class="sortable" data-sort="deficiencia">Pessoa com Deficiência</th>
+            <th class="sortable" data-sort="data_nasc">Data Nascimento</th>
+            <th class="sortable" data-sort="telefone">Telefone</th>
+            <th class="sortable" data-sort="municipio">Município</th>
+            <th class="sortable" data-sort="ubs">UBS</th>
+            <th class="sortable" data-sort="acs">ACS</th>
+            <th class="sortable" data-sort="periodo_gestacional">Período Gestacional</th>
+            <th class="sortable" data-sort="data_envio">Data Envio</th>
+            <th class="sortable" data-sort="pontuacao_total">Pontuação Total</th>
+            <th class="sortable" data-sort="classificacao_risco">Classificação de Risco</th>
+            <th class="sortable" data-sort="imc">IMC</th>
+            <th>Características individuais, condições socioeconômicas e familiares</th>
+            <th>Avaliação Nutricional</th>
+            <th>Comorbidades prévias à gestação atual</th>
+            <th>Condições clínicas específicas e relacionadas às gestações prévias</th>
+            <th>Condições clínicas específicas e relacionadas à gestação atual</th>
+            <th class="sortable" data-sort="desfecho">Desfecho</th>
+            <th class="sortable" data-sort="profissional">Profissional</th>
+            <th class="sortable" data-sort="fa">Fora de Área</th>
+            <th>PDF</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for registro in registros %}
+          <tr>
+            <td>{{ registro.user_id }}</td>
+            <td>{{ registro.codigo_ficha }}</td>
+            <td>{{ registro.nome_gestante }}</td>
+            <td>{{ registro.genero or 'Não informado' }}</td>
+            <td>{{ registro.sexualidade or 'Não informado' }}</td>
+            <td>{{ registro.raca_cor_etnia or 'Não informado' }}</td>
+            <td>{{ registro.etnia_indigena or 'Não informado' }}</td>
+            <td>{{ registro.deficiencia or 'Não informado' }}</td>
+            <td>{{ registro.data_nasc }}</td>
+            <td>{{ registro.telefone }}</td>
+            <td>{{ registro.municipio }}</td>
+            <td>{{ registro.ubs }}</td>
+            <td>{{ registro.acs }}</td>
+            <td>{{ registro.periodo_gestacional }}</td>
+            <td>{{ registro.data_envio }}</td>
+            <td>{{ registro.pontuacao_total }}</td>
+            <td class="{% if registro.classificacao_risco == 'Risco Habitual' %}risco-habitual{% elif registro.classificacao_risco == 'Risco Intermediário' %}risco-intermediario{% elif registro.classificacao_risco == 'Risco Alto' %}risco-alto{% endif %}">
+              {{ registro.classificacao_risco }}
+            </td>
+            <td>{{ registro.imc if registro.imc is not none else '-' }}</td>
+            <td>{{ registro.caracteristicas }}</td>
+            <td>{{ registro.avaliacao_nutricional }}</td>
+            <td>{{ registro.comorbidades }}</td>
+            <td>{{ registro.historia_obstetrica }}</td>
+            <td>{{ registro.condicoes_gestacionais }}</td>
+            <td>{{ registro.desfecho if registro.desfecho else '-' }}</td>
+            <td>{{ registro.profissional }}</td>
+            <td>{{ registro.fa }}</td>
+            <td>
+              {% if (registro.pdf_compartilhado_municipal == 1 and current_user.role == 'municipal') or current_user.role == 'estadual' %}
+<button class="pdf-button" onclick="gerarPDF('{{ registro.codigo_ficha }}', this)" title="Baixar PDF">
+    <i class="fas fa-file-pdf"></i> PDF
+</button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if not registros %}
+        <p style="text-align: center; margin-top: 1rem; color: var(--primary);">Nenhum registro disponível.</p>
+      {% endif %}
+      <div class="pagination-container">
+        <div class="pagination">
+          <button id="prev-page" class="button--nav" disabled><i class="fas fa-chevron-left icon"></i> Anterior</button>
+          <span id="page-info">Página <span id="current-page">1</span> de <span id="total-pages">1</span></span>
+          <button id="next-page" class="button--nav"><i class="fas fa-chevron-right icon"></i> Próximo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function getCsrfToken() {
+      const name = 'csrf_token=';
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const cookies = decodedCookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        let cookie = cookies[i].trim();
+        if (cookie.indexOf(name) === 0) {
+          return cookie.substring(name.length, cookie.length);
+        }
+      }
+      return '';
+    }
+
+    function gerarPDF(codigoFicha, button) {
+      button.disabled = true;
+      const originalIcon = button.innerHTML;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+      fetch(`/gerar_pdf/${encodeURIComponent(codigoFicha)}`, {
+        method: 'GET',
+        headers: {
+          'X-CSRF-Token': getCsrfToken()
+        },
+        credentials: 'same-origin'
+      })
+      .then(response => {
+        button.disabled = false;
+        button.innerHTML = originalIcon;
+
+        if (!response.ok) {
+          return response.json().then(data => {
+            throw new Error(data.message || `Erro ${response.status}: ${response.statusText}`);
+          });
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ficha_${codigoFicha}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        console.error('Erro ao baixar PDF:', error);
+        button.innerHTML = originalIcon;
+        const flashMessage = document.createElement('div');
+        flashMessage.className = 'flash-message danger';
+        flashMessage.textContent = `Erro ao baixar PDF: ${error.message}`;
+        document.querySelector('.container').insertBefore(flashMessage, document.querySelector('.form-group'));
+        setTimeout(() => flashMessage.remove(), 5000);
+      });
+    }
+
+    function logout() {
+      const logoutBtn = document.getElementById('logout-btn');
+      logoutBtn.disabled = true;
+      logoutBtn.textContent = 'Saindo...';
+
+      fetch('{{ url_for('logout') }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': getCsrfToken()
+        },
+        credentials: 'same-origin'
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          window.location.href = '/';
+        } else {
+          throw new Error(data.message || 'Erro ao fazer logout.');
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao fazer logout:', error);
+        logoutBtn.disabled = false;
+        logoutBtn.textContent = 'Sair';
+        const flashContainer = document.querySelector('.container');
+        const flashMessage = document.createElement('div');
+        flashMessage.className = 'flash-message danger';
+        flashMessage.textContent = `Erro ao fazer logout: ${error.message}`;
+        flashContainer.insertBefore(flashMessage, flashContainer.querySelector('.form-group'));
+        setTimeout(() => flashMessage.remove(), 5000);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const table = document.getElementById('relatorio-table');
+      const tbody = table.querySelector('tbody');
+      const headers = table.querySelectorAll('th.sortable');
+      let sortDirection = {};
+      let currentSort = null;
+      const rowsPerPage = 100;
+      let currentPage = 1;
+      let rows = Array.from(tbody.querySelectorAll('tr'));
+      const totalPages = Math.ceil(rows.length / rowsPerPage);
+      const prevPageBtn = document.getElementById('prev-page');
+      const nextPageBtn = document.getElementById('next-page');
+      const currentPageSpan = document.getElementById('current-page');
+      const totalPagesSpan = document.getElementById('total-pages');
+
+      totalPagesSpan.textContent = totalPages;
+      currentPageSpan.textContent = currentPage;
+
+      function updateTable() {
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        rows.forEach((row, index) => {
+          row.style.display = (index >= start && index < end) ? '' : 'none';
+        });
+
+        prevPageBtn.disabled = currentPage === 1;
+        nextPageBtn.disabled = currentPage === totalPages;
+        currentPageSpan.textContent = currentPage;
+      }
+
+      updateTable();
+
+      prevPageBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          updateTable();
+        }
+      });
+
+      nextPageBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          updateTable();
+        }
+      });
+
+      headers.forEach(header => {
+        header.addEventListener('click', () => {
+          const sortKey = header.getAttribute('data-sort');
+          if (currentSort === sortKey) {
+            sortDirection[sortKey] = !sortDirection[sortKey];
+          } else {
+            sortDirection = {};
+            sortDirection[sortKey] = true;
+            headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+          }
+          currentSort = sortKey;
+
+          header.classList.add(sortDirection[sortKey] ? 'sort-asc' : 'sort-desc');
+          sortTable(sortKey, sortDirection[sortKey]);
+        });
+      });
+
+      function sortTable(key, ascending) {
+        rows.sort((a, b) => {
+          let aValue = a.querySelector(`td:nth-child(${Array.from(headers).findIndex(h => h.getAttribute('data-sort') === key) + 1})`).textContent.trim();
+          let bValue = b.querySelector(`td:nth-child(${Array.from(headers).findIndex(h => h.getAttribute('data-sort') === key) + 1})`).textContent.trim();
+
+          if (!isNaN(aValue) && !isNaN(bValue)) {
+            aValue = parseFloat(aValue);
+            bValue = parseFloat(bValue);
+          } else if (key === 'data_envio' || key === 'data_nasc') {
+            aValue = aValue.split('/').reverse().join('');
+            bValue = bValue.split('/').reverse().join('');
+          }
+
+          if (aValue < bValue) return ascending ? -1 : 1;
+          if (aValue > bValue) return ascending ? 1 : -1;
+          return 0;
+        });
+
+        while (tbody.firstChild) {
+          tbody.removeChild(tbody.firstChild);
+        }
+        rows.forEach(row => tbody.appendChild(row));
+
+        currentPage = 1;
+        updateTable();
+      }
+
+      document.getElementById('export-csv').addEventListener('click', function () {
+        const rows = Array.from(document.querySelectorAll('#relatorio-table tr'));
+        const csv = [];
+        const delimiter = ';';
+
+        const headers = Array.from(rows[0].querySelectorAll('th')).map((header, index) => {
+          if (index === rows[0].querySelectorAll('th').length - 1) return '';
+          let text = header.textContent.trim();
+          if (text.includes(delimiter) || text.includes('"')) {
+            text = `"${text.replace(/"/g, '""')}"`;
+          }
+          return text;
+        });
+        csv.push(headers.join(delimiter));
+
+        for (let i = 1; i < rows.length; i++) {
+          const cols = Array.from(rows[i].querySelectorAll('td')).map((col, index) => {
+            if (index === rows[0].querySelectorAll('th').length - 1) return '';
+            let text = col.textContent.trim();
+            if (text.includes(delimiter) || text.includes('"')) {
+              text = `"${text.replace(/"/g, '""')}"`;
+            }
+            return text;
+          });
+          csv.push(cols.join(delimiter));
+        }
+
+        const csvContent = csv.join('\n');
+        const bom = '\uFEFF';
+        const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'relatorio_administrativo.csv';
+        link.click();
+      });
+
+      const accordionHeaders = document.querySelectorAll('.accordion-header');
+      accordionHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+          const item = header.parentElement;
+          const content = header.nextElementSibling;
+          const isActive = item.classList.contains('active');
+
+          document.querySelectorAll('.accordion-item').forEach(otherItem => {
+            if (otherItem !== item) {
+              otherItem.classList.remove('active');
+              otherItem.querySelector('.accordion-content').classList.remove('active');
+              otherItem.querySelector('.accordion-content').style.maxHeight = null;
+            }
+          });
+
+          item.classList.toggle('active');
+          content.classList.toggle('active');
+          if (!isActive) {
+            content.style.maxHeight = content.scrollHeight + 'px';
+          } else {
+            content.style.maxHeight = null;
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNAR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #f2eabc 0%, #ffffff 100%);
+            overflow: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23194756" fill-opacity="0.1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,245.3C960,224,1056,160,1152,149.3C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path><path fill="%2354736e" fill-opacity="0.1" d="M0,256L48,245.3C96,235,192,213,288,213.3C384,213,480,235,576,256C672,277,768,299,864,277.3C960,256,1056,192,1152,181.3C1248,171,1344,213,1392,234.7L1440,256L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            z-index: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 95%;
+            margin: 20px auto;
+            z-index: 1;
+            overflow-y: auto;
+        }
+        .container:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15), 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #194756;
+        }
+        .button {
+            background-color: #194756;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 5px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .button:hover {
+            background-color: #54736e;
+        }
+        .button i {
+            font-size: 1rem;
+        }
+        .logout-button {
+            background-color: #d32f2f;
+        }
+        .logout-button:hover {
+            background-color: #b71c1c;
+        }
+.pdf-button {
+    background-color: white !important;
+    color: #194756 !important;
+    border: 1.5px solid #194756;
+    padding: 0 12px;
+    font-size: 0.8rem;
+    min-width: 90px;
+    min-height: 36px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.pdf-button:hover {
+    background-color: #f2eabc !important;
+    border-color: #54736e;
+    color: #194756 !important;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+}
+
+.pdf-button i {
+    color: #d32f2f; /* ícone vermelho */
+    font-size: 0.9rem;
+}
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .pagination-button {
+            background-color: #194756;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+        .pagination-button:hover {
+            background-color: #54736e;
+        }
+        .pagination-button:disabled {
+            background-color: #a3b1af;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .flash-message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9rem;
+            background-color: #f2eabc;
+            color: #194756;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #194756;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            cursor: pointer;
+        }
+        th:hover {
+            background-color: #54736e;
+        }
+        .sort-icon {
+            margin-left: 5px;
+        }
+        td {
+            color: #333;
+            font-size: 0.9rem;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:nth-child(even) {
+            background-color: #f2eabc;
+        }
+        tr:hover {
+            background-color: #e6f0e5;
+            transition: background-color 0.2s ease;
+        }
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #54736e;
+            font-style: italic;
+            font-size: 1rem;
+        }
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+            }
+            .container {
+                padding: 20px;
+                margin: 10px auto;
+                max-width: 98%;
+            }
+            h2 {
+                font-size: 1.3rem;
+            }
+            th, td {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+            .button {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>PNAR – {{ titulo_usuario }}</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="button-container">
+            {% if session.get('role') == 'estadual' %}
+                <a href="/admin/gerenciar_usuarios" class="button" style="text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            {% endif %}
+            <button id="logout-btn" class="button logout-button" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
+        </div>
+
+        <div id="resultado">
+            <!-- Tabela preenchida via JS -->
+        </div>
+
+        <div class="pagination-container" id="pagination">
+            <!-- Paginação -->
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const rowsPerPage = 100;
+        let sortColumn = 'nome_gestante';
+        let sortDirection = 'ASC';
+
+        function getCsrfToken() {
+            const name = 'csrf_token=';
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const cookies = decodedCookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.indexOf(name) === 0) {
+                    return cookie.substring(name.length, cookie.length);
+                }
+            }
+            return '';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            carregarPnar(1, 'nome_gestante', 'ASC');
+        });
+
+        function carregarPnar(page = 1, column = sortColumn, direction = sortDirection) {
+            const resultado = document.getElementById('resultado');
+            currentPage = page;
+            sortColumn = column;
+            sortDirection = direction;
+
+            fetch('/buscar_pnar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    page: currentPage,
+                    per_page: rowsPerPage,
+                    sort_column: sortColumn,
+                    sort_direction: sortDirection
+                }),
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    resultado.innerHTML = `<div class="flash-message">Sessão expirada. Redirecionando...</div>`;
+                    setTimeout(() => { window.location.href = '/login'; }, 2000);
+                    return Promise.reject('Não autenticado');
+                }
+                if (!response.ok) {
+                    return response.json().then(data => { throw new Error(data.message || 'Erro no servidor'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success || !data.fichas) {
+                    resultado.innerHTML = `<div class="flash-message">${data.message || 'Nenhum dado retornado.'}</div>`;
+                    document.getElementById('pagination').innerHTML = '';
+                    return;
+                }
+
+                const fichas = data.fichas;
+                const totalRecords = data.total_records || 0;
+                const totalPages = Math.ceil(totalRecords / rowsPerPage);
+
+                if (fichas.length === 0) {
+                    resultado.innerHTML = '<p class="no-results">Nenhuma gestante de alto risco sem desfecho.</p>';
+                    document.getElementById('pagination').innerHTML = '';
+                    return;
+                }
+
+                let html = `
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable('nome_gestante')" data-column="nome_gestante">
+                                        Nome da Gestante ${getSortIcon('nome_gestante')}
+                                    </th>
+                                    <th onclick="sortTable('periodo_gestacional')" data-column="periodo_gestacional">
+                                        Período Gestacional ${getSortIcon('periodo_gestacional')}
+                                    </th>
+                                    <th onclick="sortTable('municipio')" data-column="municipio">
+                                        Município ${getSortIcon('municipio')}
+                                    </th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                const escapeHTML = str => str ? String(str).replace(/[&<>"']/g, m => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                })[m]) : 'N/A';
+
+                fichas.forEach(ficha => {
+                    html += `
+                        <tr>
+                            <td>${escapeHTML(ficha.nome_gestante)}</td>
+                            <td>${escapeHTML(ficha.periodo_gestacional)}</td>
+                            <td>${escapeHTML(ficha.municipio)}</td>
+                            <td>
+                                <a href="/gerar_pdf/${escapeHTML(ficha.codigo_ficha)}" class="pdf-button">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table></div>`;
+                resultado.innerHTML = html;
+
+                let paginationHtml = '';
+                if (totalPages > 1) {
+                    paginationHtml = `
+                        <button class="pagination-button" onclick="carregarPnar(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button>
+                        <span>Página ${currentPage} de ${totalPages}</span>
+                        <button class="pagination-button" onclick="carregarPnar(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Próxima</button>
+                    `;
+                }
+                document.getElementById('pagination').innerHTML = paginationHtml;
+            })
+            .catch(error => {
+                if (error.message !== 'Não autenticado') {
+                    console.error('Erro:', error);
+                    resultado.innerHTML = `<div class="flash-message">Erro: ${error.message}</div>`;
+                }
+            });
+        }
+
+        function sortTable(column) {
+            const valid = ['nome_gestante', 'periodo_gestacional', 'municipio'];
+            if (!valid.includes(column)) return;
+            sortDirection = (sortColumn === column && sortDirection === 'ASC') ? 'DESC' : 'ASC';
+            sortColumn = column;
+            carregarPnar(1, sortColumn, sortDirection);
+        }
+
+        function getSortIcon(column) {
+            if (sortColumn !== column) return '';
+            return sortDirection === 'ASC'
+                ? '<i class="fas fa-sort-up sort-icon"></i>'
+                : '<i class="fas fa-sort-down sort-icon"></i>';
+        }
+
+        function logout() {
+            const btn = document.getElementById('logout-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saindo...';
+            fetch('/logout', {
+                method: 'POST',
+                headers: { 'X-CSRF-Token': getCsrfToken() },
+                credentials: 'same-origin'
+            })
+            .then(() => window.location.href = '/')
+            .catch(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Sair';
+            });
+        }
+    </script>
+</body>
+</html>
